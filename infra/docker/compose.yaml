@@ -1,0 +1,66 @@
+name: ecommerce
+
+# Host port convention for per-service infrastructure:
+#   Postgres: 54NN   Redis: 63NN   (NN = service number)
+#   01 = identity
+
+services:
+  # ── identity ──────────────────────────────────────────────
+  identity-db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: identity
+      POSTGRES_USER: ${IDENTITY_DB_USER}
+      POSTGRES_PASSWORD: ${IDENTITY_DB_PASSWORD}
+    ports:
+      - '5401:5432'
+    volumes:
+      - identity-db-data:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  identity-redis:
+    image: redis:8.6-alpine
+    ports:
+      - '6301:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ── shared platform (emulates managed cloud services) ─────
+  localstack:
+    image: localstack/localstack:2026.09.0
+    environment:
+      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:-}
+      SERVICES: sqs,sns,lambda,iam,logs,sts
+    ports:
+      - '4566:4566'
+    volumes:
+      - localstack-data:/var/lib/localstack
+      # Lambda functions run as sibling containers, so LocalStack needs the Docker socket.
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ['CMD', 'curl', '-fs', 'http://localhost:4566/_localstack/health']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mailpit:
+    image: axllent/mailpit:v1.31
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # web UI
+    healthcheck:
+      test: ['CMD', '/mailpit', 'readyz']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  identity-db-data:
+  localstack-data:
