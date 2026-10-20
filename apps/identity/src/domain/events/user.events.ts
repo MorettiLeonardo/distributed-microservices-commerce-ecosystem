@@ -24,3 +24,14 @@ export type UserPasswordChanged = UserEventBase & {
 
 export type UserEvent =
   UserRegistered | UserEmailVerified | UserPasswordResetRequested | UserPasswordChanged;
+
+/**
+ * Not recorded by the User aggregate: lockouts are tracked by the login attempt limiter,
+ * outside the aggregate's state, so the application layer emits it.
+ */
+export type UserLockedOut = UserEventBase & {
+  readonly type: 'UserLockedOut';
+  readonly lockedUntil: Date;
+};
+
+export type IdentityEvent = UserEvent | UserLockedOut;
