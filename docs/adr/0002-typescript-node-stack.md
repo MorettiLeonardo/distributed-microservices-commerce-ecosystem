@@ -19,15 +19,15 @@ We need a single stack for both containerized services and Lambdas, with strong 
 
 ## Decision
 
-| Area | Choice |
-|------|--------|
-| Runtime | Node.js 24 LTS, ESM, TypeScript `strict` |
-| HTTP | Express 5 |
-| Validation | Zod |
-| Data | PostgreSQL + Sequelize |
-| Lint/format | oxlint + Prettier |
-| Tests | Vitest |
-| Logger | Pino |
+| Area        | Choice                                   |
+| ----------- | ---------------------------------------- |
+| Runtime     | Node.js 24 LTS, ESM, TypeScript `strict` |
+| HTTP        | Express 5                                |
+| Validation  | Zod                                      |
+| Data        | PostgreSQL + Sequelize                   |
+| Lint/format | oxlint + Prettier                        |
+| Tests       | Vitest                                   |
+| Logger      | Pino                                     |
 
 ### Rationale
 

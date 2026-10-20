@@ -7,20 +7,20 @@
 
 ## 1. Stack
 
-| Area | Choice | ADR |
-|------|--------|-----|
-| Language / runtime | TypeScript · Node.js 24 LTS · ESM | [0002](docs/adr/0002-typescript-node-stack.md) |
-| HTTP | Express 5 | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Validation | Zod (HTTP, events, env vars) | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Relational database | PostgreSQL + Sequelize | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Logger | Pino (+ pino-http) | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Tests | Vitest (+ Testcontainers) | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Lint / format | oxlint + Prettier | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Monorepo | pnpm workspaces + Turborepo | [0003](docs/adr/0003-monorepo-pnpm-turborepo.md) |
-| Service architecture | Hexagonal (Ports & Adapters) | [0004](docs/adr/0004-hexagonal-architecture.md) |
-| Compute | Hybrid: containers + AWS Lambda | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
-| Local cloud / IaC | LocalStack + Terraform (`tflocal`) | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
-| Contracts | REST `/v1`, RFC 9457, CloudEvents, UUIDv7 | [0006](docs/adr/0006-api-and-event-contracts.md) |
+| Area                 | Choice                                    | ADR                                                          |
+| -------------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| Language / runtime   | TypeScript · Node.js 24 LTS · ESM         | [0002](docs/adr/0002-typescript-node-stack.md)               |
+| HTTP                 | Express 5                                 | [0002](docs/adr/0002-typescript-node-stack.md)               |
+| Validation           | Zod (HTTP, events, env vars)              | [0002](docs/adr/0002-typescript-node-stack.md)               |
+| Relational database  | PostgreSQL + Sequelize                    | [0002](docs/adr/0002-typescript-node-stack.md)               |
+| Logger               | Pino (+ pino-http)                        | [0002](docs/adr/0002-typescript-node-stack.md)               |
+| Tests                | Vitest (+ Testcontainers)                 | [0002](docs/adr/0002-typescript-node-stack.md)               |
+| Lint / format        | oxlint + Prettier                         | [0002](docs/adr/0002-typescript-node-stack.md)               |
+| Monorepo             | pnpm workspaces + Turborepo               | [0003](docs/adr/0003-monorepo-pnpm-turborepo.md)             |
+| Service architecture | Hexagonal (Ports & Adapters)              | [0004](docs/adr/0004-hexagonal-architecture.md)              |
+| Compute              | Hybrid: containers + AWS Lambda           | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
+| Local cloud / IaC    | LocalStack + Terraform (`tflocal`)        | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
+| Contracts            | REST `/v1`, RFC 9457, CloudEvents, UUIDv7 | [0006](docs/adr/0006-api-and-event-contracts.md)             |
 
 ---
 
@@ -32,6 +32,8 @@
   - `noUncheckedIndexedAccess: true`
   - `exactOptionalPropertyTypes: true`
   - `verbatimModuleSyntax: true` (forces `import type` for types)
+- Build: containers compile with `tsc` to `dist/` (dev runs `node --watch`); Lambdas are bundled with `esbuild` into a single file per function.
+- `module: NodeNext` ⇒ relative imports must use the `.js` extension (`import { Order } from './order.entity.js'`).
 - No explicit `any`; use `unknown` + narrowing (or a Zod schema).
 - Prefer `type` for unions/data and `interface` for **ports** (contracts implemented by adapters).
 - No TS `enum` — use a literal union + `as const`:
@@ -42,17 +44,17 @@
 
 ## 3. Naming
 
-| Element | Convention | Example |
-|---------|------------|---------|
-| Files | `kebab-case` + role suffix | `create-order.use-case.ts`, `order.repository.ts` |
-| Classes / types | `PascalCase` | `Order`, `CreateOrderUseCase` |
-| Interfaces (ports) | `PascalCase`, **no** `I` prefix | `OrderRepository`, `EventPublisher` |
-| Variables / functions | `camelCase` | `findById`, `totalAmount` |
-| Global constants | `UPPER_SNAKE_CASE` | `MAX_RETRY_ATTEMPTS` |
-| Env vars | `UPPER_SNAKE_CASE` | `DATABASE_URL`, `ORDERS_QUEUE_URL` |
-| Tables / columns | `snake_case`, plural tables | `order_items.unit_price` |
-| Internal packages | `@ecommerce/` scope | `@ecommerce/event-contracts` |
-| AWS resources | `ecommerce-<service>-<resource>` | `ecommerce-orders-events-queue` |
+| Element               | Convention                       | Example                                           |
+| --------------------- | -------------------------------- | ------------------------------------------------- |
+| Files                 | `kebab-case` + role suffix       | `create-order.use-case.ts`, `order.repository.ts` |
+| Classes / types       | `PascalCase`                     | `Order`, `CreateOrderUseCase`                     |
+| Interfaces (ports)    | `PascalCase`, **no** `I` prefix  | `OrderRepository`, `EventPublisher`               |
+| Variables / functions | `camelCase`                      | `findById`, `totalAmount`                         |
+| Global constants      | `UPPER_SNAKE_CASE`               | `MAX_RETRY_ATTEMPTS`                              |
+| Env vars              | `UPPER_SNAKE_CASE`               | `DATABASE_URL`, `ORDERS_QUEUE_URL`                |
+| Tables / columns      | `snake_case`, plural tables      | `order_items.unit_price`                          |
+| Internal packages     | `@ecommerce/` scope              | `@ecommerce/event-contracts`                      |
+| AWS resources         | `ecommerce-<service>-<resource>` | `ecommerce-orders-events-queue`                   |
 
 Standard file suffixes: `.entity`, `.value-object`, `.event`, `.use-case`, `.port`, `.repository`, `.controller`, `.consumer`, `.mapper`, `.schema`, `.error`, `.test`.
 

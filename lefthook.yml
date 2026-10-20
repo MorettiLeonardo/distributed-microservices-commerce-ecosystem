@@ -1,0 +1,15 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: '*.{js,mjs,cjs,ts}'
+      run: pnpm exec oxlint {staged_files}
+    format:
+      glob: '*.{js,mjs,cjs,ts,json,md,yml,yaml}'
+      run: pnpm exec prettier --write {staged_files}
+      stage_fixed: true
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}

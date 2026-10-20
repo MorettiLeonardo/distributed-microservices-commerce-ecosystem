@@ -4,14 +4,14 @@ Bounded context responsible for **authentication**: registering users, verifying
 
 ## Ubiquitous language
 
-| Term | Meaning |
-|------|---------|
-| **User** | A person with credentials in the platform. |
-| **Session** | A token family created at login; holds the current refresh token hash. |
-| **Access token** | Short-lived ES256 JWT used to call services. |
-| **Refresh token** | Opaque, single-use secret exchanged for a new token pair. |
-| **One-time token** | Single-use secret for email verification or password reset. |
-| **Lockout** | Temporary block of an account after repeated login failures. |
+| Term               | Meaning                                                                |
+| ------------------ | ---------------------------------------------------------------------- |
+| **User**           | A person with credentials in the platform.                             |
+| **Session**        | A token family created at login; holds the current refresh token hash. |
+| **Access token**   | Short-lived ES256 JWT used to call services.                           |
+| **Refresh token**  | Opaque, single-use secret exchanged for a new token pair.              |
+| **One-time token** | Single-use secret for email verification or password reset.            |
+| **Lockout**        | Temporary block of an account after repeated login failures.           |
 
 ## Aggregates
 
@@ -67,33 +67,33 @@ classDiagram
 
 All events use the CloudEvents envelope and contain **no secrets**.
 
-| Type | Emitted when | Data |
-|------|--------------|------|
-| `com.ecommerce.identity.user.registered.v1` | A new user is created | `userId`, `email` |
-| `com.ecommerce.identity.user.email-verified.v1` | The email is verified | `userId` |
-| `com.ecommerce.identity.user.password-reset-requested.v1` | A reset is requested for an existing user | `userId` |
-| `com.ecommerce.identity.user.password-changed.v1` | The password is reset or changed | `userId` |
-| `com.ecommerce.identity.user.locked-out.v1` | The failure threshold is reached | `userId`, `lockedUntil` |
+| Type                                                      | Emitted when                              | Data                    |
+| --------------------------------------------------------- | ----------------------------------------- | ----------------------- |
+| `com.ecommerce.identity.user.registered.v1`               | A new user is created                     | `userId`, `email`       |
+| `com.ecommerce.identity.user.email-verified.v1`           | The email is verified                     | `userId`                |
+| `com.ecommerce.identity.user.password-reset-requested.v1` | A reset is requested for an existing user | `userId`                |
+| `com.ecommerce.identity.user.password-changed.v1`         | The password is reset or changed          | `userId`                |
+| `com.ecommerce.identity.user.locked-out.v1`               | The failure threshold is reached          | `userId`, `lockedUntil` |
 
 ## Commands sent
 
-| Command | Queue | Consumer |
-|---------|-------|----------|
+| Command                                             | Queue                                      | Consumer            |
+| --------------------------------------------------- | ------------------------------------------ | ------------------- |
 | `send-email` (template + recipient + one-time link) | `ecommerce-notifications-send-email-queue` | Notification Lambda |
 
 ## HTTP API
 
-| Method | Path | Auth | Success |
-|--------|------|------|---------|
-| `POST` | `/v1/auth/register` | — | `202` (neutral) |
-| `POST` | `/v1/auth/login` | — | `200` token pair |
-| `POST` | `/v1/auth/refresh` | refresh token | `200` new token pair |
-| `POST` | `/v1/auth/logout` | refresh token | `204` |
-| `POST` | `/v1/auth/verify-email` | one-time token | `204` |
-| `POST` | `/v1/auth/forgot-password` | — | `202` (neutral) |
-| `POST` | `/v1/auth/reset-password` | one-time token | `204` |
-| `GET` | `/v1/users/me` | access token | `200` |
-| `GET` | `/.well-known/jwks.json` | — | `200` JWKS |
+| Method | Path                       | Auth           | Success              |
+| ------ | -------------------------- | -------------- | -------------------- |
+| `POST` | `/v1/auth/register`        | —              | `202` (neutral)      |
+| `POST` | `/v1/auth/login`           | —              | `200` token pair     |
+| `POST` | `/v1/auth/refresh`         | refresh token  | `200` new token pair |
+| `POST` | `/v1/auth/logout`          | refresh token  | `204`                |
+| `POST` | `/v1/auth/verify-email`    | one-time token | `204`                |
+| `POST` | `/v1/auth/forgot-password` | —              | `202` (neutral)      |
+| `POST` | `/v1/auth/reset-password`  | one-time token | `204`                |
+| `GET`  | `/v1/users/me`             | access token   | `200`                |
+| `GET`  | `/.well-known/jwks.json`   | —              | `200` JWKS           |
 
 Access token claims: `sub` (user id), `email`, `emailVerified`, `iat`, `exp`, `iss`, `aud`, header `kid`.
 

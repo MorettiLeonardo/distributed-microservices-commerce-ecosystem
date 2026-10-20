@@ -1,0 +1,24 @@
+# dependencies
+node_modules/
+
+# build / tooling output
+dist/
+coverage/
+.turbo/
+*.tsbuildinfo
+*.log
+
+# env
+.env
+.env.*
+!.env.example
+
+# terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
