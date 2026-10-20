@@ -1,26 +1,26 @@
-# 0005 — Compute híbrido, LocalStack e Terraform
+# 0005 — Hybrid compute, LocalStack and Terraform
 
 - **Status:** accepted
-- **Data:** 2026-10-19
+- **Date:** 2026-10-19
 
-## Contexto e problema
+## Context and problem
 
-Queremos praticar AWS (SQS, SNS, EventBridge, S3, Lambda, Step Functions, etc.) sem custo, e entender quando usar container e quando usar função.
+We want to practice AWS (SQS, SNS, EventBridge, S3, Lambda, Step Functions, etc.) at no cost, and understand when to use a container versus a function.
 
-## Opções consideradas
+## Considered options
 
-- **Compute:** híbrido; tudo em containers; tudo serverless
-- **IaC:** Terraform, AWS CDK, scripts `awslocal`
+- **Compute:** hybrid; containers only; serverless only
+- **IaC:** Terraform, AWS CDK, `awslocal` scripts
 
-## Decisão
+## Decision
 
-- **Compute híbrido:** serviços core com estado e tráfego contínuo (ex.: Orders, Catalog, Inventory) rodam em containers; workers reativos a eventos (notificações, processamento de imagens no S3, relatórios) rodam em Lambda.
-- **AWS local via LocalStack**, rodando no Docker Compose junto com Postgres e Redis.
-- **Terraform** (via `tflocal`) para provisionar todos os recursos AWS de forma declarativa.
+- **Hybrid compute:** stateful core services with steady traffic (e.g. Orders, Catalog, Inventory) run in containers; event-reactive workers (notifications, S3 image processing, reports) run in Lambda.
+- **Local AWS via LocalStack**, running in Docker Compose alongside Postgres and Redis.
+- **Terraform** (via `tflocal`) to provision every AWS resource declaratively.
 
-## Consequências
+## Consequences
 
-- **+** Explora o trade-off container × serverless (cold start, conexões com banco, custo, escala).
-- **+** Terraform é a skill de IaC mais transferível; o mesmo código poderia apontar para uma conta real.
-- **−** LocalStack não reproduz 100% do comportamento da AWS (IAM, limites, alguns serviços são pagos).
-- **−** Duas formas de empacotar/rodar código para manter.
+- **+** Explores the container × serverless trade-off (cold start, database connections, cost, scaling).
+- **+** Terraform is the most transferable IaC skill; the same code could target a real account.
+- **−** LocalStack does not reproduce 100% of AWS behavior (IAM, limits, some services are paid-tier only).
+- **−** Two ways of packaging/running code to maintain.

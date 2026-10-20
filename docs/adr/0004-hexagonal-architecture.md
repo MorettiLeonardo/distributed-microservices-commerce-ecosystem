@@ -1,26 +1,26 @@
-# 0004 — Arquitetura hexagonal em cada serviço
+# 0004 — Hexagonal architecture in every service
 
 - **Status:** accepted
-- **Data:** 2026-10-19
+- **Date:** 2026-10-19
 
-## Contexto e problema
+## Context and problem
 
-O mesmo caso de uso pode ser disparado por HTTP, por uma mensagem SQS ou por uma Lambda, e persistir/publicar em tecnologias diferentes (Postgres, Redis, SNS, EventBridge). O domínio não deve depender desses detalhes.
+The same use case may be triggered by HTTP, an SQS message or a Lambda, and may persist/publish through different technologies (Postgres, Redis, SNS, EventBridge). The domain must not depend on those details.
 
-## Opções consideradas
+## Considered options
 
 - Hexagonal (Ports & Adapters)
 - Clean Architecture
 - Vertical Slice
-- Camadas simples (controller → service → repository)
+- Simple layers (controller → service → repository)
 
-## Decisão
+## Decision
 
-**Hexagonal.** Cada serviço tem `domain/`, `application/` (use cases + ports), `adapters/in/`, `adapters/out/` e um composition root (`main.ts`) com DI manual. Dependências apontam sempre para dentro.
+**Hexagonal.** Each service has `domain/`, `application/` (use cases + ports), `adapters/in/`, `adapters/out/` and a composition root (`main.ts`) with manual DI. Dependencies always point inward.
 
-## Consequências
+## Consequences
 
-- **+** Domínio testável sem I/O; trocar SQS por EventBridge ou Express por handler de Lambda afeta só adapters.
-- **+** Deixa explícito o que é porta de entrada e de saída — base para entender sync vs async.
-- **−** Mais arquivos e mapeamentos (DTO ↔ domínio ↔ model).
-- **−** DI manual exige disciplina no `main.ts`.
+- **+** Domain testable without I/O; swapping SQS for EventBridge or Express for a Lambda handler only touches adapters.
+- **+** Makes inbound and outbound ports explicit — the foundation for reasoning about sync vs async.
+- **−** More files and mappings (DTO ↔ domain ↔ model).
+- **−** Manual DI requires discipline in `main.ts`.

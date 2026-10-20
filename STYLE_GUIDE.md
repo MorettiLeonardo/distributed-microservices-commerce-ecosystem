@@ -1,76 +1,76 @@
 # Style Guide — E-commerce Microservices
 
-> Guia de convenções do projeto. Toda decisão relevante aqui tem um ADR correspondente em [`docs/adr/`](docs/adr/).
-> Código, identificadores, endpoints e mensagens de commit em **inglês**; documentação em **português**.
+> Project conventions. Every relevant decision here has a matching ADR in [`docs/adr/`](docs/adr/).
+> Everything in this repository — code, identifiers, endpoints, docs, ADRs and commit messages — is written in **English**.
 
 ---
 
 ## 1. Stack
 
-| Área | Escolha | ADR |
-|------|---------|-----|
-| Linguagem / runtime | TypeScript · Node.js 24 LTS · ESM | [0002](docs/adr/0002-typescript-node-stack.md) |
+| Area | Choice | ADR |
+|------|--------|-----|
+| Language / runtime | TypeScript · Node.js 24 LTS · ESM | [0002](docs/adr/0002-typescript-node-stack.md) |
 | HTTP | Express 5 | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Validação | Zod (HTTP, eventos, env vars) | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Banco relacional | PostgreSQL + Sequelize | [0002](docs/adr/0002-typescript-node-stack.md) |
+| Validation | Zod (HTTP, events, env vars) | [0002](docs/adr/0002-typescript-node-stack.md) |
+| Relational database | PostgreSQL + Sequelize | [0002](docs/adr/0002-typescript-node-stack.md) |
 | Logger | Pino (+ pino-http) | [0002](docs/adr/0002-typescript-node-stack.md) |
-| Testes | Vitest (+ Testcontainers) | [0002](docs/adr/0002-typescript-node-stack.md) |
+| Tests | Vitest (+ Testcontainers) | [0002](docs/adr/0002-typescript-node-stack.md) |
 | Lint / format | oxlint + Prettier | [0002](docs/adr/0002-typescript-node-stack.md) |
 | Monorepo | pnpm workspaces + Turborepo | [0003](docs/adr/0003-monorepo-pnpm-turborepo.md) |
-| Arquitetura interna | Hexagonal (Ports & Adapters) | [0004](docs/adr/0004-hexagonal-architecture.md) |
-| Compute | Híbrido: containers + AWS Lambda | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
-| Cloud local / IaC | LocalStack + Terraform (`tflocal`) | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
-| Contratos | REST `/v1`, RFC 9457, CloudEvents, UUIDv7 | [0006](docs/adr/0006-api-and-event-contracts.md) |
+| Service architecture | Hexagonal (Ports & Adapters) | [0004](docs/adr/0004-hexagonal-architecture.md) |
+| Compute | Hybrid: containers + AWS Lambda | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
+| Local cloud / IaC | LocalStack + Terraform (`tflocal`) | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
+| Contracts | REST `/v1`, RFC 9457, CloudEvents, UUIDv7 | [0006](docs/adr/0006-api-and-event-contracts.md) |
 
 ---
 
 ## 2. TypeScript
 
-- `"type": "module"` em todos os pacotes (ESM).
-- `tsconfig` base em `packages/tsconfig/` com:
+- `"type": "module"` in every package (ESM).
+- Base `tsconfig` in `packages/tsconfig/` with:
   - `strict: true`
   - `noUncheckedIndexedAccess: true`
   - `exactOptionalPropertyTypes: true`
-  - `verbatimModuleSyntax: true` (force `import type` para tipos)
-- Proibido `any` explícito; use `unknown` + narrowing (ou um schema Zod).
-- Prefira `type` para uniões/dados e `interface` para **ports** (contratos implementados por adapters).
-- Sem `enum` do TS — use união de literais + `as const`:
+  - `verbatimModuleSyntax: true` (forces `import type` for types)
+- No explicit `any`; use `unknown` + narrowing (or a Zod schema).
+- Prefer `type` for unions/data and `interface` for **ports** (contracts implemented by adapters).
+- No TS `enum` — use a literal union + `as const`:
   ```ts
   export const OrderStatus = ['pending', 'confirmed', 'cancelled'] as const;
   export type OrderStatus = (typeof OrderStatus)[number];
   ```
 
-## 3. Nomenclatura
+## 3. Naming
 
-| Elemento | Convenção | Exemplo |
-|----------|-----------|---------|
-| Arquivos | `kebab-case` + sufixo de papel | `create-order.use-case.ts`, `order.repository.ts` |
-| Classes / tipos | `PascalCase` | `Order`, `CreateOrderUseCase` |
-| Interfaces (ports) | `PascalCase`, **sem** prefixo `I` | `OrderRepository`, `EventPublisher` |
-| Variáveis / funções | `camelCase` | `findById`, `totalAmount` |
-| Constantes globais | `UPPER_SNAKE_CASE` | `MAX_RETRY_ATTEMPTS` |
+| Element | Convention | Example |
+|---------|------------|---------|
+| Files | `kebab-case` + role suffix | `create-order.use-case.ts`, `order.repository.ts` |
+| Classes / types | `PascalCase` | `Order`, `CreateOrderUseCase` |
+| Interfaces (ports) | `PascalCase`, **no** `I` prefix | `OrderRepository`, `EventPublisher` |
+| Variables / functions | `camelCase` | `findById`, `totalAmount` |
+| Global constants | `UPPER_SNAKE_CASE` | `MAX_RETRY_ATTEMPTS` |
 | Env vars | `UPPER_SNAKE_CASE` | `DATABASE_URL`, `ORDERS_QUEUE_URL` |
-| Tabelas / colunas | `snake_case`, tabelas no plural | `order_items.unit_price` |
-| Pacotes internos | escopo `@ecommerce/` | `@ecommerce/event-contracts` |
-| Recursos AWS | `ecommerce-<serviço>-<recurso>` | `ecommerce-orders-events-queue` |
+| Tables / columns | `snake_case`, plural tables | `order_items.unit_price` |
+| Internal packages | `@ecommerce/` scope | `@ecommerce/event-contracts` |
+| AWS resources | `ecommerce-<service>-<resource>` | `ecommerce-orders-events-queue` |
 
-Sufixos de arquivo padrão: `.entity`, `.value-object`, `.event`, `.use-case`, `.port`, `.repository`, `.controller`, `.consumer`, `.mapper`, `.schema`, `.error`, `.test`.
+Standard file suffixes: `.entity`, `.value-object`, `.event`, `.use-case`, `.port`, `.repository`, `.controller`, `.consumer`, `.mapper`, `.schema`, `.error`, `.test`.
 
-## 4. Estrutura do monorepo
+## 4. Monorepo layout
 
 ```
 .
-├── apps/              # serviços que rodam em container (orders, catalog, inventory, ...)
-├── functions/         # AWS Lambdas (handlers de eventos, jobs)
-├── packages/          # código compartilhado — APENAS contratos e infra transversal
-│   ├── event-contracts/   # schemas Zod + tipos dos CloudEvents
-│   ├── http-problem/      # helpers RFC 9457
-│   ├── logger/            # config do Pino + correlation id
-│   ├── config/            # loader de env validado com Zod
-│   └── tsconfig/          # tsconfig base
+├── apps/              # services running in containers (orders, catalog, inventory, ...)
+├── functions/         # AWS Lambdas (event handlers, jobs)
+├── packages/          # shared code — ONLY contracts and cross-cutting infrastructure
+│   ├── event-contracts/   # Zod schemas + CloudEvent types
+│   ├── http-problem/      # RFC 9457 helpers
+│   ├── logger/            # Pino config + correlation id
+│   ├── config/            # Zod-validated env loader
+│   └── tsconfig/          # base tsconfig
 ├── infra/
 │   ├── docker/            # docker-compose (LocalStack, Postgres, Redis)
-│   └── terraform/         # recursos AWS
+│   └── terraform/         # AWS resources
 ├── docs/
 │   ├── adr/
 │   └── diagrams/
@@ -78,13 +78,13 @@ Sufixos de arquivo padrão: `.entity`, `.value-object`, `.event`, `.use-case`, `
 └── turbo.json / pnpm-workspace.yaml
 ```
 
-> **Regra de ouro:** `packages/` nunca contém regra de negócio. Se dois serviços precisam da mesma lógica de domínio, provavelmente a fronteira entre eles está errada. Compartilhar domínio = monólito distribuído.
+> **Golden rule:** `packages/` never contains business logic. If two services need the same domain logic, the boundary between them is probably wrong. Sharing domain code = distributed monolith.
 
-## 5. Estrutura interna de um serviço (hexagonal)
+## 5. Service layout (hexagonal)
 
 ```
 apps/orders/src/
-├── domain/                 # puro: zero import de framework/infra
+├── domain/                 # pure: zero framework/infrastructure imports
 │   ├── entities/
 │   ├── value-objects/
 │   ├── events/
@@ -93,31 +93,31 @@ apps/orders/src/
 │   ├── use-cases/
 │   └── ports/              # interfaces: OrderRepository, EventPublisher, Clock...
 ├── adapters/
-│   ├── in/                 # quem CHAMA a aplicação
-│   │   ├── http/           # rotas Express, schemas de request, mapeamento de erro
-│   │   └── messaging/      # consumers SQS
-│   └── out/                # quem a aplicação CHAMA
-│       ├── persistence/    # models Sequelize + repositórios + mappers
-│       ├── messaging/      # publishers SNS/EventBridge, outbox
+│   ├── in/                 # things that CALL the application
+│   │   ├── http/           # Express routes, request schemas, error mapping
+│   │   └── messaging/      # SQS consumers
+│   └── out/                # things the application CALLS
+│       ├── persistence/    # Sequelize models + repositories + mappers
+│       ├── messaging/      # SNS/EventBridge publishers, outbox
 │       ├── cache/          # Redis
-│       └── http-clients/   # chamadas a outros serviços
-├── config.ts               # env validada com Zod
-└── main.ts                 # composition root (DI manual)
+│       └── http-clients/   # calls to other services
+├── config.ts               # Zod-validated env
+└── main.ts                 # composition root (manual DI)
 ```
 
-Regras de dependência (sempre **para dentro**):
+Dependency rules (always pointing **inward**):
 
-- `domain` → não importa nada além de si mesmo.
-- `application` → importa `domain`.
-- `adapters` → importam `application` e `domain`; nunca o contrário.
-- `main.ts` é o **único** lugar que instancia adapters e injeta nos use cases.
-- Models do Sequelize **nunca** saem de `adapters/out/persistence`. O repositório converte `Model ↔ Entity` via mapper.
+- `domain` → imports nothing but itself.
+- `application` → imports `domain`.
+- `adapters` → import `application` and `domain`; never the other way around.
+- `main.ts` is the **only** place that instantiates adapters and injects them into use cases.
+- Sequelize models **never** leave `adapters/out/persistence`. Repositories convert `Model ↔ Entity` through a mapper.
 
-## 6. Erros
+## 6. Errors
 
-- Erros de domínio são classes tipadas em `domain/errors/` estendendo `DomainError` (com `code` estável, ex.: `ORDER_ALREADY_CANCELLED`).
-- O domínio **não conhece HTTP**. O adapter HTTP mapeia `DomainError → Problem Details`.
-- Resposta HTTP de erro sempre RFC 9457, `Content-Type: application/problem+json`:
+- Domain errors are typed classes in `domain/errors/` extending `DomainError`, with a stable `code` (e.g. `ORDER_ALREADY_CANCELLED`).
+- The domain **does not know about HTTP**. The HTTP adapter maps `DomainError → Problem Details`.
+- HTTP error responses always follow RFC 9457, `Content-Type: application/problem+json`:
   ```json
   {
     "type": "https://errors.ecommerce.dev/order-already-cancelled",
@@ -129,23 +129,23 @@ Regras de dependência (sempre **para dentro**):
     "correlationId": "..."
   }
   ```
-- Erros inesperados → `500` genérico, sem vazar stack trace; o detalhe vai pro log.
+- Unexpected errors → generic `500` with no stack trace leaked; details go to the log.
 
-## 7. APIs REST
+## 7. REST APIs
 
-- Versão na URL: `/v1/...`.
-- Recursos no plural, `kebab-case`: `/v1/orders`, `/v1/orders/{orderId}/items`, `/v1/product-categories`.
-- Ações que não são CRUD: sub-recurso com verbo, `POST /v1/orders/{orderId}/cancel`.
-- JSON em `camelCase`. Datas em ISO 8601 UTC (`2026-10-19T12:00:00.000Z`). Dinheiro em **centavos inteiros** + moeda (`{ "amount": 1990, "currency": "BRL" }`).
-- Paginação por cursor: `?limit=20&cursor=...` → `{ "data": [...], "nextCursor": "..." }`.
-- `POST` que cria recurso aceita header `Idempotency-Key`.
-- Headers propagados entre serviços: `x-correlation-id` e `traceparent` (W3C).
-- Todo serviço expõe `GET /health/live` e `GET /health/ready`.
-- Toda entrada validada com Zod no adapter `in/http`.
+- Version in the URL: `/v1/...`.
+- Plural, `kebab-case` resources: `/v1/orders`, `/v1/orders/{orderId}/items`, `/v1/product-categories`.
+- Non-CRUD actions: verb sub-resource, `POST /v1/orders/{orderId}/cancel`.
+- JSON in `camelCase`. Dates in ISO 8601 UTC (`2026-10-19T12:00:00.000Z`). Money as **integer cents** + currency (`{ "amount": 1990, "currency": "BRL" }`).
+- Cursor pagination: `?limit=20&cursor=...` → `{ "data": [...], "nextCursor": "..." }`.
+- Resource-creating `POST` endpoints accept an `Idempotency-Key` header.
+- Headers propagated between services: `x-correlation-id` and `traceparent` (W3C).
+- Every service exposes `GET /health/live` and `GET /health/ready`.
+- All input is validated with Zod in the `in/http` adapter.
 
-## 8. Eventos e mensagens
+## 8. Events and messages
 
-- Envelope **CloudEvents 1.0** (JSON):
+- **CloudEvents 1.0** envelope (JSON):
   ```json
   {
     "specversion": "1.0",
@@ -159,60 +159,60 @@ Regras de dependência (sempre **para dentro**):
     "data": { "orderId": "...", "items": [], "total": { "amount": 1990, "currency": "BRL" } }
   }
   ```
-- `type`: `com.ecommerce.<serviço>.<agregado>.<fato-no-passado>.v<N>`.
-- Eventos são **fatos no passado** (`placed`, `paid`, `reserved`); comandos são imperativos (`reserve-stock`) e ficam em filas ponto a ponto.
-- Mudança incompatível de payload ⇒ nova versão (`.v2`); publicar as duas versões durante a migração.
-- Schemas Zod de todos os eventos vivem em `@ecommerce/event-contracts`.
-- Consumers são **idempotentes** (dedupe por `id` do evento) e toda fila tem **DLQ**.
-- Publicação de eventos a partir de mudança de estado usa **Outbox Pattern**.
+- `type`: `com.ecommerce.<service>.<aggregate>.<past-tense-fact>.v<N>`.
+- Events are **past-tense facts** (`placed`, `paid`, `reserved`); commands are imperative (`reserve-stock`) and go to point-to-point queues.
+- Incompatible payload change ⇒ new version (`.v2`); publish both versions during migration.
+- Zod schemas for every event live in `@ecommerce/event-contracts`.
+- Consumers are **idempotent** (dedupe by event `id`) and every queue has a **DLQ**.
+- Publishing events from state changes uses the **Outbox Pattern**.
 
-## 9. Banco de dados
+## 9. Database
 
-- Um banco (database ou schema) **por serviço**; nenhum serviço lê a tabela de outro.
-- Sequelize com `underscored: true`, `timestamps: true` (`created_at`, `updated_at`).
-- PK: `id uuid` gerado na aplicação (**UUIDv7**).
-- Migrations versionadas por serviço; nunca `sync()` fora de testes.
+- One database (or schema) **per service**; no service reads another service's tables.
+- Sequelize with `underscored: true`, `timestamps: true` (`created_at`, `updated_at`).
+- PK: `id uuid` generated by the application (**UUIDv7**).
+- Versioned migrations per service; never `sync()` outside tests.
 
-## 10. Configuração
+## 10. Configuration
 
-- 12-factor: toda configuração via env var.
-- Cada serviço valida sua env com Zod em `config.ts` na inicialização; env inválida ⇒ processo não sobe (fail-fast).
-- `.env.example` versionado; `.env` no `.gitignore`.
+- 12-factor: all configuration through env vars.
+- Each service validates its env with Zod in `config.ts` at startup; invalid env ⇒ process does not start (fail-fast).
+- `.env.example` is committed; `.env` is in `.gitignore`.
 
 ## 11. Logging
 
-- Pino, JSON, um log por linha.
-- Campos obrigatórios: `service`, `level`, `msg`, `correlationId`, `traceId` (quando houver).
-- Níveis: `error` (ação necessária), `warn` (degradação), `info` (eventos de negócio/ciclo de vida), `debug` (desenvolvimento).
-- Nunca logar segredos, tokens ou dados de cartão.
+- Pino, JSON, one log entry per line.
+- Required fields: `service`, `level`, `msg`, `correlationId`, `traceId` (when available).
+- Levels: `error` (action required), `warn` (degradation), `info` (business/lifecycle events), `debug` (development).
+- Never log secrets, tokens, passwords or card data.
 
-## 12. Testes
+## 12. Tests
 
-- Vitest. Arquivos `*.test.ts` ao lado do código (unit) e em `test/integration/` (integração).
-- **Unit:** domínio e use cases com fakes dos ports, sem I/O.
-- **Integração:** adapters contra Postgres/Redis/LocalStack reais via Testcontainers.
-- **Contrato:** eventos validados contra os schemas de `@ecommerce/event-contracts`.
-- Nome dos testes descreve comportamento: `it('rejects cancellation of a shipped order')`.
+- Vitest. `*.test.ts` next to the code (unit) and in `test/integration/` (integration).
+- **Unit:** domain and use cases with fake ports, no I/O.
+- **Integration:** adapters against real Postgres/Redis/LocalStack via Testcontainers.
+- **Contract:** events validated against `@ecommerce/event-contracts` schemas.
+- Test names describe behavior: `it('rejects cancellation of a shipped order')`.
 
-## 13. Lint e formatação
+## 13. Lint and formatting
 
-- `oxlint` para lint, `Prettier` para formatação (`singleQuote`, `trailingComma: all`, `printWidth: 100`).
-- Lint e format checados no CI e em pre-commit (lefthook).
+- `oxlint` for linting, `Prettier` for formatting (`singleQuote`, `trailingComma: all`, `printWidth: 100`).
+- Lint and format are checked in CI and on pre-commit (lefthook).
 
 ## 14. Git
 
-- **Trunk-based**: `main` sempre verde; branches curtas `feat/…`, `fix/…`, `chore/…`, `docs/…`.
-- Merge via PR com CI passando; cada módulo do curso ≈ um PR.
-- **Conventional Commits**, escopo = serviço ou pacote:
+- **Trunk-based**: `main` is always green; short-lived branches `feat/…`, `fix/…`, `chore/…`, `docs/…`.
+- Merge through PRs with passing CI; each course module ≈ one PR.
+- **Conventional Commits**, scope = service or package:
   ```
   feat(orders): add cancel order endpoint
   fix(inventory): release reservation on payment failure
   docs(adr): add 0007 outbox pattern
   ```
-- Validado com commitlint.
+- Enforced with commitlint.
 
-## 15. Documentação
+## 15. Documentation
 
-- Decisões arquiteturais → ADR no formato **MADR** em `docs/adr/NNNN-titulo.md`.
-- ADRs são imutáveis; para mudar uma decisão, crie um novo ADR que **supersede** o anterior.
-- Diagramas em **Mermaid** (C4 e sequência) dentro de `docs/diagrams/` ou no próprio ADR.
+- Architectural decisions → **MADR** ADR in `docs/adr/NNNN-title.md`.
+- ADRs are immutable; to change a decision, write a new ADR that **supersedes** the previous one.
+- Diagrams in **Mermaid** (C4 and sequence) under `docs/diagrams/` or inside the ADR itself.

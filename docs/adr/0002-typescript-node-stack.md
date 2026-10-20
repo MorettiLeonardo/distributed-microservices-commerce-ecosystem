@@ -1,46 +1,46 @@
-# 0002 — Stack TypeScript/Node.js
+# 0002 — TypeScript/Node.js stack
 
 - **Status:** accepted
-- **Data:** 2026-10-19
+- **Date:** 2026-10-19
 
-## Contexto e problema
+## Context and problem
 
-Precisamos de uma stack única para serviços em container e para Lambdas, com boa tipagem e ecossistema maduro para AWS, mensageria e cache.
+We need a single stack for both containerized services and Lambdas, with strong typing and a mature ecosystem for AWS, messaging and caching.
 
-## Opções consideradas
+## Considered options
 
-- **Linguagem:** TypeScript/Node.js, Go, Java/Kotlin + Spring, C#/.NET
+- **Language:** TypeScript/Node.js, Go, Java/Kotlin + Spring, C#/.NET
 - **HTTP:** Express, Fastify, NestJS, Hono
-- **Acesso a dados:** Sequelize, Drizzle, Prisma, Kysely, TypeORM
-- **Validação:** Zod, Valibot, class-validator
+- **Data access:** Sequelize, Drizzle, Prisma, Kysely, TypeORM
+- **Validation:** Zod, Valibot, class-validator
 - **Lint/format:** oxlint + Prettier, Biome, ESLint + Prettier
-- **Testes:** Vitest, Jest, node:test
+- **Tests:** Vitest, Jest, node:test
 - **Logger:** Pino, Winston, Powertools Logger
 
-## Decisão
+## Decision
 
-| Área | Escolha |
-|------|---------|
+| Area | Choice |
+|------|--------|
 | Runtime | Node.js 24 LTS, ESM, TypeScript `strict` |
 | HTTP | Express 5 |
-| Validação | Zod |
-| Dados | PostgreSQL + Sequelize |
+| Validation | Zod |
+| Data | PostgreSQL + Sequelize |
 | Lint/format | oxlint + Prettier |
-| Testes | Vitest |
+| Tests | Vitest |
 | Logger | Pino |
 
-### Justificativa
+### Rationale
 
-- **TypeScript/Node:** mesma linguagem em containers e Lambda; I/O assíncrono nativo; SDK v3 da AWS de primeira classe.
-- **Express 5:** o framework mais difundido; a v5 trata rejeições de handlers `async` nativamente. A falta de opinião do Express é proposital: montamos a arquitetura hexagonal à mão.
-- **Zod:** schema = tipo (`z.infer`), reutilizável em HTTP, eventos e config.
-- **Sequelize:** ORM maduro e muito presente no mercado. Fica confinado ao adapter de persistência.
-- **oxlint + Prettier:** lint extremamente rápido; Prettier como formatador estável.
-- **Vitest:** TS/ESM nativos, rápido, API compatível com Jest.
-- **Pino:** logger JSON mais rápido do ecossistema, integração com OpenTelemetry.
+- **TypeScript/Node:** same language in containers and Lambda; native async I/O; first-class AWS SDK v3.
+- **Express 5:** the most widespread framework; v5 natively handles rejections from `async` handlers. Express's lack of opinions is intentional: we build the hexagonal architecture by hand.
+- **Zod:** schema = type (`z.infer`), reusable across HTTP, events and config.
+- **Sequelize:** mature ORM, widely used in industry. Confined to the persistence adapter.
+- **oxlint + Prettier:** extremely fast linting; Prettier as a stable formatter.
+- **Vitest:** native TS/ESM, fast, Jest-compatible API.
+- **Pino:** fastest JSON logger in the ecosystem, OpenTelemetry integration.
 
-## Consequências
+## Consequences
 
-- **+** Uma linguagem só em todo o sistema; pacotes compartilhados fáceis.
-- **−** Express não tem validação/serialização nativas → padronizar middlewares próprios.
-- **−** Tipagem do Sequelize é mais verbosa; exige mappers explícitos `Model ↔ Entity` (o que reforça o desacoplamento).
+- **+** One language across the whole system; shared packages are easy.
+- **−** Express has no built-in validation/serialization → standardize our own middlewares.
+- **−** Sequelize typing is more verbose; requires explicit `Model ↔ Entity` mappers (which reinforces decoupling).

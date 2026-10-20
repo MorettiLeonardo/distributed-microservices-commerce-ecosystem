@@ -1,21 +1,21 @@
-# 0001 — Registrar decisões arquiteturais
+# 0001 — Record architecture decisions
 
 - **Status:** accepted
-- **Data:** 2026-10-19
+- **Date:** 2026-10-19
 
-## Contexto e problema
+## Context and problem
 
-Este projeto é um laboratório de microsserviços para aprendizado e portfólio. O valor está tanto no código quanto no **porquê** de cada escolha. Sem registro, os trade-offs considerados se perdem.
+This project is a microservices lab for learning and portfolio purposes. Its value lies both in the code and in **why** each choice was made. Without a record, the trade-offs considered get lost.
 
-## Decisão
+## Decision
 
-Registrar toda decisão arquitetural relevante como ADR no formato [MADR](https://adr.github.io/madr/), em `docs/adr/NNNN-titulo.md`.
+Record every relevant architectural decision as an ADR in [MADR](https://adr.github.io/madr/) format under `docs/adr/NNNN-title.md`.
 
-- ADRs aceitos são imutáveis.
-- Mudança de decisão ⇒ novo ADR com status `supersedes NNNN`; o antigo passa a `superseded by NNNN`.
+- Accepted ADRs are immutable.
+- A changed decision ⇒ new ADR with status `supersedes NNNN`; the old one becomes `superseded by NNNN`.
 
-## Consequências
+## Consequences
 
-- **+** Histórico explícito de trade-offs, útil em entrevistas e revisões.
-- **+** Força pensar nas alternativas antes de implementar.
-- **−** Custo de escrita por decisão.
+- **+** Explicit history of trade-offs, useful in interviews and reviews.
+- **+** Forces alternatives to be considered before implementing.
+- **−** Writing cost per decision.

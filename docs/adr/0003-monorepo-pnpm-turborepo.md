@@ -1,25 +1,25 @@
-# 0003 — Monorepo com pnpm + Turborepo
+# 0003 — Monorepo with pnpm + Turborepo
 
 - **Status:** accepted
-- **Data:** 2026-10-19
+- **Date:** 2026-10-19
 
-## Contexto e problema
+## Context and problem
 
-Vários serviços, Lambdas e pacotes compartilhados (contratos de eventos, logger, config) precisam evoluir juntos num projeto solo.
+Several services, Lambdas and shared packages (event contracts, logger, config) must evolve together in a solo project.
 
-## Opções consideradas
+## Considered options
 
 - pnpm workspaces + Turborepo
 - Nx
-- Multi-repo (um repositório por serviço)
+- Multi-repo (one repository per service)
 
-## Decisão
+## Decision
 
-Monorepo com **pnpm workspaces + Turborepo**, organizado em `apps/`, `functions/`, `packages/`, `infra/` e `docs/`.
+Monorepo with **pnpm workspaces + Turborepo**, organized into `apps/`, `functions/`, `packages/`, `infra/` and `docs/`.
 
-## Consequências
+## Consequences
 
-- **+** Mudança de contrato e consumidores no mesmo PR; build/test incremental com cache.
-- **+** Um único repositório para mostrar no portfólio.
-- **−** Risco de acoplamento por conveniência (importar código de outro serviço). Mitigação: `packages/` só contém contratos e infra transversal, nunca regra de negócio; serviços nunca importam uns aos outros.
-- **−** Menos realista que multi-repo quanto a deploy independente; compensado com pipelines e imagens por serviço.
+- **+** Contract changes and their consumers land in the same PR; incremental build/test with caching.
+- **+** A single repository to showcase in a portfolio.
+- **−** Risk of coupling by convenience (importing another service's code). Mitigation: `packages/` only holds contracts and cross-cutting infrastructure, never business logic; services never import each other.
+- **−** Less realistic than multi-repo regarding independent deployment; offset by per-service pipelines and images.
