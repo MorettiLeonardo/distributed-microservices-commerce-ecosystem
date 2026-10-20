@@ -190,7 +190,10 @@ Dependency rules (always pointing **inward**):
 
 ## 12. Tests
 
-- Vitest. `*.test.ts` next to the code (unit) and in `test/integration/` (integration).
+- Vitest. Tests live outside `src/`, in each package's `test/` folder:
+  - `test/unit/` mirrors the `src/` tree (`src/domain/entities/user.entity.ts` → `test/unit/domain/entities/user.entity.test.ts`);
+  - `test/integration/` holds tests that need real infrastructure.
+- `src/` contains production code only.
 - **Unit:** domain and use cases with fake ports, no I/O.
 - **Integration:** adapters against real Postgres/Redis/LocalStack via Testcontainers.
 - **Contract:** events validated against `@ecommerce/event-contracts` schemas.
