@@ -1,6 +1,6 @@
 # 0005 — Hybrid compute, LocalStack and Terraform
 
-- **Status:** accepted
+- **Status:** accepted; LocalStack and `tflocal` superseded by [0008](0008-floci-as-local-aws-emulator.md)
 - **Date:** 2026-10-19
 
 ## Context and problem

@@ -19,7 +19,7 @@
 | Monorepo             | pnpm workspaces + Turborepo               | [0003](docs/adr/0003-monorepo-pnpm-turborepo.md)             |
 | Service architecture | Hexagonal (Ports & Adapters)              | [0004](docs/adr/0004-hexagonal-architecture.md)              |
 | Compute              | Hybrid: containers + AWS Lambda           | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
-| Local cloud / IaC    | LocalStack + Terraform (`tflocal`)        | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
+| Local cloud / IaC    | Floci + Terraform                         | [0008](docs/adr/0008-floci-as-local-aws-emulator.md)         |
 | Contracts            | REST `/v1`, RFC 9457, CloudEvents, UUIDv7 | [0006](docs/adr/0006-api-and-event-contracts.md)             |
 
 ---
@@ -32,7 +32,7 @@
   - `noUncheckedIndexedAccess: true`
   - `exactOptionalPropertyTypes: true`
   - `verbatimModuleSyntax: true` (forces `import type` for types)
-- Build: containers compile with `tsc` to `dist/` (dev runs `node --watch`); Lambdas are bundled with `esbuild` into a single file per function.
+- Build: containers compile with `tsc` to `dist/` (dev runs `tsx watch`, see ADR 0009); Lambdas are bundled with `esbuild` into a single file per function.
 - `module: NodeNext` ⇒ relative imports must use the `.js` extension (`import { Order } from './order.entity.js'`).
 - No explicit `any`; use `unknown` + narrowing (or a Zod schema).
 - Prefer `type` for unions/data and `interface` for **ports** (contracts implemented by adapters).
@@ -62,6 +62,8 @@ Standard file suffixes: `.entity`, `.value-object`, `.event`, `.use-case`, `.por
 
 ```
 .
+├── api/
+│   └── bruno/         # Bruno collection (.bru): one folder per service, local environment
 ├── apps/              # services running in containers (orders, catalog, inventory, ...)
 ├── functions/         # AWS Lambdas (event handlers, jobs)
 ├── packages/          # shared code — ONLY contracts and cross-cutting infrastructure
@@ -71,7 +73,7 @@ Standard file suffixes: `.entity`, `.value-object`, `.event`, `.use-case`, `.por
 │   ├── config/            # Zod-validated env loader
 │   └── tsconfig/          # base tsconfig
 ├── infra/
-│   ├── docker/            # docker-compose (LocalStack, Postgres, Redis)
+│   ├── docker/            # docker-compose (Floci, Postgres, Redis)
 │   └── terraform/         # AWS resources
 ├── docs/
 │   ├── adr/
@@ -195,7 +197,8 @@ Dependency rules (always pointing **inward**):
   - `test/integration/` holds tests that need real infrastructure.
 - `src/` contains production code only.
 - **Unit:** domain and use cases with fake ports, no I/O.
-- **Integration:** adapters against real Postgres/Redis/LocalStack via Testcontainers.
+- **Integration:** adapters against real Postgres/Redis/Floci via Testcontainers. `pnpm test` runs unit tests only; `pnpm test:integration` runs these (needs Docker).
+- Test doubles (in-memory repositories, recording publishers) live in `test/support/`, never in `src/`: the running service only wires real adapters (ADR 0010).
 - **Contract:** events validated against `@ecommerce/event-contracts` schemas.
 - Test names describe behavior: `it('rejects cancellation of a shipped order')`.
 
