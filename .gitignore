@@ -17,6 +17,7 @@ coverage/
 .terraform/
 *.tfstate
 *.tfstate.*
+infra/terraform/.build/
 
 # os / editor
 .DS_Store
