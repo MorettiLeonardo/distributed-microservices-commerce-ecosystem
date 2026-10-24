@@ -1,0 +1,29 @@
+meta {
+  name: Validation failed
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{identityBaseUrl}}/v1/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": 42
+  }
+}
+
+tests {
+  test("answers 400 listing every invalid field", function () {
+    expect(res.status).to.equal(400);
+    expect(res.body.code).to.equal("VALIDATION_FAILED");
+    expect(res.body.errors).to.have.lengthOf(2);
+  });
+}
+
+docs {
+  The body has the wrong shape (Zod, in the HTTP adapter): 400 with an `errors` list.
+}

@@ -1,0 +1,42 @@
+meta {
+  name: Login
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{identityBaseUrl}}/v1/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "password": "{{password}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("accessToken", res.body.accessToken);
+    bru.setVar("refreshToken", res.body.refreshToken);
+  }
+}
+
+tests {
+  test("returns a token pair", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.accessToken).to.be.a("string");
+    expect(res.body.refreshToken).to.be.a("string");
+  });
+}
+
+docs {
+  Returns an ES256 access token (15 min) and a refresh token (`<sessionId>.<secret>`).
+  Both are stored in runtime variables for the next requests.
+
+  Unverified users can log in: the access token carries `emailVerified`.
+  5 wrong passwords lock the account for 15 min (423 + `Retry-After`); 20 attempts per minute
+  from one IP answer 429.
+}

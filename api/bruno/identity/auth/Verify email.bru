@@ -1,0 +1,28 @@
+meta {
+  name: Verify email
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{identityBaseUrl}}/v1/auth/verify-email
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "token": "{{emailToken}}"
+  }
+}
+
+tests {
+  test("verifies the email", function () {
+    expect(res.status).to.equal(204);
+  });
+}
+
+docs {
+  Consumes the one-time token sent after registration (valid for 24 h, single use).
+  Sending it twice answers 400 `ONE_TIME_TOKEN_ALREADY_CONSUMED`.
+}

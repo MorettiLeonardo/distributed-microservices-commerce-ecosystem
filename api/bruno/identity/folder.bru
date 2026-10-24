@@ -1,0 +1,21 @@
+meta {
+  name: identity
+  seq: 1
+}
+
+docs {
+  # identity
+
+  Registration, login, token rotation and password recovery (ADR 0007, `docs/domain/identity.md`).
+
+  Happy path, in order: **Register → Verify email → Login → Get current user → Refresh**.
+
+  Before the first run: `pnpm infra:up`, `pnpm infra:provision`,
+  `pnpm --filter @ecommerce/identity db:migrate`, then `pnpm dev:identity`.
+
+  ## One-time tokens
+
+  Emails go identity → SQS → notification Lambda → Mailpit. Open http://localhost:8025, copy the
+  token from the email (the first one can take ~15 s: Lambda cold start) and paste it into the
+  **emailToken** secret variable of the local environment.
+}

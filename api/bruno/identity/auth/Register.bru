@@ -1,0 +1,31 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{identityBaseUrl}}/v1/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{email}}",
+    "password": "{{password}}"
+  }
+}
+
+tests {
+  test("is accepted", function () {
+    expect(res.status).to.equal(202);
+  });
+}
+
+docs {
+  Always answers **202**, even when the email is already registered (anti-enumeration, ADR 0007):
+  the owner of the existing account gets a notice email instead.
+
+  Next: copy the verification token from the email in Mailpit (http://localhost:8025) into the **emailToken** secret variable.
+}

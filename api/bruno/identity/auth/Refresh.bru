@@ -1,0 +1,41 @@
+meta {
+  name: Refresh
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{identityBaseUrl}}/v1/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{refreshToken}}"
+  }
+}
+
+script:pre-request {
+  // Kept so "Refresh (reuse old token)" can replay it and trigger theft detection.
+  bru.setVar("previousRefreshToken", bru.getVar("refreshToken"));
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("accessToken", res.body.accessToken);
+    bru.setVar("refreshToken", res.body.refreshToken);
+  }
+}
+
+tests {
+  test("rotates the refresh token", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.refreshToken).to.not.equal(bru.getVar("previousRefreshToken"));
+  });
+}
+
+docs {
+  Every refresh **rotates** the refresh token: the old one stops working. The session expiry is
+  absolute, so `refreshTokenExpiresAt` does not move.
+}

@@ -1,0 +1,28 @@
+meta {
+  name: Logout
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{identityBaseUrl}}/v1/auth/logout
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{refreshToken}}"
+  }
+}
+
+tests {
+  test("ends the session", function () {
+    expect(res.status).to.equal(204);
+  });
+}
+
+docs {
+  Revokes the session. Idempotent: unknown or stale tokens also answer 204.
+  The access token stays valid until it expires (at most 15 min, ADR 0007).
+}

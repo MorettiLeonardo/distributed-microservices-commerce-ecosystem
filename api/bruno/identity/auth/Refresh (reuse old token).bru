@@ -1,0 +1,30 @@
+meta {
+  name: Refresh (reuse old token)
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{identityBaseUrl}}/v1/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refreshToken": "{{previousRefreshToken}}"
+  }
+}
+
+tests {
+  test("detects reuse and revokes the session", function () {
+    expect(res.status).to.equal(401);
+    expect(res.body.code).to.equal("REFRESH_TOKEN_REUSE_DETECTED");
+  });
+}
+
+docs {
+  Run **Refresh** first. Replaying the token it replaced looks like a stolen token being used:
+  the whole session is revoked, so even the newest refresh token now answers 401
+  `SESSION_REVOKED`. Log in again afterwards.
+}

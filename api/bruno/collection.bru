@@ -1,0 +1,12 @@
+docs {
+  # ecommerce API
+
+  One collection for every service, one folder per service. Select the **local** environment.
+
+  - Start the infrastructure with `pnpm infra:up` (+ `pnpm infra:provision` once) and a service
+    with `pnpm dev:<service>` (Turborepo builds the shared packages first).
+  - Tokens returned by the API are kept in **runtime variables** (`bru.setVar`), which live only
+    in memory and are never written to the `.bru` files.
+  - Values you paste by hand (e.g. one-time tokens from emails in Mailpit) go into the
+    environment's **secret** variables, which Bruno stores locally and never in the repository.
+}

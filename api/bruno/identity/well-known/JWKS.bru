@@ -1,0 +1,24 @@
+meta {
+  name: JWKS
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{identityBaseUrl}}/.well-known/jwks.json
+  body: none
+  auth: none
+}
+
+tests {
+  test("publishes only the public key", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.keys[0].alg).to.equal("ES256");
+    expect(res.body.keys[0]).to.not.have.property("d");
+  });
+}
+
+docs {
+  Public signing keys. Other services fetch and cache this (`Cache-Control: max-age=300`) to
+  verify access tokens locally, picking the key by the token's `kid` header.
+}

@@ -1,0 +1,26 @@
+meta {
+  name: Unauthenticated
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{identityBaseUrl}}/v1/users/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: not-a-jwt
+}
+
+tests {
+  test("answers 401 with WWW-Authenticate", function () {
+    expect(res.status).to.equal(401);
+    expect(res.headers["www-authenticate"]).to.equal("Bearer");
+  });
+}
+
+docs {
+  An invalid bearer token: 401 `UNAUTHENTICATED` plus the `WWW-Authenticate: Bearer` header.
+}

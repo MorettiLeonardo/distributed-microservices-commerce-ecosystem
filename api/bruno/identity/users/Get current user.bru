@@ -1,0 +1,27 @@
+meta {
+  name: Get current user
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{identityBaseUrl}}/v1/users/me
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("returns the authenticated user", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.email).to.equal(bru.getEnvVar("email"));
+  });
+}
+
+docs {
+  Requires the access token from **Login** or **Refresh**. A missing, forged or expired token
+  answers 401 with `WWW-Authenticate: Bearer`.
+}
