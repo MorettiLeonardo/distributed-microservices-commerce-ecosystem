@@ -1,15 +1,15 @@
+import { InMemoryDatabase } from './in-memory-database.js';
+import { InMemoryLoginAttemptLimiter } from './in-memory-login-attempt-limiter.js';
 import { RegisterUser } from '../../src/application/use-cases/register-user.use-case.js';
 import {
   FakeAccessTokenIssuer,
   FakeClock,
   FakePasswordHasher,
   FakeSecureTokenGenerator,
-  InMemoryLoginAttemptLimiter,
   RecordingEmailSender,
   RecordingEventPublisher,
   SequentialIdGenerator,
 } from './fakes.js';
-import { InMemoryDatabase } from './in-memory-database.js';
 
 export const DAY_MS = 24 * 60 * 60 * 1000;
 export const SESSION_TTL_MS = 30 * DAY_MS;

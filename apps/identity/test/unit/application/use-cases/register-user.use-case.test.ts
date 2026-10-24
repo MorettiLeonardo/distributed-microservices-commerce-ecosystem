@@ -76,6 +76,19 @@ describe('RegisterUser', () => {
     });
   });
 
+  it('creates a single user when two registrations of the same email race', async () => {
+    const credentials = { email: 'john@example.com', password: 'correct horse' };
+
+    // Both pass findByEmail before either saves; the UNIQUE index stops the second one.
+    await Promise.all([registerUser.execute(credentials), registerUser.execute(credentials)]);
+
+    expect(ctx.db.tables.users.size).toBe(1);
+    expect(ctx.emailSender.sent.map((message) => message.template).toSorted()).toEqual([
+      'account-already-exists',
+      'email-verification',
+    ]);
+  });
+
   it('rejects an invalid email', async () => {
     await expect(
       registerUser.execute({ email: 'nope', password: 'correct horse' }),

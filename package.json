@@ -10,12 +10,16 @@
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:integration": "turbo run test:integration",
+    "dev:identity": "turbo run dev --filter=@ecommerce/identity",
     "lint": "oxlint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "infra:up": "docker compose -f infra/docker/compose.yaml up -d --wait",
     "infra:down": "docker compose -f infra/docker/compose.yaml down",
-    "infra:reset": "docker compose -f infra/docker/compose.yaml down -v"
+    "infra:reset": "docker compose -f infra/docker/compose.yaml down -v",
+    "infra:tf": "docker compose -f infra/docker/compose.yaml run --rm terraform",
+    "infra:provision": "turbo run build --filter=@ecommerce/notification-function && pnpm infra:tf init -input=false && pnpm infra:tf apply -auto-approve -input=false"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",

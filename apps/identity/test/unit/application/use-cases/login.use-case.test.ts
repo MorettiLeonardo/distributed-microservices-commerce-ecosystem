@@ -7,7 +7,7 @@ import {
 import { parseRefreshToken } from '../../../../src/application/token-pair.js';
 import { Login } from '../../../../src/application/use-cases/login.use-case.js';
 import { VerifyEmail } from '../../../../src/application/use-cases/verify-email.use-case.js';
-import { InMemoryLoginAttemptLimiter } from '../../../support/fakes.js';
+import { InMemoryLoginAttemptLimiter } from '../../../support/in-memory-login-attempt-limiter.js';
 import {
   createTestContext,
   registerUser,

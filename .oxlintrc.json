@@ -9,7 +9,8 @@
     "typescript/no-explicit-any": "error",
     "typescript/consistent-type-imports": "error",
     "import/no-cycle": "error",
-    "no-console": "error"
+    "no-console": "error",
+    "oxc/no-async-endpoint-handlers": "off"
   },
   "ignorePatterns": ["dist/**", "coverage/**", ".turbo/**"]
 }

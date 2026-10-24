@@ -3,4 +3,10 @@ packages:
   - functions/*
   - packages/*
 allowBuilds:
+  bcrypt: true
+  esbuild: true
   lefthook: true
+  # Testcontainers transitive deps, only needed for Docker over SSH / build-time checks.
+  cpu-features: false
+  protobufjs: false
+  ssh2: false

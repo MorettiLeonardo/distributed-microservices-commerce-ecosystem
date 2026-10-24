@@ -3,6 +3,7 @@ import { User } from '../../domain/entities/user.entity.js';
 import { Email } from '../../domain/value-objects/email.value-object.js';
 import { OneTimeTokenId, UserId } from '../../domain/value-objects/identifiers.js';
 import { Password } from '../../domain/value-objects/password.value-object.js';
+import { EmailAlreadyRegisteredError } from '../errors/email-already-registered.error.js';
 import type { Clock } from '../ports/clock.port.js';
 import type { EmailSender } from '../ports/email-sender.port.js';
 import type { EventPublisher } from '../ports/event-publisher.port.js';
@@ -64,10 +65,20 @@ export class RegisterUser {
       now,
     });
 
-    await this.deps.unitOfWork.run(async ({ users, oneTimeTokens }) => {
-      await users.save(user);
-      await oneTimeTokens.save(verificationToken);
-    });
+    try {
+      await this.deps.unitOfWork.run(async ({ users, oneTimeTokens }) => {
+        await users.save(user);
+        await oneTimeTokens.save(verificationToken);
+      });
+    } catch (error) {
+      // A concurrent registration of the same email won the race between our findByEmail and
+      // save: answer exactly as if the email had already been taken.
+      if (error instanceof EmailAlreadyRegisteredError) {
+        await this.deps.emailSender.send({ template: 'account-already-exists', to: email.value });
+        return;
+      }
+      throw error;
+    }
 
     // Naive dual write: if the process dies right here, the user is saved but neither the event
     // nor the email ever goes out. To be fixed with the Transactional Outbox.

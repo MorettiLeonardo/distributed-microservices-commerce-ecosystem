@@ -1,3 +1,4 @@
+import { EmailAlreadyRegisteredError } from '../../src/application/errors/email-already-registered.error.js';
 import type { OneTimeTokenRepository } from '../../src/application/ports/one-time-token.repository.port.js';
 import type { SessionRepository } from '../../src/application/ports/session.repository.port.js';
 import type { Repositories, UnitOfWork } from '../../src/application/ports/unit-of-work.port.js';
@@ -19,8 +20,9 @@ type Tables = {
 };
 
 /**
- * Stores COPIES of aggregate state, like a real database would. Had it kept the objects
- * themselves, a use case that mutates an aggregate but forgets to save it would still pass.
+ * Test double for the Postgres adapter. Stores COPIES of aggregate state, like a real database
+ * would: had it kept the objects themselves, a use case that mutates an aggregate but forgets
+ * to save it would still pass. Also mimics the UNIQUE email index and transaction rollback.
  */
 export class InMemoryDatabase {
   tables: Tables = { users: new Map(), sessions: new Map(), oneTimeTokens: new Map() };
@@ -69,6 +71,12 @@ class InMemoryUserRepository implements UserRepository {
   }
 
   async save(user: User): Promise<void> {
+    // Mimics the UNIQUE index on users.email.
+    for (const props of this.db.tables.users.values()) {
+      if (props.id !== user.id && props.email.equals(user.email)) {
+        throw new EmailAlreadyRegisteredError();
+      }
+    }
     this.db.tables.users.set(user.id, {
       id: user.id,
       email: user.email,
