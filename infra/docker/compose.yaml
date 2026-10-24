@@ -33,22 +33,62 @@ services:
       retries: 10
 
   # ── shared platform (emulates managed cloud services) ─────
-  localstack:
-    image: localstack/localstack:2026.09.0
+  floci:
+    image: floci/floci:2.3.0
     environment:
-      LOCALSTACK_AUTH_TOKEN: ${LOCALSTACK_AUTH_TOKEN:-}
-      SERVICES: sqs,sns,lambda,iam,logs,sts
+      FLOCI_DEFAULT_REGION: us-east-1
+      # State survives restarts; it is kept in the floci-data volume.
+      FLOCI_STORAGE_MODE: persistent
+      FLOCI_STORAGE_PERSISTENT_PATH: /app/data
+      # The console runs as its own service below, not as a sidecar Floci spawns outside Compose.
+      FLOCI_SERVICES_UI_ENABLED: 'false'
+      # Lambda containers join this network, so functions reach Mailpit (and others) by name.
+      FLOCI_SERVICES_LAMBDA_DOCKER_NETWORK: ecommerce_default
     ports:
       - '4566:4566'
     volumes:
-      - localstack-data:/var/lib/localstack
-      # Lambda functions run as sibling containers, so LocalStack needs the Docker socket.
+      - floci-data:/app/data
+      # Lambda functions run as sibling containers, so Floci needs the Docker socket.
       - /var/run/docker.sock:/var/run/docker.sock
     healthcheck:
-      test: ['CMD', 'curl', '-fs', 'http://localhost:4566/_localstack/health']
+      # The image ships no curl; this bundled script probes the port with bash /dev/tcp.
+      test: ['CMD', '/usr/local/bin/healthcheck.sh']
       interval: 5s
       timeout: 3s
       retries: 20
+
+  floci-ui:
+    image: floci/floci-ui:0.7.0
+    environment:
+      PORT: '4500'
+      FLOCI_ENDPOINT: http://floci:4566
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+    ports:
+      - '4500:4500' # web console
+    depends_on:
+      floci:
+        condition: service_healthy
+    healthcheck:
+      # A real API route: unknown paths fall back to the SPA's index.html with a 200.
+      test:
+        ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:4500/api/clouds/aws/services']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ── tools (run on demand: pnpm infra:tf <command>) ────────
+  terraform:
+    image: hashicorp/terraform:1.17.0
+    profiles: ['tools']
+    # The whole repo is mounted so the Lambda bundle under functions/ can be zipped.
+    working_dir: /repo/infra/terraform
+    volumes:
+      - ../..:/repo
+    depends_on:
+      floci:
+        condition: service_healthy
 
   mailpit:
     image: axllent/mailpit:v1.31
@@ -63,4 +103,4 @@ services:
 
 volumes:
   identity-db-data:
-  localstack-data:
+  floci-data:
