@@ -196,6 +196,9 @@ importers:
 
   apps/catalog:
     dependencies:
+      '@ecommerce/ddd':
+        specifier: workspace:*
+        version: link:../../packages/ddd
       '@ecommerce/http':
         specifier: workspace:*
         version: link:../../packages/http
