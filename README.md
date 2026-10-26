@@ -53,6 +53,10 @@ Highlights:
 - **Anti-enumeration**: neutral responses and equalized timing on register and forgot-password.
 - **Errors** follow RFC 9457 Problem Details (`application/problem+json`).
 
+### Catalog (`apps/catalog`) — in progress
+
+Categories, products, prices and images. Currently a running skeleton (health checks, logging, error format) on its own Postgres and Redis.
+
 ### Notification (`functions/notification`)
 
 A Lambda that consumes `send-email` commands from SQS and delivers them over SMTP. It uses **partial batch responses**, so only the failed records go back to the queue, and they move to a DLQ after 5 receives. One-time tokens are never logged.
@@ -85,6 +89,7 @@ A Lambda that consumes `send-email` commands from SQS and delivers them over SMT
 ```
 .
 ├── apps/identity/            # Identity service (container)
+├── apps/catalog/             # Catalog service (container)
 ├── functions/notification/   # send-email Lambda
 ├── packages/
 │   ├── event-contracts/      # Zod schemas + CloudEvents
@@ -118,16 +123,21 @@ cp apps/identity/.env.example apps/identity/.env
 pnpm -s --filter @ecommerce/identity keys:generate >> apps/identity/.env
 pnpm --filter @ecommerce/identity db:migrate
 pnpm dev:identity             # http://localhost:3001
+
+# 4. Catalog service
+cp apps/catalog/.env.example apps/catalog/.env
+pnpm dev:catalog              # http://localhost:3002
 ```
 
 | Local endpoint         | URL                   |
 | ---------------------- | --------------------- |
 | Identity API           | http://localhost:3001 |
+| Catalog API            | http://localhost:3002 |
 | Mailpit (emails)       | http://localhost:8025 |
 | Floci UI (AWS console) | http://localhost:4500 |
 | Floci (AWS API)        | http://localhost:4566 |
 
-Ports follow a convention: Postgres `54NN`, Redis `63NN` and service HTTP `30NN`, where `NN` is the service number (`01` = identity).
+Ports follow a convention: Postgres `54NN`, Redis `63NN` and service HTTP `30NN`, where `NN` is the service number (`01` = identity, `02` = catalog).
 
 To try the API manually, open `api/bruno/` in [Bruno](https://www.usebruno.com/) and select the `local` environment.
 

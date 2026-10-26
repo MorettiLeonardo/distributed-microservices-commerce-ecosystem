@@ -12,6 +12,7 @@
     "test": "turbo run test",
     "test:integration": "turbo run test:integration",
     "dev:identity": "turbo run dev --filter=@ecommerce/identity",
+    "dev:catalog": "turbo run dev --filter=@ecommerce/catalog",
     "lint": "oxlint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
