@@ -1,4 +1,4 @@
-import { DomainError } from '../shared/domain-error.js';
+import { DomainError } from '@ecommerce/ddd';
 
 export class InvalidEmailError extends DomainError {
   override readonly code = 'INVALID_EMAIL';

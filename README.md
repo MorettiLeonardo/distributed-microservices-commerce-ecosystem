@@ -48,9 +48,14 @@ Highlights:
 - **Access tokens**: JWT signed with **ES256** that expire after 15 minutes. Other services validate them locally through the JWKS endpoint, without calling Identity on each request.
 - **Refresh tokens**: opaque tokens, **rotated on every use**, and only their SHA-256 hash is stored. If an already-used token is presented again, the whole session is revoked (theft detection).
 - **Passwords**: bcrypt with cost 12, enforcing bcrypt's 72-byte input limit.
+- **Roles**: `customer` or `admin`, carried in the access token. Admins are promoted by an operator script (`users:promote`), never over HTTP.
 - **Brute-force protection** in Redis: 20 attempts per minute per IP. After 5 failures in 15 minutes, the account is locked for 15 minutes.
 - **Anti-enumeration**: neutral responses and equalized timing on register and forgot-password.
 - **Errors** follow RFC 9457 Problem Details (`application/problem+json`).
+
+### Catalog (`apps/catalog`) — in progress
+
+Categories, products, prices and images. Currently a running skeleton (health checks, logging, error format) on its own Postgres and Redis.
 
 ### Notification (`functions/notification`)
 
@@ -84,6 +89,7 @@ A Lambda that consumes `send-email` commands from SQS and delivers them over SMT
 ```
 .
 ├── apps/identity/            # Identity service (container)
+├── apps/catalog/             # Catalog service (container)
 ├── functions/notification/   # send-email Lambda
 ├── packages/
 │   ├── event-contracts/      # Zod schemas + CloudEvents
@@ -117,16 +123,21 @@ cp apps/identity/.env.example apps/identity/.env
 pnpm -s --filter @ecommerce/identity keys:generate >> apps/identity/.env
 pnpm --filter @ecommerce/identity db:migrate
 pnpm dev:identity             # http://localhost:3001
+
+# 4. Catalog service
+cp apps/catalog/.env.example apps/catalog/.env
+pnpm dev:catalog              # http://localhost:3002
 ```
 
 | Local endpoint         | URL                   |
 | ---------------------- | --------------------- |
 | Identity API           | http://localhost:3001 |
+| Catalog API            | http://localhost:3002 |
 | Mailpit (emails)       | http://localhost:8025 |
 | Floci UI (AWS console) | http://localhost:4500 |
 | Floci (AWS API)        | http://localhost:4566 |
 
-Ports follow a convention: Postgres `54NN`, Redis `63NN` and service HTTP `30NN`, where `NN` is the service number (`01` = identity).
+Ports follow a convention: Postgres `54NN`, Redis `63NN` and service HTTP `30NN`, where `NN` is the service number (`01` = identity, `02` = catalog).
 
 To try the API manually, open `api/bruno/` in [Bruno](https://www.usebruno.com/) and select the `local` environment.
 

@@ -1,4 +1,4 @@
-import { DomainError } from '../../domain/shared/domain-error.js';
+import { DomainError } from '@ecommerce/ddd';
 
 export class UserNotFoundError extends DomainError {
   override readonly code = 'USER_NOT_FOUND';

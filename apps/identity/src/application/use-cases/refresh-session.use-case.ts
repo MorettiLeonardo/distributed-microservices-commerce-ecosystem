@@ -52,6 +52,7 @@ export class RefreshSession {
       userId: user.id,
       email: user.email.value,
       emailVerified: user.isEmailVerified,
+      role: user.role,
     });
 
     return {

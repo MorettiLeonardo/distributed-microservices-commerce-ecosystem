@@ -1,7 +1,7 @@
 import type { AddressInfo } from 'node:net';
+import type { ReadinessCheck } from '@ecommerce/http';
 import { exportJWK, generateKeyPair } from 'jose';
 import { createApp } from '../../src/adapters/in/http/app.js';
-import type { ReadinessCheck } from '../../src/adapters/in/http/routes/health.routes.js';
 import { JoseAccessTokens } from '../../src/adapters/out/security/jose.access-tokens.js';
 import { GetCurrentUser } from '../../src/application/use-cases/get-current-user.use-case.js';
 import { Login } from '../../src/application/use-cases/login.use-case.js';
@@ -16,6 +16,7 @@ import { createTestContext, type TestContext } from './test-context.js';
 
 export type TestServer = {
   ctx: TestContext;
+  baseUrl: string;
   accessTokens: JoseAccessTokens;
   /** Sends a request; `json` is serialized as the body with the JSON content type. */
   request: (path: string, init?: RequestInit & { json?: unknown }) => Promise<Response>;
@@ -27,9 +28,9 @@ export type TestServer = {
  * real ES256 token issuer (fresh key per server), so tests go through actual HTTP.
  */
 export async function startTestServer(
-  options: { readinessChecks?: ReadinessCheck[] } = {},
+  options: { readinessChecks?: ReadinessCheck[]; now?: Date } = {},
 ): Promise<TestServer> {
-  const ctx = createTestContext();
+  const ctx = createTestContext(options.now);
   const { privateKey } = await generateKeyPair('ES256', { extractable: true });
   const accessTokens = await JoseAccessTokens.fromPrivateJwk(await exportJWK(privateKey), {
     issuer: 'test-issuer',
@@ -62,6 +63,7 @@ export async function startTestServer(
 
   return {
     ctx,
+    baseUrl,
     accessTokens,
     request: (path, { json, headers, ...init } = {}) =>
       fetch(`${baseUrl}${path}`, {

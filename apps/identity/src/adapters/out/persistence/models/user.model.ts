@@ -16,6 +16,7 @@ export class UserModel extends Model<
   declare email: string;
   declare passwordHash: string;
   declare status: string;
+  declare role: string;
   declare emailVerifiedAt: Date | null;
   declare createdAt: Date;
   declare updatedAt: CreationOptional<Date>;
@@ -27,6 +28,7 @@ export class UserModel extends Model<
         email: { type: DataTypes.TEXT, allowNull: false },
         passwordHash: { type: DataTypes.TEXT, allowNull: false },
         status: { type: DataTypes.TEXT, allowNull: false },
+        role: { type: DataTypes.TEXT, allowNull: false },
         emailVerifiedAt: { type: DataTypes.DATE, allowNull: true },
         createdAt: { type: DataTypes.DATE, allowNull: false },
         updatedAt: { type: DataTypes.DATE, allowNull: false },

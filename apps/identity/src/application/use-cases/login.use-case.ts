@@ -95,6 +95,7 @@ export class Login {
       userId: user.id,
       email: user.email.value,
       emailVerified: user.isEmailVerified,
+      role: user.role,
     });
 
     return {

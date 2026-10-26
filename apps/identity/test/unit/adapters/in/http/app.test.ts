@@ -63,6 +63,7 @@ describe('HTTP adapter', () => {
         email: 'john@example.com',
         emailVerified: false,
         status: 'pending_verification',
+        role: 'customer',
       });
     });
 

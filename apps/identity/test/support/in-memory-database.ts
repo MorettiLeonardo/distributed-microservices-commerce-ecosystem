@@ -82,6 +82,7 @@ class InMemoryUserRepository implements UserRepository {
       email: user.email,
       passwordHash: user.passwordHash,
       status: user.status,
+      role: user.role,
       emailVerifiedAt: user.emailVerifiedAt,
       createdAt: user.createdAt,
     });

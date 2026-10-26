@@ -1,17 +1,22 @@
-import { UserDisabledError } from '../errors/user.error.js';
+import { AggregateRoot } from '@ecommerce/ddd';
+import { EmailNotVerifiedError, UserDisabledError } from '../errors/user.error.js';
 import type { UserEvent } from '../events/user.events.js';
-import { AggregateRoot } from '../shared/aggregate-root.js';
 import type { Email } from '../value-objects/email.value-object.js';
 import type { PasswordHash, UserId } from '../value-objects/identifiers.js';
 
 export const UserStatus = ['pending_verification', 'active', 'disabled'] as const;
 export type UserStatus = (typeof UserStatus)[number];
 
+/** What the user may do across services; carried in the access token (ADR 0012). */
+export const UserRole = ['customer', 'admin'] as const;
+export type UserRole = (typeof UserRole)[number];
+
 export type UserProps = {
   id: UserId;
   email: Email;
   passwordHash: PasswordHash;
   status: UserStatus;
+  role: UserRole;
   emailVerifiedAt: Date | null;
   createdAt: Date;
 };
@@ -33,6 +38,7 @@ export class User extends AggregateRoot<UserEvent> {
       email: input.email,
       passwordHash: input.passwordHash,
       status: 'pending_verification',
+      role: 'customer',
       emailVerifiedAt: null,
       createdAt: input.now,
     });
@@ -64,6 +70,10 @@ export class User extends AggregateRoot<UserEvent> {
 
   get status(): UserStatus {
     return this.props.status;
+  }
+
+  get role(): UserRole {
+    return this.props.role;
   }
 
   get emailVerifiedAt(): Date | null {
@@ -100,6 +110,16 @@ export class User extends AggregateRoot<UserEvent> {
     this.ensureNotDisabled();
     this.props = { ...this.props, passwordHash: newHash };
     this.record({ type: 'UserPasswordChanged', userId: this.id, occurredAt: now });
+  }
+
+  /**
+   * Only an active user (verified email) can become an admin: an unverified address could belong
+   * to someone else. Idempotent. Emits nothing: no one reacts yet; the caller logs it for audit.
+   */
+  promoteToAdmin(): void {
+    this.ensureNotDisabled();
+    if (!this.isEmailVerified) throw new EmailNotVerifiedError();
+    this.props = { ...this.props, role: 'admin' };
   }
 
   private ensureNotDisabled(): void {

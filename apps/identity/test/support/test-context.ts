@@ -14,9 +14,12 @@ import {
 export const DAY_MS = 24 * 60 * 60 * 1000;
 export const SESSION_TTL_MS = 30 * DAY_MS;
 
-/** Every port a use case may need, backed by fakes. Pass it whole to any use case constructor. */
-export function createTestContext() {
-  const clock = new FakeClock(new Date('2026-10-19T12:00:00.000Z'));
+/**
+ * Every port a use case may need, backed by fakes. Pass it whole to any use case constructor.
+ * The clock starts at a fixed date unless `now` is given.
+ */
+export function createTestContext(now = new Date('2026-10-19T12:00:00.000Z')) {
+  const clock = new FakeClock(now);
   const db = new InMemoryDatabase();
 
   return {

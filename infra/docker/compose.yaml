@@ -2,7 +2,7 @@ name: ecommerce
 
 # Host port convention for per-service infrastructure:
 #   Postgres: 54NN   Redis: 63NN   (NN = service number)
-#   01 = identity
+#   01 = identity   02 = catalog
 
 services:
   # ── identity ──────────────────────────────────────────────
@@ -26,6 +26,33 @@ services:
     image: redis:8.6-alpine
     ports:
       - '6301:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ── catalog ───────────────────────────────────────────────
+  catalog-db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: catalog
+      POSTGRES_USER: ${CATALOG_DB_USER}
+      POSTGRES_PASSWORD: ${CATALOG_DB_PASSWORD}
+    ports:
+      - '5402:5432'
+    volumes:
+      - catalog-db-data:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  catalog-redis:
+    image: redis:8.6-alpine
+    ports:
+      - '6302:6379'
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
@@ -103,4 +130,5 @@ services:
 
 volumes:
   identity-db-data:
+  catalog-db-data:
   floci-data:

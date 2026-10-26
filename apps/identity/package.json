@@ -9,6 +9,7 @@
     "keys:generate": "tsx scripts/generate-jwt-key.ts",
     "db:migrate": "tsx --env-file-if-exists=.env scripts/migrate.ts",
     "db:rollback": "tsx --env-file-if-exists=.env scripts/migrate.ts down",
+    "users:promote": "tsx --env-file-if-exists=.env scripts/promote-user.ts",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run test/unit",
@@ -16,6 +17,7 @@
     "test:watch": "vitest test/unit"
   },
   "devDependencies": {
+    "@ecommerce/auth": "workspace:*",
     "@ecommerce/tsconfig": "workspace:*",
     "@testcontainers/postgresql": "^12.2.1",
     "@testcontainers/redis": "^12.2.1",
@@ -30,13 +32,14 @@
   "dependencies": {
     "@aws-sdk/client-sns": "^3.1156.0",
     "@aws-sdk/client-sqs": "^3.1156.0",
+    "@ecommerce/ddd": "workspace:*",
     "@ecommerce/event-contracts": "workspace:*",
+    "@ecommerce/http": "workspace:*",
+    "@ecommerce/logger": "workspace:*",
     "bcrypt": "^6.0.0",
     "express": "^5.3.0",
     "jose": "^6.2.13",
     "pg": "^8.23.1",
-    "pino": "^10.4.0",
-    "pino-http": "^11.0.0",
     "redis": "^6.3.0",
     "sequelize": "^6.37.8",
     "umzug": "^3.8.3",

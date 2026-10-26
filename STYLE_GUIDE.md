@@ -7,20 +7,22 @@
 
 ## 1. Stack
 
-| Area                 | Choice                                    | ADR                                                          |
-| -------------------- | ----------------------------------------- | ------------------------------------------------------------ |
-| Language / runtime   | TypeScript · Node.js 24 LTS · ESM         | [0002](docs/adr/0002-typescript-node-stack.md)               |
-| HTTP                 | Express 5                                 | [0002](docs/adr/0002-typescript-node-stack.md)               |
-| Validation           | Zod (HTTP, events, env vars)              | [0002](docs/adr/0002-typescript-node-stack.md)               |
-| Relational database  | PostgreSQL + Sequelize                    | [0002](docs/adr/0002-typescript-node-stack.md)               |
-| Logger               | Pino (+ pino-http)                        | [0002](docs/adr/0002-typescript-node-stack.md)               |
-| Tests                | Vitest (+ Testcontainers)                 | [0002](docs/adr/0002-typescript-node-stack.md)               |
-| Lint / format        | oxlint + Prettier                         | [0002](docs/adr/0002-typescript-node-stack.md)               |
-| Monorepo             | pnpm workspaces + Turborepo               | [0003](docs/adr/0003-monorepo-pnpm-turborepo.md)             |
-| Service architecture | Hexagonal (Ports & Adapters)              | [0004](docs/adr/0004-hexagonal-architecture.md)              |
-| Compute              | Hybrid: containers + AWS Lambda           | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md) |
-| Local cloud / IaC    | Floci + Terraform                         | [0008](docs/adr/0008-floci-as-local-aws-emulator.md)         |
-| Contracts            | REST `/v1`, RFC 9457, CloudEvents, UUIDv7 | [0006](docs/adr/0006-api-and-event-contracts.md)             |
+| Area                 | Choice                                    | ADR                                                            |
+| -------------------- | ----------------------------------------- | -------------------------------------------------------------- |
+| Language / runtime   | TypeScript · Node.js 24 LTS · ESM         | [0002](docs/adr/0002-typescript-node-stack.md)                 |
+| HTTP                 | Express 5                                 | [0002](docs/adr/0002-typescript-node-stack.md)                 |
+| Validation           | Zod (HTTP, events, env vars)              | [0002](docs/adr/0002-typescript-node-stack.md)                 |
+| Relational database  | PostgreSQL + Sequelize                    | [0002](docs/adr/0002-typescript-node-stack.md)                 |
+| Logger               | Pino (+ pino-http)                        | [0002](docs/adr/0002-typescript-node-stack.md)                 |
+| Tests                | Vitest (+ Testcontainers)                 | [0002](docs/adr/0002-typescript-node-stack.md)                 |
+| Lint / format        | oxlint + Prettier                         | [0002](docs/adr/0002-typescript-node-stack.md)                 |
+| Monorepo             | pnpm workspaces + Turborepo               | [0003](docs/adr/0003-monorepo-pnpm-turborepo.md)               |
+| Service architecture | Hexagonal (Ports & Adapters)              | [0004](docs/adr/0004-hexagonal-architecture.md)                |
+| Compute              | Hybrid: containers + AWS Lambda           | [0005](docs/adr/0005-hybrid-compute-localstack-terraform.md)   |
+| Local cloud / IaC    | Floci + Terraform                         | [0008](docs/adr/0008-floci-as-local-aws-emulator.md)           |
+| Contracts            | REST `/v1`, RFC 9457, CloudEvents, UUIDv7 | [0006](docs/adr/0006-api-and-event-contracts.md)               |
+| Shared packages      | `ddd`, `logger`, `http` (mechanics only)  | [0011](docs/adr/0011-shared-packages.md)                       |
+| Token verification   | `@ecommerce/auth`, JWKS, 401/403/503      | [0013](docs/adr/0013-access-token-verification-in-services.md) |
 
 ---
 
@@ -67,10 +69,11 @@ Standard file suffixes: `.entity`, `.value-object`, `.event`, `.use-case`, `.por
 ├── apps/              # services running in containers (orders, catalog, inventory, ...)
 ├── functions/         # AWS Lambdas (event handlers, jobs)
 ├── packages/          # shared code — ONLY contracts and cross-cutting infrastructure
+│   ├── auth/              # access token claims contract + JWKS verifier
+│   ├── ddd/               # shared kernel: AggregateRoot, DomainError, Brand (no deps)
 │   ├── event-contracts/   # Zod schemas + CloudEvent types
-│   ├── http-problem/      # RFC 9457 helpers
-│   ├── logger/            # Pino config + correlation id
-│   ├── config/            # Zod-validated env loader
+│   ├── http/              # request logging + correlation id, RFC 9457, health, bearer auth
+│   ├── logger/            # Pino config with redaction + request context
 │   └── tsconfig/          # base tsconfig
 ├── infra/
 │   ├── docker/            # docker-compose (Floci, Postgres, Redis)
@@ -111,7 +114,7 @@ apps/orders/src/
 
 Dependency rules (always pointing **inward**):
 
-- `domain` → imports nothing but itself.
+- `domain` → imports nothing but itself and the `@ecommerce/ddd` shared kernel (ADR 0011).
 - `application` → imports `domain`.
 - `adapters` → import `application` and `domain`; never the other way around.
 - `main.ts` is the **only** place that instantiates adapters and injects them into use cases.

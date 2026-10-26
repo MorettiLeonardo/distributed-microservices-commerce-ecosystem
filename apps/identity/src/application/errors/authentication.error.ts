@@ -1,4 +1,4 @@
-import { DomainError } from '../../domain/shared/domain-error.js';
+import { DomainError } from '@ecommerce/ddd';
 
 /** Deliberately vague: never says whether the email or the password was wrong. */
 export class InvalidCredentialsError extends DomainError {

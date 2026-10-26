@@ -1,7 +1,7 @@
+import { authenticate } from '@ecommerce/http';
 import { Router } from 'express';
 import type { AccessTokenVerifier } from '../../../../application/ports/access-token-verifier.port.js';
 import type { GetCurrentUser } from '../../../../application/use-cases/get-current-user.use-case.js';
-import { authenticate } from '../authenticate.js';
 
 export function usersRoutes(deps: {
   getCurrentUser: GetCurrentUser;
