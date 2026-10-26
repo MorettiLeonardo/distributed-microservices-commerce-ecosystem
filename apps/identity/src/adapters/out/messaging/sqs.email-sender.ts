@@ -1,9 +1,9 @@
 import { SendMessageCommand, type SQSClient } from '@aws-sdk/client-sqs';
 import { createCloudEvent, IDENTITY_SOURCE, SendEmailV1 } from '@ecommerce/event-contracts';
+import { requestContext } from '@ecommerce/logger';
 import type { Clock } from '../../../application/ports/clock.port.js';
 import type { EmailMessage, EmailSender } from '../../../application/ports/email-sender.port.js';
 import type { IdGenerator } from '../../../application/ports/id-generator.port.js';
-import { requestContext } from '../../../request-context.js';
 
 /**
  * Sends the `send-email` command to the notification queue, consumed only by the notification

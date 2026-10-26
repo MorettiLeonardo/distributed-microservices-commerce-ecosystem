@@ -1,4 +1,4 @@
-import { DomainError } from '../shared/domain-error.js';
+import { DomainError } from '@ecommerce/ddd';
 
 export class OneTimeTokenExpiredError extends DomainError {
   override readonly code = 'ONE_TIME_TOKEN_EXPIRED';

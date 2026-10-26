@@ -1,4 +1,4 @@
-import type { UserStatus } from '../../domain/entities/user.entity.js';
+import type { UserRole, UserStatus } from '../../domain/entities/user.entity.js';
 import { UserId } from '../../domain/value-objects/identifiers.js';
 import { UserNotFoundError } from '../errors/user-not-found.error.js';
 import type { UserRepository } from '../ports/user.repository.port.js';
@@ -13,6 +13,7 @@ export type CurrentUser = {
   email: string;
   emailVerified: boolean;
   status: UserStatus;
+  role: UserRole;
   createdAt: Date;
 };
 
@@ -28,6 +29,7 @@ export class GetCurrentUser {
       email: user.email.value,
       emailVerified: user.isEmailVerified,
       status: user.status,
+      role: user.role,
       createdAt: user.createdAt,
     };
   }

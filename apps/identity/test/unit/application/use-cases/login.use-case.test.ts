@@ -7,6 +7,7 @@ import {
 import { parseRefreshToken } from '../../../../src/application/token-pair.js';
 import { Login } from '../../../../src/application/use-cases/login.use-case.js';
 import { VerifyEmail } from '../../../../src/application/use-cases/verify-email.use-case.js';
+import { Email } from '../../../../src/domain/value-objects/email.value-object.js';
 import { InMemoryLoginAttemptLimiter } from '../../../support/in-memory-login-attempt-limiter.js';
 import {
   createTestContext,
@@ -56,6 +57,19 @@ describe('Login', () => {
     await login.execute(valid);
 
     expect(ctx.accessTokenIssuer.issued.at(-1)?.emailVerified).toBe(true);
+  });
+
+  it('carries the user role in the access token', async () => {
+    await login.execute(valid);
+    expect(ctx.accessTokenIssuer.issued.at(-1)?.role).toBe('customer');
+
+    const user = await ctx.users.findByEmail(Email.create(valid.email));
+    user?.verifyEmail(ctx.clock.now());
+    user?.promoteToAdmin();
+    if (user) await ctx.users.save(user);
+
+    await login.execute(valid);
+    expect(ctx.accessTokenIssuer.issued.at(-1)?.role).toBe('admin');
   });
 
   it('rejects a wrong password and an unknown email with the same error', async () => {

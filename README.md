@@ -48,6 +48,7 @@ Highlights:
 - **Access tokens**: JWT signed with **ES256** that expire after 15 minutes. Other services validate them locally through the JWKS endpoint, without calling Identity on each request.
 - **Refresh tokens**: opaque tokens, **rotated on every use**, and only their SHA-256 hash is stored. If an already-used token is presented again, the whole session is revoked (theft detection).
 - **Passwords**: bcrypt with cost 12, enforcing bcrypt's 72-byte input limit.
+- **Roles**: `customer` or `admin`, carried in the access token. Admins are promoted by an operator script (`users:promote`), never over HTTP.
 - **Brute-force protection** in Redis: 20 attempts per minute per IP. After 5 failures in 15 minutes, the account is locked for 15 minutes.
 - **Anti-enumeration**: neutral responses and equalized timing on register and forgot-password.
 - **Errors** follow RFC 9457 Problem Details (`application/problem+json`).

@@ -5,11 +5,11 @@ import {
   ReceiveMessageCommand,
 } from '@aws-sdk/client-sqs';
 import { IdentityEvent, SendEmailV1 } from '@ecommerce/event-contracts';
+import { requestContext } from '@ecommerce/logger';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { SnsEventPublisher } from '../../../../../src/adapters/out/messaging/sns.event-publisher.js';
 import { SqsEmailSender } from '../../../../../src/adapters/out/messaging/sqs.email-sender.js';
 import { UserId } from '../../../../../src/domain/value-objects/identifiers.js';
-import { requestContext } from '../../../../../src/request-context.js';
 import { FakeClock, SequentialIdGenerator } from '../../../../support/fakes.js';
 import { startFloci, type TestFloci } from '../../../../support/floci.js';
 

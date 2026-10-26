@@ -1,9 +1,11 @@
+import type { UserRole } from '../../domain/entities/user.entity.js';
 import type { UserId } from '../../domain/value-objects/identifiers.js';
 
 export type AccessTokenClaims = {
   userId: UserId;
   email: string;
   emailVerified: boolean;
+  role: UserRole;
 };
 
 export type IssuedAccessToken = {

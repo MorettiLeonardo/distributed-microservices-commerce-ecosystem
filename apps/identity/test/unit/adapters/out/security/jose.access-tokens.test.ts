@@ -1,11 +1,16 @@
-import { exportJWK, generateKeyPair, type JWK } from 'jose';
+import { exportJWK, generateKeyPair, importJWK, type JWK, SignJWT } from 'jose';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { JoseAccessTokens } from '../../../../../src/adapters/out/security/jose.access-tokens.js';
 import { UserId } from '../../../../../src/domain/value-objects/identifiers.js';
 import { FakeClock } from '../../../../support/fakes.js';
 
 const TTL_MS = 15 * 60_000;
-const claims = { userId: UserId('user-1'), email: 'john@example.com', emailVerified: true };
+const claims = {
+  userId: UserId('user-1'),
+  email: 'john@example.com',
+  emailVerified: true,
+  role: 'customer',
+} as const;
 
 async function newPrivateJwk(): Promise<JWK> {
   const { privateKey } = await generateKeyPair('ES256', { extractable: true });
@@ -36,6 +41,23 @@ describe('JoseAccessTokens', () => {
     const { token } = await tokens.issue(claims);
 
     expect(await tokens.verify(token)).toEqual(claims);
+  });
+
+  it('rejects a correctly signed token whose role is missing or unknown', async () => {
+    const key = await importJWK(privateJwk, 'ES256');
+    const sign = (payload: Record<string, unknown>) =>
+      new SignJWT(payload)
+        .setProtectedHeader({ alg: 'ES256' })
+        .setSubject('user-1')
+        .setIssuer('identity')
+        .setAudience('ecommerce')
+        .setIssuedAt()
+        .setExpirationTime('5m')
+        .sign(key);
+    const base = { email: 'john@example.com', emailVerified: true };
+
+    expect(await tokens.verify(await sign(base))).toBeNull();
+    expect(await tokens.verify(await sign({ ...base, role: 'superuser' }))).toBeNull();
   });
 
   it('reports an expiry equal to the exp claim', async () => {

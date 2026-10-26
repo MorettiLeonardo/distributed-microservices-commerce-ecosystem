@@ -1,4 +1,4 @@
-import { DomainError } from '../shared/domain-error.js';
+import { DomainError } from '@ecommerce/ddd';
 
 export class SessionRevokedError extends DomainError {
   override readonly code = 'SESSION_REVOKED';

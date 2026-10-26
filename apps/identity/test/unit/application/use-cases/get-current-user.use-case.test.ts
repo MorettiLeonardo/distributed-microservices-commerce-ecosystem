@@ -27,6 +27,7 @@ describe('GetCurrentUser', () => {
       email: 'john@example.com',
       emailVerified: false,
       status: 'pending_verification',
+      role: 'customer',
       createdAt: ctx.clock.now(),
     });
   });

@@ -1,4 +1,4 @@
-import type { Brand } from '../shared/brand.js';
+import type { Brand } from '@ecommerce/ddd';
 
 export type UserId = Brand<string, 'UserId'>;
 export const UserId = (value: string): UserId => value as UserId;

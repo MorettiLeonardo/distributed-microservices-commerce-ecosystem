@@ -1,4 +1,4 @@
-import { DomainError } from '../../domain/shared/domain-error.js';
+import { DomainError } from '@ecommerce/ddd';
 
 /**
  * Raised by the user repository when saving would duplicate an email. `RegisterUser` checks

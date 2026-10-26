@@ -1,4 +1,4 @@
-import { DomainError } from '../shared/domain-error.js';
+import { DomainError } from '@ecommerce/ddd';
 
 export class PasswordTooShortError extends DomainError {
   override readonly code = 'PASSWORD_TOO_SHORT';

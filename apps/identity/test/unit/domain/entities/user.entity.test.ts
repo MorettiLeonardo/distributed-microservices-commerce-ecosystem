@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { UserDisabledError } from '../../../../src/domain/errors/user.error.js';
+import {
+  EmailNotVerifiedError,
+  UserDisabledError,
+} from '../../../../src/domain/errors/user.error.js';
 import { Email } from '../../../../src/domain/value-objects/email.value-object.js';
 import { PasswordHash, UserId } from '../../../../src/domain/value-objects/identifiers.js';
 import { User, type UserProps } from '../../../../src/domain/entities/user.entity.js';
@@ -22,6 +25,7 @@ function restoreUser(overrides: Partial<UserProps> = {}): User {
     email: Email.create('john@example.com'),
     passwordHash: PasswordHash('hash-1'),
     status: 'active',
+    role: 'customer',
     emailVerifiedAt: now,
     createdAt: now,
     ...overrides,
@@ -33,6 +37,7 @@ describe('User', () => {
     it('starts pending verification', () => {
       const user = registerUser();
       expect(user.status).toBe('pending_verification');
+      expect(user.role).toBe('customer');
       expect(user.isEmailVerified).toBe(false);
       expect(user.createdAt).toEqual(now);
     });
@@ -115,6 +120,38 @@ describe('User', () => {
       expect(user.pullEvents()).toEqual([
         { type: 'UserPasswordResetRequested', userId: 'user-1', occurredAt: later },
       ]);
+    });
+  });
+
+  describe('promoteToAdmin', () => {
+    it('makes an active customer an admin without recording events', () => {
+      const user = restoreUser();
+
+      user.promoteToAdmin();
+
+      expect(user.role).toBe('admin');
+      expect(user.pullEvents()).toEqual([]);
+    });
+
+    it('is idempotent for an admin', () => {
+      const user = restoreUser({ role: 'admin' });
+
+      user.promoteToAdmin();
+
+      expect(user.role).toBe('admin');
+    });
+
+    it('rejects a user whose email is not verified', () => {
+      const user = restoreUser({ status: 'pending_verification', emailVerifiedAt: null });
+
+      expect(() => user.promoteToAdmin()).toThrow(EmailNotVerifiedError);
+      expect(user.role).toBe('customer');
+    });
+
+    it('rejects a disabled user', () => {
+      const user = restoreUser({ status: 'disabled' });
+
+      expect(() => user.promoteToAdmin()).toThrow(UserDisabledError);
     });
   });
 });

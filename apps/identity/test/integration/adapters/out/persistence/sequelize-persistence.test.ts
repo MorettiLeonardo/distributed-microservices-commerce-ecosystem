@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { createMigrator } from '../../../../../src/adapters/out/persistence/migrator.js';
 import {
   createRepositories,
   SequelizeUnitOfWork,
@@ -68,6 +69,29 @@ describe('Sequelize persistence (Postgres)', () => {
 
       expect(loaded?.status).toBe('active');
       expect(loaded?.emailVerifiedAt).toEqual(NOW);
+    });
+
+    it('persists the role, defaulting new users to customer', async () => {
+      const customer = newUser('0192a1f0-0000-7000-8000-000000000001');
+      const admin = newUser('0192a1f0-0000-7000-8000-000000000002', 'ann@example.com');
+      admin.verifyEmail(NOW);
+      admin.promoteToAdmin();
+      await repos.users.save(customer);
+      await repos.users.save(admin);
+
+      expect((await repos.users.findById(customer.id))?.role).toBe('customer');
+      expect((await repos.users.findById(admin.id))?.role).toBe('admin');
+    });
+
+    it('rejects an unknown role at the database level (CHECK constraint)', async () => {
+      const user = newUser('0192a1f0-0000-7000-8000-000000000001');
+      await repos.users.save(user);
+
+      await expect(
+        pg.sequelize.query(`UPDATE users SET role = 'superuser' WHERE id = :id`, {
+          replacements: { id: user.id },
+        }),
+      ).rejects.toThrow(/users_role_check/);
     });
 
     it('translates the UNIQUE email violation into EmailAlreadyRegisteredError', async () => {
@@ -172,6 +196,20 @@ describe('Sequelize persistence (Postgres)', () => {
       ).rejects.toThrow('boom');
 
       expect(await repos.users.findById(user.id)).toBeNull();
+    });
+  });
+
+  describe('migrations', () => {
+    it('reverts and reapplies the role column', async () => {
+      const migrator = createMigrator(pg.sequelize);
+      const columns = async () =>
+        Object.keys(await pg.sequelize.getQueryInterface().describeTable('users'));
+
+      await migrator.down();
+      expect(await columns()).not.toContain('role');
+
+      await migrator.up();
+      expect(await columns()).toContain('role');
     });
   });
 });

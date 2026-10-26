@@ -12,6 +12,7 @@ Bounded context responsible for **authentication**: registering users, verifying
 | **Refresh token**  | Opaque, single-use secret exchanged for a new token pair.              |
 | **One-time token** | Single-use secret for email verification or password reset.            |
 | **Lockout**        | Temporary block of an account after repeated login failures.           |
+| **Role**           | What a user may do across services: `customer` or `admin`.             |
 
 ## Aggregates
 
@@ -22,10 +23,12 @@ classDiagram
         +Email email
         +PasswordHash passwordHash
         +UserStatus status
+        +UserRole role
         +Date? emailVerifiedAt
         +register(email, passwordHash)$ User
         +verifyEmail(at)
         +changePassword(newHash)
+        +promoteToAdmin()
     }
     class Session {
         +SessionId id
@@ -50,6 +53,7 @@ classDiagram
 ```
 
 - `UserStatus`: `pending_verification` → `active` → `disabled`.
+- `UserRole`: `customer` (every new user) | `admin` (granted by an operator script, ADR 0012).
 - `Purpose`: `email_verification` (expires in 24 h) | `password_reset` (expires in 30 min).
 - Aggregates reference each other **by id only**.
 
@@ -62,6 +66,7 @@ classDiagram
 5. A revoked or expired session cannot be rotated.
 6. A one-time token can be consumed once, and only before `expiresAt`.
 7. Changing the password revokes every session of the user.
+8. Only an `active` user (verified email, not disabled) can be promoted to `admin`; promoting an admin is a no-op.
 
 ## Domain events
 
@@ -95,7 +100,9 @@ All events use the CloudEvents envelope and contain **no secrets**.
 | `GET`  | `/v1/users/me`             | access token   | `200`                |
 | `GET`  | `/.well-known/jwks.json`   | —              | `200` JWKS           |
 
-Access token claims: `sub` (user id), `email`, `emailVerified`, `iat`, `exp`, `iss`, `aud`, header `kid`.
+Access token claims: `sub` (user id), `email`, `emailVerified`, `role`, `iat`, `exp`, `iss`, `aud`, header `kid`. A token without a known `role` is rejected.
+
+There is **no endpoint to grant roles**: `pnpm --filter @ecommerce/identity users:promote <email>` runs the `PromoteUserToAdmin` use case and writes an audit log line. The new role reaches the token on the next login or refresh.
 
 ## Key flows
 
