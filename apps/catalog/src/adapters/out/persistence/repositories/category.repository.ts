@@ -2,6 +2,7 @@ import { UniqueConstraintError } from 'sequelize';
 import { CategoryNameTakenError } from '../../../../application/errors/category-name-taken.error.js';
 import type { CategoryRepository } from '../../../../application/ports/category.repository.port.js';
 import type { Category } from '../../../../domain/entities/category.entity.js';
+import type { CategoryId } from '../../../../domain/value-objects/identifiers.js';
 import { CategoryModel } from '../models/category.model.js';
 
 /** Created by migration 0001 on lower(name). */
@@ -26,6 +27,10 @@ export class SequelizeCategoryRepository implements CategoryRepository {
       }
       throw error;
     }
+  }
+
+  async exists(id: CategoryId): Promise<boolean> {
+    return (await CategoryModel.count({ where: { id } })) > 0;
   }
 }
 

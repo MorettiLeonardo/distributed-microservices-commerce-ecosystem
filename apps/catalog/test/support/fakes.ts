@@ -13,11 +13,15 @@ export class FakeClock implements Clock {
   }
 }
 
+/** The n-th id handed out by `SequentialIdGenerator`: UUID-shaped, so HTTP validation accepts it. */
+export const testId = (n: number): string =>
+  `00000000-0000-7000-8000-${String(n).padStart(12, '0')}`;
+
 export class SequentialIdGenerator implements IdGenerator {
   #next = 0;
 
   generate(): string {
     this.#next += 1;
-    return `id-${this.#next}`;
+    return testId(this.#next);
   }
 }

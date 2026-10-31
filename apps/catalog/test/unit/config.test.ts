@@ -4,6 +4,7 @@ import { loadConfig } from '../../src/config.js';
 const required = {
   DATABASE_URL: 'postgres://catalog:catalog@localhost:5402/catalog',
   REDIS_URL: 'redis://localhost:6302',
+  IDENTITY_JWKS_URL: 'http://localhost:3001/.well-known/jwks.json',
 };
 
 describe('loadConfig', () => {
@@ -14,6 +15,11 @@ describe('loadConfig', () => {
       logLevel: 'info',
       databaseUrl: required.DATABASE_URL,
       redisUrl: required.REDIS_URL,
+      auth: {
+        jwksUrl: required.IDENTITY_JWKS_URL,
+        issuer: 'ecommerce-identity',
+        audience: 'ecommerce',
+      },
     });
   });
 

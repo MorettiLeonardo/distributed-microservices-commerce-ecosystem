@@ -8,6 +8,7 @@ docs {
 
   Categories, products, prices and images (`docs/domain/event-storming.md`).
 
-  Before the first run: `pnpm infra:up`, copy `apps/catalog/.env.example` to `apps/catalog/.env`,
+  Before the first run: `pnpm infra:up`, copy `apps/catalog/.env.example` to `apps/catalog/.env`
+  (an existing `.env` needs the new `IDENTITY_JWKS_URL`), `pnpm --filter @ecommerce/catalog db:migrate`,
   then `pnpm dev:catalog`.
 }

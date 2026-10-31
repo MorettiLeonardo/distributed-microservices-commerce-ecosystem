@@ -1,0 +1,49 @@
+meta {
+  name: Create product
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{catalogBaseUrl}}/v1/admin/products
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "categoryId": "{{categoryId}}",
+    "name": "Dune",
+    "description": "A desert planet, a spice and a messiah.",
+    "price": { "amount": 4990, "currency": "BRL" },
+    "weightGrams": 450
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setVar("productId", res.body.id);
+    bru.setVar("productLocation", res.headers.location);
+  }
+}
+
+tests {
+  test("creates a draft and points to it", function () {
+    expect(res.status).to.equal(201);
+    expect(res.body.status).to.equal("draft");
+    expect(res.body.price).to.eql({ amount: 4990, currency: "BRL" });
+    expect(res.headers.location).to.equal(`/v1/admin/products/${res.body.id}`);
+  });
+}
+
+docs {
+  Run **Create category** first: it sets `categoryId`.
+
+  Only `categoryId` and `name` are required; a draft may lack price, weight and images
+  (publishing requires them). Price is integer cents (`currency` defaults to BRL).
+  422 for an unknown category or values the domain rejects; 400 for a malformed body.
+}

@@ -23,6 +23,7 @@
 | Contracts            | REST `/v1`, RFC 9457, CloudEvents, UUIDv7 | [0006](docs/adr/0006-api-and-event-contracts.md)               |
 | Shared packages      | `ddd`, `logger`, `http` (mechanics only)  | [0011](docs/adr/0011-shared-packages.md)                       |
 | Token verification   | `@ecommerce/auth`, JWKS, 401/403/503      | [0013](docs/adr/0013-access-token-verification-in-services.md) |
+| Admin API            | `/v1/admin` prefix behind one middleware  | [0014](docs/adr/0014-catalog-admin-api.md)                     |
 
 ---
 

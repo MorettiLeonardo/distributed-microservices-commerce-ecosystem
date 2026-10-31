@@ -69,7 +69,7 @@ stateDiagram-v2
 4. At most **8 images** per product (K4); attaching the same image id twice is a no-op.
 5. Weight is a whole number of grams between 1 and 100 000.
 6. Names: category 1–60 characters, product 1–120 (trimmed); description up to 5000.
-7. Category names are unique (database + use case, not the aggregate).
+7. Category names are unique ignoring case; accents count (`Books` = `BOOKS`, `Eletrônicos` ≠ `Eletronicos`). Enforced by a UNIQUE index on `lower(name)`, not by the aggregate (ADR 0014).
 8. `publish` on a published product and `unpublish` on an unpublished one are no-ops; unpublishing a draft is an error.
 
 ## Domain events

@@ -196,6 +196,9 @@ importers:
 
   apps/catalog:
     dependencies:
+      '@ecommerce/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@ecommerce/ddd':
         specifier: workspace:*
         version: link:../../packages/ddd
@@ -220,6 +223,9 @@ importers:
       umzug:
         specifier: ^3.8.3
         version: 3.8.3(@types/node@24.19.2)
+      uuid:
+        specifier: ^14.0.3
+        version: 14.0.3
       zod:
         specifier: ^4.6.7
         version: 4.6.7
