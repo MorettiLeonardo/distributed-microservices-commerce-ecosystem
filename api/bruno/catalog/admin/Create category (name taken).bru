@@ -1,0 +1,36 @@
+meta {
+  name: Create category (name taken)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{catalogBaseUrl}}/v1/admin/categories
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "{{categoryNameUpper}}"
+  }
+}
+
+script:pre-request {
+  bru.setVar("categoryNameUpper", bru.getVar("categoryName").toUpperCase());
+}
+
+tests {
+  test("rejects a name taken in another case", function () {
+    expect(res.status).to.equal(409);
+    expect(res.body.code).to.equal("CATEGORY_NAME_TAKEN");
+  });
+}
+
+docs {
+  Run **Create category** first: this sends the same name in upper case.
+}

@@ -1,0 +1,13 @@
+meta {
+  name: admin
+  seq: 2
+}
+
+docs {
+  Every route under `/v1/admin` requires an **admin** access token from identity
+  (401 without a valid token, 403 for customers, 503 when identity's JWKS is unreachable).
+
+  To get one: register and verify a user, promote it with
+  `pnpm -s --filter @ecommerce/identity users:promote <email>`, then run **identity / auth / Login**
+  (a token issued before the promotion still says `customer`).
+}

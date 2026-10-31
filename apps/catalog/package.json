@@ -6,12 +6,16 @@
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/main.ts",
     "start": "node dist/main.js",
+    "db:migrate": "tsx --env-file-if-exists=.env scripts/migrate.ts",
+    "db:rollback": "tsx --env-file-if-exists=.env scripts/migrate.ts down",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run test/unit",
+    "test:integration": "vitest run test/integration",
     "test:watch": "vitest test/unit"
   },
   "dependencies": {
+    "@ecommerce/auth": "workspace:*",
     "@ecommerce/ddd": "workspace:*",
     "@ecommerce/http": "workspace:*",
     "@ecommerce/logger": "workspace:*",
@@ -19,12 +23,16 @@
     "pg": "^8.23.1",
     "redis": "^6.3.0",
     "sequelize": "^6.37.8",
+    "umzug": "^3.8.3",
+    "uuid": "^14.0.3",
     "zod": "^4.6.7"
   },
   "devDependencies": {
     "@ecommerce/tsconfig": "workspace:*",
+    "@testcontainers/postgresql": "^12.2.1",
     "@types/express": "^5.0.6",
     "@types/node": "^24.19.2",
+    "testcontainers": "^12.2.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^5.0.5"

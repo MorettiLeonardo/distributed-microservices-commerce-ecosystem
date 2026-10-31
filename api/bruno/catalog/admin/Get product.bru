@@ -1,0 +1,27 @@
+meta {
+  name: Get product
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{catalogBaseUrl}}{{productLocation}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("reads the product the Location pointed to", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.id).to.equal(bru.getVar("productId"));
+  });
+}
+
+docs {
+  Run **Create product** first: it follows the `Location` it returned.
+  Any status is visible here (admin read); 404 for an unknown id, 400 for one that is not a UUID.
+}

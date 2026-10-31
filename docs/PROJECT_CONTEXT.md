@@ -1,7 +1,7 @@
 # Project Context
 
 > Living document that captures **why** this project exists, **how** we work on it, **what** has been decided and built, and **what comes next**.
-> Read this first when resuming work. Last updated: 2026-10-25.
+> Read this first when resuming work. Last updated: 2026-10-28.
 
 ---
 
@@ -36,21 +36,21 @@ These rules govern how the project is built (human + AI pair):
 
 ## 3. Learning plan
 
-| #   | Module                  | Content                                                                           | Status            |
-| --- | ----------------------- | --------------------------------------------------------------------------------- | ----------------- |
-| 0   | Style guide             | Stack, conventions, layout, API and event standards, commits                      | ✅ Done           |
-| 1   | Domain modeling         | DDD: Identity modeled; whole e-commerce event-stormed; Catalog domain built       | 🟡 In progress    |
-| 2   | Architecture            | C4 diagrams, ADRs, sync/async map, database per service, Lambda vs container      | 🟡 Partial        |
-| 3   | Local infra + IaC       | Docker Compose with Floci, Postgres, Redis; Terraform                             | ✅ Done           |
-| 4   | First service           | Hexagonal architecture, validation, tests, health checks, 12-factor config        | ✅ Done           |
-| 5   | Synchronous HTTP        | REST between services, API Gateway, timeouts, retry with backoff, circuit breaker | 🟡 Started (JWKS) |
-| 6   | Cache                   | Redis cache-aside, TTL, event-driven invalidation, stampede protection            | ⬜                |
-| 7   | Asynchronous messaging  | SQS, SNS, EventBridge, DLQ, idempotency, Outbox Pattern                           | 🟡 Partial        |
-| 8   | Serverless + S3         | Event-driven Lambdas, presigned URL uploads, reports                              | 🟡 Partial        |
-| 9   | Distributed consistency | Checkout saga: choreography vs orchestration (Step Functions), compensations      | ⬜                |
-| 10  | Observability           | Structured logs, correlation id, OpenTelemetry traces and metrics                 | ⬜                |
-| 11  | Tests and quality       | Unit, integration (Testcontainers + Floci), contract tests, CI (GitHub Actions)   | 🟡 Partial        |
-| 12  | Portfolio polish        | README with diagrams, ADR index, end-to-end demo script                           | 🟡 README done    |
+| #   | Module                  | Content                                                                           | Status                             |
+| --- | ----------------------- | --------------------------------------------------------------------------------- | ---------------------------------- |
+| 0   | Style guide             | Stack, conventions, layout, API and event standards, commits                      | ✅ Done                            |
+| 1   | Domain modeling         | DDD: Identity modeled; whole e-commerce event-stormed; Catalog domain built       | 🟡 In progress                     |
+| 2   | Architecture            | C4 diagrams, ADRs, sync/async map, database per service, Lambda vs container      | 🟡 Partial                         |
+| 3   | Local infra + IaC       | Docker Compose with Floci, Postgres, Redis; Terraform                             | ✅ Done                            |
+| 4   | First service           | Hexagonal architecture, validation, tests, health checks, 12-factor config        | ✅ Done                            |
+| 5   | Synchronous HTTP        | REST between services, API Gateway, timeouts, retry with backoff, circuit breaker | 🟡 Started (JWKS wired in catalog) |
+| 6   | Cache                   | Redis cache-aside, TTL, event-driven invalidation, stampede protection            | ⬜                                 |
+| 7   | Asynchronous messaging  | SQS, SNS, EventBridge, DLQ, idempotency, Outbox Pattern                           | 🟡 Partial                         |
+| 8   | Serverless + S3         | Event-driven Lambdas, presigned URL uploads, reports                              | 🟡 Partial                         |
+| 9   | Distributed consistency | Checkout saga: choreography vs orchestration (Step Functions), compensations      | ⬜                                 |
+| 10  | Observability           | Structured logs, correlation id, OpenTelemetry traces and metrics                 | ⬜                                 |
+| 11  | Tests and quality       | Unit, integration (Testcontainers + Floci), contract tests, CI (GitHub Actions)   | 🟡 Partial                         |
+| 12  | Portfolio polish        | README with diagrams, ADR index, end-to-end demo script                           | 🟡 README done                     |
 
 ### 3.1 Technologies the author wants to learn
 
@@ -186,6 +186,15 @@ Full detail lives in [`STYLE_GUIDE.md`](../STYLE_GUIDE.md), [`docs/adr/`](adr/) 
 - **Domain:** `Category` (flat) and `Product` aggregates referenced by id; `Product` lifecycle `draft → published ⇄ unpublished`, never deleted; publishing requires price > 0, `weightGrams` and ≥ 1 image (error lists everything missing); ≤ 8 images; `Money` (integer cents, BRL) lives in Catalog's domain.
 - **Increment order changed** so the strict image rule never blocks: 5 persistence + admin API → 6 images → 7 storefront + events → 8 cache.
 
+### 4.13 Catalog admin API (ADR 0014)
+
+- **Vertical slices**: Category end to end (use case → persistence → route → manual check), then Product following the same mold.
+- Admin routes under **`/v1/admin`**, behind **one middleware** `requireAdmin(verifier)` (`authenticate` + `requireRole('admin')`), mounted on the prefix: new admin routes are protected by default; unknown admin paths answer `401` to non-admins. Lives in catalog until a second service needs it.
+- Token verification **only in the HTTP adapter** (generic `TokenVerifier` from `@ecommerce/http`), no application port. Config `IDENTITY_JWKS_URL` (required), `JWT_ISSUER` / `JWT_AUDIENCE` (identity's defaults). Named after the issuer like eShop's `Identity:Url`; swapping issuers is configuration only.
+- Category names **unique ignoring case, accents count**, enforced **only** by `UNIQUE (lower(name))`; the repository matches the violation **by index name** → `CategoryNameTakenError` → `409`. **No lookup before saving** (it was an equivalent mutant).
+- `201` with the view `{ id, name, createdAt }`, **no `Location`** until a read route exists. Use cases return plain views.
+- `CategoryCreated` recorded but not published until increment 7.
+
 ## 5. What has been built
 
 ### 5.1 Repository layout
@@ -195,10 +204,10 @@ Full detail lives in [`STYLE_GUIDE.md`](../STYLE_GUIDE.md), [`docs/adr/`](adr/) 
 ├── CLAUDE.md                  # auto-loaded context for Claude Code sessions
 ├── README.md                  # product README (no mention of learning)
 ├── STYLE_GUIDE.md
-├── api/bruno/                 # Bruno collection: identity/{health,auth,users,well-known,errors}, catalog/health
+├── api/bruno/                 # Bruno collection: identity/{health,auth,users,well-known,errors}, catalog/{health,admin}
 ├── docs/
 │   ├── PROJECT_CONTEXT.md     # this file
-│   ├── adr/0001..0013         # architecture decision records
+│   ├── adr/0001..0014         # architecture decision records
 │   └── domain/                # identity.md, catalog.md, event-storming.md
 ├── infra/docker/
 │   ├── compose.yaml           # identity-db/redis, catalog-db/redis, floci, floci-ui, mailpit, terraform (tools)
@@ -215,9 +224,11 @@ Full detail lives in [`STYLE_GUIDE.md`](../STYLE_GUIDE.md), [`docs/adr/`](adr/) 
 ├── apps/identity/             # 142 unit + 19 integration tests
 │   ├── scripts/               # generate-jwt-key.ts, migrate.ts, promote-user.ts
 │   └── src/, test/            # hexagonal layout (see STYLE_GUIDE §5)
-└── apps/catalog/              # 52 unit tests
+└── apps/catalog/              # 67 unit + 5 integration tests
     ├── .env.example           # copy to .env
-    └── src/                   # config, logger, main, adapters/in/http, adapters/out/{persistence,cache},
+    ├── scripts/               # migrate.ts
+    └── src/                   # config, logger, main, application/{use-cases,ports,errors},
+                               # adapters/in/http (admin routes, requireAdmin), adapters/out/{persistence,cache,system},
                                # domain/{entities,value-objects,events,errors}
 ```
 
@@ -254,7 +265,10 @@ Floci needs no account or token. Its state is **persistent** (`floci-data` volum
 ### 5.5 Catalog
 
 - Skeleton verified against real infra (2026-10-25): `/health/ready` green with Postgres + Redis, correlation id echoed, JSON logs with `service: catalog`.
-- Domain layer done and mutation-tested (publish idempotency, images copy, image limit, weight check). **No persistence or HTTP routes yet.**
+- Domain layer done and mutation-tested (publish idempotency, images copy, image limit, weight check).
+- **Category slice done (increment 5, part 1):** `CreateCategory` use case, `categories` table (migration `0001-create-catalog-tables`, `UNIQUE (lower(name))`), `SequelizeCategoryRepository`, `POST /v1/admin/categories` behind `requireAdmin`, Bruno requests (`catalog/admin`). Mutation-tested (role check, gate mounting, error translation, `lower` in the index).
+- Verified end to end (2026-10-28) with a real identity token: customer `403`, token issued before promotion `403`, admin `201`, same name in upper case `409`, blank name `422`, tampered token `401`.
+- **No Product persistence or routes yet.**
 
 ## 6. Known gaps (deliberate or accepted)
 
@@ -270,14 +284,15 @@ Floci needs no account or token. Its state is **persistent** (`floci-data` volum
 | `pnpm infra:reset` wipes Floci but not the Terraform state file                                                      | `infra/terraform`         | Accepted; `infra:provision` recreates    |
 | `Role` declared twice (identity domain + `@ecommerce/auth` contract); identity does not issue with the shared schema | Identity / auth           | Kept aligned by the contract test        |
 | First authenticated request after a cold start pays the JWKS round trip                                              | `@ecommerce/auth`         | Accepted                                 |
+| Case-insensitive category names rely on `lower()`, which follows the DB locale (`C` would fold only ASCII)           | Catalog persistence       | Accepted; guarded by integration tests   |
 
 ## 7. Next steps
 
-Work happens on branch **`feat/catalog`** (not pushed yet). Commits so far: `a29cdee` event storming, `bffa579` shared packages + roles + auth, `26e0c0b` catalog skeleton, `14c042e` catalog domain (increment 4).
+`feat/catalog` (skeleton + domain, increment 4) was merged into `main` (PR #1). Work now happens on branch **`feat/catalog-admin-api`** (not pushed yet).
 
 Catalog increments (new order):
 
-1. **Increment 5 — persistence + admin API:** application layer (use cases incl. `CreateCategory`, `CreateProduct` checking the category exists, `UpdateProductDetails`, `ChangeProductPrice`, `PublishProduct`, `UnpublishProduct`), Sequelize models/migrations (FK to categories, UNIQUE category name), admin routes protected by `authenticate` + `requireRole('admin')` with `JwksAccessTokenVerifier` wired in catalog (`IDENTITY_JWKS_URL` config), Bruno requests, first manual end-to-end check with a real identity token (promote a user first).
+1. **Increment 5 — persistence + admin API:** ✅ Category slice done (ADR 0014). **Next: the Product slice** with the same mold: `CreateProduct` (checks the category exists), `UpdateProductDetails`, `ChangeProductPrice`, `PublishProduct`, `UnpublishProduct`; `products` table with FK to categories; routes under `/v1/admin/products` (actions as sub-resources, e.g. `POST .../{id}/publish`); Bruno; manual check. Open decisions: how to check the category exists (repository `exists()` and/or FK), how to persist `Money` and images (own table vs JSONB), how "cannot publish" lists everything missing, and probably the first `GET` by id (which enables `Location` on `201`).
 2. **Increment 6 — images:** S3 bucket (Terraform), presigned upload URL, image-processor Lambda (H22), `attachImage`, lifecycle rule.
 3. **Increment 7 — storefront + events:** public read routes (cursor pagination, filter by category), catalog events on SNS (`ecommerce-catalog-events`).
 4. **Increment 8 — cache:** Redis cache-aside for the storefront, event-driven invalidation, stampede protection (H21).
@@ -326,6 +341,14 @@ Later: design level of the event storming (H9–H23), Inventory/Promotions/Cart/
 - **Sagas** — order steps cheapest-to-undo first; compensations undo only what was done, in reverse; timers are events caused by nothing happening.
 - **Eventual consistency on reads** — read-side checks are a convenience; the write side is the guarantee.
 - **Presigned URLs** — the service signs permission; the client uploads straight to S3.
+- **Vertical vs horizontal slices** — finish one feature through every layer before the next; integration problems surface while little code depends on them.
+- **Equivalent mutants** — a mutant no test can kill because behavior is identical; a sign the code is redundant (the pre-save lookup), not that tests are missing.
+- **Expression indexes** — `UNIQUE (lower(name))` keeps the value as typed and compares normalized; queries must use the same expression to hit it.
+- **Match database errors by constraint name** — the pg error's `constraint` is stable; parsed `fields` depend on how the key is reported.
+- **Locale-dependent functions** — `lower()` follows the database locale; a JS fake can hide the difference, only a real database shows it.
+- **Gate middleware on a prefix** — protection by default for every route under it; non-admins cannot discover admin routes (`401` before `404`).
+- **Coupling to a contract, not a service** — JWKS (OIDC discovery) is how Spring, ASP.NET, eShop, Cognito, Auth0, Istio and GitHub OIDC verify tokens without calling the issuer per request; alternatives (static key, introspection, shared secret) trade it for deploy coupling, runtime coupling or forgeable tokens.
+- **Lambda + SQS is pull under the hood** — the event source mapping long-polls the queue, invokes the function with a batch and deletes what succeeded; partial batch responses need `ReportBatchItemFailures`.
 
 ## 9. Environment notes
 
@@ -354,8 +377,11 @@ pnpm -s --filter @ecommerce/identity users:promote <email>
 pnpm dev:identity                         # http://localhost:3001
 
 # catalog (copy apps/catalog/.env.example to .env first)
-pnpm dev:catalog                          # http://localhost:3002
+pnpm --filter @ecommerce/catalog db:migrate    # / db:rollback
+pnpm dev:catalog                          # http://localhost:3002 (needs identity up for admin routes)
 ```
+
+- **After `pnpm infra:reset`** (or new volumes), the databases and Floci start empty: run `db:migrate` for **each** service and `pnpm infra:provision`, otherwise identity's `register` answers `500` (missing tables) and no email goes out (missing queue).
 
 - Use `pnpm dev:<service>`, not `pnpm --filter ... dev`: the latter does not build the shared packages first.
 - Emails: Mailpit UI at http://localhost:8025. Lambda logs: `docker logs ecommerce-floci-1`.

@@ -1,0 +1,29 @@
+meta {
+  name: Create product (unknown category)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{catalogBaseUrl}}/v1/admin/products
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "categoryId": "00000000-0000-7000-8000-000000000000",
+    "name": "Dune"
+  }
+}
+
+tests {
+  test("rejects a category that does not exist", function () {
+    expect(res.status).to.equal(422);
+    expect(res.body.code).to.equal("CATEGORY_NOT_FOUND");
+  });
+}
