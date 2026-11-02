@@ -26,6 +26,9 @@ describe('admin products routes', () => {
   const get = (id: string, headers: Record<string, string> = asAdmin) =>
     server.request(`/v1/admin/products/${id}`, { headers });
 
+  const patch = (id: string, json: unknown, headers: Record<string, string> = asAdmin) =>
+    server.request(`/v1/admin/products/${id}`, { method: 'PATCH', json, headers });
+
   describe('POST /v1/admin/products', () => {
     it('creates a draft and answers 201 with it and its Location', async () => {
       const response = await create({
@@ -140,6 +143,77 @@ describe('admin products routes', () => {
       const response = await get(testId(99), { authorization: `Bearer ${TOKENS.customer}` });
 
       expect(response.status).toBe(403);
+    });
+  });
+
+  describe('PATCH /v1/admin/products/:id', () => {
+    let productId: string;
+
+    beforeEach(async () => {
+      ({ id: productId } = (await (await create({ categoryId, name: 'Dune' })).json()) as {
+        id: string;
+      });
+    });
+
+    it('answers 200 with the product, changing only the given fields', async () => {
+      const response = await patch(productId, { description: 'A desert planet', weightGrams: 450 });
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({
+        id: productId,
+        name: 'Dune',
+        description: 'A desert planet',
+        weightGrams: 450,
+      });
+    });
+
+    it('answers 200 to an empty body, changing nothing', async () => {
+      const response = await patch(productId, {});
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toMatchObject({ name: 'Dune', description: '' });
+    });
+
+    it('answers 404 for an unknown product', async () => {
+      const response = await patch(testId(99), { name: 'Dune Messiah' });
+
+      expect(response.status).toBe(404);
+    });
+
+    it('answers 422 when the new category does not exist', async () => {
+      const response = await patch(productId, { categoryId: testId(99) });
+
+      expect(response.status).toBe(422);
+      expect(await response.json()).toMatchObject({ code: 'CATEGORY_NOT_FOUND' });
+    });
+
+    it('answers 422 for a value the domain rejects', async () => {
+      const response = await patch(productId, { weightGrams: 0 });
+
+      expect(response.status).toBe(422);
+      expect(await response.json()).toMatchObject({ code: 'INVALID_WEIGHT' });
+    });
+
+    it.each([
+      ['a weight set to null', { weightGrams: null }],
+      ['a category id that is not a UUID', { categoryId: 'books' }],
+      ['a name that is not a string', { name: 42 }],
+    ])('answers 400 for %s', async (_case, body) => {
+      const response = await patch(productId, body);
+
+      expect(response.status).toBe(400);
+      expect(await response.json()).toMatchObject({ code: 'VALIDATION_FAILED' });
+    });
+
+    it('answers 403 to a customer, changing nothing', async () => {
+      const response = await patch(
+        productId,
+        { name: 'Hacked' },
+        { authorization: `Bearer ${TOKENS.customer}` },
+      );
+
+      expect(response.status).toBe(403);
+      expect(server.ctx.db.tables.products.get(productId)?.name).toBe('Dune');
     });
   });
 });

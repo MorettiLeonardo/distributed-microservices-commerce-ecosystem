@@ -16,6 +16,9 @@ export type ProductView = {
   publishedAt: Date | null;
 };
 
+/** What product use cases return: the view plus the version, which HTTP exposes as the ETag. */
+export type VersionedProductView = { product: ProductView; version: number };
+
 export const toProductView = (product: Product): ProductView => ({
   id: product.id,
   categoryId: product.categoryId,

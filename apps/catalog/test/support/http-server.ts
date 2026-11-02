@@ -5,6 +5,7 @@ import { createApp } from '../../src/adapters/in/http/app.js';
 import { CreateCategory } from '../../src/application/use-cases/create-category.use-case.js';
 import { CreateProduct } from '../../src/application/use-cases/create-product.use-case.js';
 import { GetProduct } from '../../src/application/use-cases/get-product.use-case.js';
+import { UpdateProductDetails } from '../../src/application/use-cases/update-product-details.use-case.js';
 import { createLogger } from '../../src/logger.js';
 import { createTestContext, type TestContext } from './test-context.js';
 
@@ -54,6 +55,7 @@ export async function startTestServer(
       createCategory: new CreateCategory(ctx),
       createProduct: new CreateProduct(ctx),
       getProduct: new GetProduct(ctx),
+      updateProductDetails: new UpdateProductDetails(ctx),
     },
     accessTokenVerifier: new FakeTokenVerifier(),
     readinessChecks: options.readinessChecks ?? [],

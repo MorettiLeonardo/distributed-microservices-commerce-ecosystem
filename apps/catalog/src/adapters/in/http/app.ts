@@ -10,6 +10,7 @@ import express, { type Express } from 'express';
 import type { CreateCategory } from '../../../application/use-cases/create-category.use-case.js';
 import type { CreateProduct } from '../../../application/use-cases/create-product.use-case.js';
 import type { GetProduct } from '../../../application/use-cases/get-product.use-case.js';
+import type { UpdateProductDetails } from '../../../application/use-cases/update-product-details.use-case.js';
 import type { Logger } from '../../../logger.js';
 import { problemDetailsHandler } from './problem-details.js';
 import { requireAdmin } from './require-admin.js';
@@ -21,6 +22,7 @@ export type HttpDependencies = {
     createCategory: CreateCategory;
     createProduct: CreateProduct;
     getProduct: GetProduct;
+    updateProductDetails: UpdateProductDetails;
   };
   accessTokenVerifier: TokenVerifier<AccessTokenClaims>;
   readinessChecks: readonly ReadinessCheck[];

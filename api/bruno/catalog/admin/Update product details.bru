@@ -1,0 +1,40 @@
+meta {
+  name: Update product details
+  type: http
+  seq: 6
+}
+
+patch {
+  url: {{catalogBaseUrl}}/v1/admin/products/{{productId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Dune (Deluxe Edition)",
+    "weightGrams": 980
+  }
+}
+
+tests {
+  test("changes only the given fields", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.name).to.equal("Dune (Deluxe Edition)");
+    expect(res.body.weightGrams).to.equal(980);
+    expect(res.body.price).to.eql({ amount: 4990, currency: "BRL" });
+  });
+}
+
+docs {
+  Run **Create product** first: it sets `productId`.
+
+  Any of `name`, `description`, `categoryId`, `weightGrams`; omitted fields keep their value and an
+  empty body changes nothing. Price and lifecycle have their own endpoints. 404 for an unknown
+  product, 422 for an unknown category or values the domain rejects, 400 for a malformed body
+  (including `null`: a weight or category cannot be cleared).
+}

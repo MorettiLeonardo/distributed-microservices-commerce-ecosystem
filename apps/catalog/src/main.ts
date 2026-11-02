@@ -9,6 +9,7 @@ import { UuidV7IdGenerator } from './adapters/out/system/uuid-v7.id-generator.js
 import { CreateCategory } from './application/use-cases/create-category.use-case.js';
 import { CreateProduct } from './application/use-cases/create-product.use-case.js';
 import { GetProduct } from './application/use-cases/get-product.use-case.js';
+import { UpdateProductDetails } from './application/use-cases/update-product-details.use-case.js';
 import { type Config, loadConfig } from './config.js';
 import { createLogger } from './logger.js';
 
@@ -33,6 +34,7 @@ async function main(config: Config): Promise<void> {
       createCategory: new CreateCategory(ports),
       createProduct: new CreateProduct(ports),
       getProduct: new GetProduct(ports),
+      updateProductDetails: new UpdateProductDetails(ports),
     },
     accessTokenVerifier: new JwksAccessTokenVerifier(config.auth),
     // Identity is deliberately absent: its outage must not take catalog out of the load

@@ -18,9 +18,13 @@ describe('CreateProduct', () => {
     ({ id: categoryId } = await new CreateCategory(ctx).execute({ name: 'Books' }));
   });
 
-  it('creates a draft with only the required fields and returns its view', async () => {
-    const view = await createProduct.execute({ categoryId, name: '  Dune  ' });
+  it('creates a draft at version 1 with only the required fields and returns its view', async () => {
+    const { product: view, version } = await createProduct.execute({
+      categoryId,
+      name: '  Dune  ',
+    });
 
+    expect(version).toBe(1);
     expect(view).toEqual({
       id: testId(2),
       categoryId,
@@ -33,11 +37,15 @@ describe('CreateProduct', () => {
       createdAt: ctx.clock.now(),
       publishedAt: null,
     });
-    expect(ctx.db.tables.products.get(view.id)).toMatchObject({ name: 'Dune', status: 'draft' });
+    expect(ctx.db.tables.products.get(view.id)).toMatchObject({
+      name: 'Dune',
+      status: 'draft',
+      version: 1,
+    });
   });
 
   it('creates a draft with every optional field', async () => {
-    const view = await createProduct.execute({
+    const { product: view } = await createProduct.execute({
       categoryId,
       name: 'Dune',
       description: 'A desert planet',

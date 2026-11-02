@@ -13,4 +13,12 @@ export const CreateProductBody = z.object({
   weightGrams: z.number().optional(),
 });
 
+/** No field is nullable: the domain cannot clear a weight or a category once set. */
+export const UpdateProductDetailsBody = z.object({
+  name: z.string().max(1000).optional(),
+  description: z.string().max(20_000).optional(),
+  categoryId: z.uuid().optional(),
+  weightGrams: z.number().optional(),
+});
+
 export const ProductIdParams = z.object({ id: z.uuid() });
