@@ -28,6 +28,7 @@ script:post-response {
   if (res.status === 201) {
     bru.setVar("productId", res.body.id);
     bru.setVar("productLocation", res.headers.location);
+    bru.setVar("productETag", res.headers.etag);
   }
 }
 
@@ -37,6 +38,7 @@ tests {
     expect(res.body.status).to.equal("draft");
     expect(res.body.price).to.eql({ amount: 4990, currency: "BRL" });
     expect(res.headers.location).to.equal(`/v1/admin/products/${res.body.id}`);
+    expect(res.headers.etag).to.equal(`"1"`);
   });
 }
 

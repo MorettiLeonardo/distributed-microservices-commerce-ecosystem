@@ -10,6 +10,10 @@ patch {
   auth: bearer
 }
 
+headers {
+  If-Match: {{productETag}}
+}
+
 auth:bearer {
   token: {{accessToken}}
 }
@@ -21,20 +25,32 @@ body:json {
   }
 }
 
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("productETag", res.headers.etag);
+  }
+}
+
 tests {
-  test("changes only the given fields", function () {
+  test("changes only the given fields and returns the new ETag", function () {
     expect(res.status).to.equal(200);
     expect(res.body.name).to.equal("Dune (Deluxe Edition)");
     expect(res.body.weightGrams).to.equal(980);
     expect(res.body.price).to.eql({ amount: 4990, currency: "BRL" });
+    expect(res.headers.etag).to.match(/^"\d+"$/);
   });
 }
 
 docs {
-  Run **Create product** first: it sets `productId`.
+  Run **Create product** or **Get product** first: they set `productId` and `productETag`.
 
   Any of `name`, `description`, `categoryId`, `weightGrams`; omitted fields keep their value and an
-  empty body changes nothing. Price and lifecycle have their own endpoints. 404 for an unknown
-  product, 422 for an unknown category or values the domain rejects, 400 for a malformed body
-  (including `null`: a weight or category cannot be cleared).
+  empty body changes nothing (the ETag stays). Price and lifecycle have their own endpoints.
+
+  Optimistic locking: `If-Match` must carry the ETag you read. Missing (or `*`) → 428; stale → 412
+  (`PRODUCT_VERSION_CONFLICT`: someone changed it, GET it again). Running this request twice in a
+  row works because the script stores the new ETag; clear `productETag` to see the 428.
+
+  404 for an unknown product, 422 for an unknown category or values the domain rejects, 400 for a
+  malformed body (including `null`: a weight or category cannot be cleared).
 }

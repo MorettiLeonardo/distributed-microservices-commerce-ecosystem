@@ -78,6 +78,18 @@ describe('UpdateProductDetails', () => {
     expect(stored()).toMatchObject({ name: 'Dune Messiah', weightGrams: null, version: 2 });
   });
 
+  it.each([
+    // Without the up-front check these would answer "nothing changed" and "invalid weight".
+    ['no fields', {}],
+    ['invalid details', { weightGrams: 0 }],
+  ])('rejects a stale version even with %s', async (_case, changes) => {
+    await updateDetails.execute({ productId, expectedVersion: 1, name: 'Dune Messiah' });
+
+    await expect(
+      updateDetails.execute({ productId, expectedVersion: 1, ...changes }),
+    ).rejects.toThrow(ProductVersionConflictError);
+  });
+
   it('rejects an unknown product', async () => {
     await expect(
       updateDetails.execute({ productId: testId(99), expectedVersion: 1, name: 'X' }),

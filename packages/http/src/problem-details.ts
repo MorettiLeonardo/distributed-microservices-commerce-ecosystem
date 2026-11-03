@@ -3,8 +3,16 @@ import type { ErrorRequestHandler, Request } from 'express';
 import { z } from 'zod';
 import { HttpProblem } from './http-problem.js';
 
-/** Extra fields a service attaches to a specific domain error (e.g. `Retry-After`). */
-export type ProblemExtras = { detail?: string; headers?: Record<string, string> };
+/**
+ * Extra fields a service attaches to a specific domain error: a `detail`, response headers
+ * (e.g. `Retry-After`) and extension members (RFC 9457 §3.2, e.g. what is missing), which can
+ * never override the standard members.
+ */
+export type ProblemExtras = {
+  detail?: string;
+  headers?: Record<string, string>;
+  extensions?: Record<string, unknown>;
+};
 
 export type ProblemDetailsOptions<TCode extends string> = {
   /**
@@ -90,6 +98,8 @@ export function createProblemDetailsHandler<TCode extends string>(
       .set(problem.headers ?? {})
       .type('application/problem+json')
       .json({
+        // First, so the standard members below always win.
+        ...problem.extensions,
         type: typeUri(problem.code),
         title: problem.title,
         status: problem.status,
@@ -97,7 +107,6 @@ export function createProblemDetailsHandler<TCode extends string>(
         instance: req.originalUrl,
         code: problem.code,
         correlationId: req.id,
-        ...problem.extensions,
       });
   };
 }

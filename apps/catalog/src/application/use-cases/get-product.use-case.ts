@@ -1,7 +1,7 @@
 import { ProductId } from '../../domain/value-objects/identifiers.js';
 import { ProductNotFoundError } from '../errors/product-not-found.error.js';
 import type { ProductRepository } from '../ports/product.repository.port.js';
-import { type ProductView, toProductView } from '../product.view.js';
+import { toProductView, type VersionedProductView } from '../product.view.js';
 
 export type GetProductInput = {
   productId: string;
@@ -11,9 +11,9 @@ export type GetProductInput = {
 export class GetProduct {
   constructor(private readonly deps: { products: ProductRepository }) {}
 
-  async execute(input: GetProductInput): Promise<ProductView> {
-    const product = await this.deps.products.findById(ProductId(input.productId));
-    if (!product) throw new ProductNotFoundError();
-    return toProductView(product);
+  async execute(input: GetProductInput): Promise<VersionedProductView> {
+    const found = await this.deps.products.findById(ProductId(input.productId));
+    if (!found) throw new ProductNotFoundError();
+    return { product: toProductView(found.product), version: found.version };
   }
 }

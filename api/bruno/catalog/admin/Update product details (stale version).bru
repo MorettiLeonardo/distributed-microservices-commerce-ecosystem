@@ -1,0 +1,37 @@
+meta {
+  name: Update product details (stale version)
+  type: http
+  seq: 7
+}
+
+patch {
+  url: {{catalogBaseUrl}}/v1/admin/products/{{productId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  If-Match: "1"
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "weightGrams": 1000
+  }
+}
+
+tests {
+  test("rejects a change based on a stale read", function () {
+    expect(res.status).to.equal(412);
+    expect(res.body.code).to.equal("PRODUCT_VERSION_CONFLICT");
+  });
+}
+
+docs {
+  Run **Update product details** first, so the product is past version 1. Simulates a second admin
+  who read the product before that update: the change is refused instead of silently undoing it.
+}
