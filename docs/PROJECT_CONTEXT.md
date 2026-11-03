@@ -1,7 +1,7 @@
 # Project Context
 
 > Living document that captures **why** this project exists, **how** we work on it, **what** has been decided and built, and **what comes next**.
-> Read this first when resuming work. Last updated: 2026-10-28.
+> Read this first when resuming work. Last updated: 2026-11-02.
 
 ---
 
@@ -194,6 +194,21 @@ Full detail lives in [`STYLE_GUIDE.md`](../STYLE_GUIDE.md), [`docs/adr/`](adr/) 
 - Category names **unique ignoring case, accents count**, enforced **only** by `UNIQUE (lower(name))`; the repository matches the violation **by index name** → `CategoryNameTakenError` → `409`. **No lookup before saving** (it was an equivalent mutant).
 - `201` with the view `{ id, name, createdAt }`, **no `Location`** until a read route exists. Use cases return plain views.
 - `CategoryCreated` recorded but not published until increment 7.
+- **Products** follow the same mold: `products` + `product_images` tables (migration `0002`; money as `price_amount`/`price_currency` columns, images in their own table with `position`, `CHECK`s for price and ≤ 8 images); category existence checked by the use case (`exists()`), FK only guards bugs; `201` with `Location` now that `GET /v1/admin/products/{id}` exists. Routes: `POST /products`, `GET /products/{id}`, `PATCH /products/{id}` (details only; price and lifecycle get their own endpoints).
+
+### 4.14 Product optimistic locking (ADR 0015)
+
+- **Version beside the aggregate**: `findById` → `{ product, version }`; `save(product, expectedVersion | null)` returns the new version. Use cases return `VersionedProductView`.
+- **Check in the `UPDATE`'s `WHERE version = :expected`** (hand-written, not Sequelize's `version: true`); 0 rows ⇒ `ProductVersionConflictError`. The use case also checks up front, so a stale request fails even when it changes nothing or is invalid. No event recorded ⇒ no save, version unchanged.
+- **HTTP**: strong `ETag: "<version>"` on every product response; `PATCH` requires `If-Match`. Missing or `*` ⇒ `428 PRECONDITION_REQUIRED`; stale ⇒ `412 PRODUCT_VERSION_CONFLICT`; malformed/weak/list ⇒ `412 PRECONDITION_FAILED`.
+- Migration `0003-add-product-version` (`DEFAULT 1`, no backfill).
+
+### 4.15 Product price and lifecycle endpoints (ADR 0016)
+
+- `PUT /v1/admin/products/{id}/price` (body = Money); `POST .../{id}/publish` and `.../{id}/unpublish` (no body). All require `If-Match`, answer `200` + product + new `ETag`; repeats are no-ops.
+- Invalid transitions answer **`409`** (`PRODUCT_NOT_PUBLISHABLE` with `missing: [...]`, `PRODUCT_NOT_PUBLISHED`): the state refuses the action, there is no content to be invalid.
+- `@ecommerce/http` `ProblemExtras.extensions` (RFC 9457 extension members), spread before the standard members so they cannot be overridden.
+- Shared flow in `changeProduct(products, input, change)` (plain function): load → 404 → stale version → change → no event, no save → save.
 
 ## 5. What has been built
 
@@ -207,7 +222,7 @@ Full detail lives in [`STYLE_GUIDE.md`](../STYLE_GUIDE.md), [`docs/adr/`](adr/) 
 ├── api/bruno/                 # Bruno collection: identity/{health,auth,users,well-known,errors}, catalog/{health,admin}
 ├── docs/
 │   ├── PROJECT_CONTEXT.md     # this file
-│   ├── adr/0001..0014         # architecture decision records
+│   ├── adr/0001..0016         # architecture decision records
 │   └── domain/                # identity.md, catalog.md, event-storming.md
 ├── infra/docker/
 │   ├── compose.yaml           # identity-db/redis, catalog-db/redis, floci, floci-ui, mailpit, terraform (tools)
@@ -217,14 +232,14 @@ Full detail lives in [`STYLE_GUIDE.md`](../STYLE_GUIDE.md), [`docs/adr/`](adr/) 
 │   ├── tsconfig/              # @ecommerce/tsconfig — strict base config
 │   ├── ddd/                   # shared kernel: AggregateRoot, DomainError, Brand (2 tests)
 │   ├── logger/                # Pino with redaction + request context (3 tests)
-│   ├── http/                  # request logging, Problem Details, health, authenticate, requireRole (14 tests)
+│   ├── http/                  # request logging, Problem Details (+ extension members), health, authenticate, requireRole (14 tests)
 │   ├── auth/                  # claims contract + JWKS verifier (11 tests, real JWKS server)
 │   └── event-contracts/       # Zod + CloudEvents (4 tests)
 ├── functions/notification/    # send-email Lambda: SQS → nodemailer → Mailpit (4 tests)
 ├── apps/identity/             # 142 unit + 19 integration tests
 │   ├── scripts/               # generate-jwt-key.ts, migrate.ts, promote-user.ts
 │   └── src/, test/            # hexagonal layout (see STYLE_GUIDE §5)
-└── apps/catalog/              # 67 unit + 5 integration tests
+└── apps/catalog/              # 148 unit + 20 integration tests
     ├── .env.example           # copy to .env
     ├── scripts/               # migrate.ts
     └── src/                   # config, logger, main, application/{use-cases,ports,errors},
@@ -268,7 +283,8 @@ Floci needs no account or token. Its state is **persistent** (`floci-data` volum
 - Domain layer done and mutation-tested (publish idempotency, images copy, image limit, weight check).
 - **Category slice done (increment 5, part 1):** `CreateCategory` use case, `categories` table (migration `0001-create-catalog-tables`, `UNIQUE (lower(name))`), `SequelizeCategoryRepository`, `POST /v1/admin/categories` behind `requireAdmin`, Bruno requests (`catalog/admin`). Mutation-tested (role check, gate mounting, error translation, `lower` in the index).
 - Verified end to end (2026-10-28) with a real identity token: customer `403`, token issued before promotion `403`, admin `201`, same name in upper case `409`, blank name `422`, tampered token `401`.
-- **No Product persistence or routes yet.**
+- **Product slice (increment 5) done in code:** `CreateProduct`, `GetProduct`, `UpdateProductDetails`, `ChangeProductPrice`, `PublishProduct`, `UnpublishProduct`, all changes through `changeProduct` with optimistic locking (ADR 0015, 0016); `SequelizeProductRepository`; admin routes `POST`/`GET`/`PATCH /products[/{id}]`, `PUT /products/{id}/price`, `POST /products/{id}/publish|unpublish`; Bruno requests (stale `412`, incomplete publish `409`, unpublish draft `409`). Mutation-tested (version check, no-change skip, `*` → 428, strict tag parsing, `If-Match` wiring, `412`/`409` mapping, `missing` extension, currency forwarding, action wiring). One **equivalent mutant** survives: the "category changed" guard before `categories.exists()` in `UpdateProductDetails` only saves a query.
+- Commit `e44f018` landed on `main` with the locking tests red (use cases and repository not yet versioned); fixed on branch `feat/product-optimistic-locking`.
 
 ## 6. Known gaps (deliberate or accepted)
 
@@ -288,11 +304,13 @@ Floci needs no account or token. Its state is **persistent** (`floci-data` volum
 
 ## 7. Next steps
 
-`feat/catalog` (skeleton + domain, increment 4) was merged into `main` (PR #1). Work now happens on branch **`feat/catalog-admin-api`** (not pushed yet).
+`feat/catalog-admin-api` was merged into `main` (PR #2). Work now happens on branch **`feat/product-optimistic-locking`** (not pushed yet).
+
+**Pending on this branch:** run `pnpm test:integration` with Docker up (the 4 optimistic-locking integration tests, incl. the concurrent-update race, have not run yet), run `db:migrate` locally (migration `0003`) and do the manual Bruno check (`If-Match` flow, stale `412`, missing `428`).
 
 Catalog increments (new order):
 
-1. **Increment 5 — persistence + admin API:** ✅ Category slice done (ADR 0014). **Next: the Product slice** with the same mold: `CreateProduct` (checks the category exists), `UpdateProductDetails`, `ChangeProductPrice`, `PublishProduct`, `UnpublishProduct`; `products` table with FK to categories; routes under `/v1/admin/products` (actions as sub-resources, e.g. `POST .../{id}/publish`); Bruno; manual check. Open decisions: how to check the category exists (repository `exists()` and/or FK), how to persist `Money` and images (own table vs JSONB), how "cannot publish" lists everything missing, and probably the first `GET` by id (which enables `Location` on `201`).
+1. **Increment 5 — persistence + admin API:** ✅ Category slice (ADR 0014). ✅ Product slice: create, get, update details, price, publish, unpublish, with optimistic locking (ADR 0015, 0016). **Left:** integration tests with Docker, `db:migrate` (`0003`), manual Bruno check; then open the PR.
 2. **Increment 6 — images:** S3 bucket (Terraform), presigned upload URL, image-processor Lambda (H22), `attachImage`, lifecycle rule.
 3. **Increment 7 — storefront + events:** public read routes (cursor pagination, filter by category), catalog events on SNS (`ecommerce-catalog-events`).
 4. **Increment 8 — cache:** Redis cache-aside for the storefront, event-driven invalidation, stampede protection (H21).
@@ -348,6 +366,10 @@ Later: design level of the event storming (H9–H23), Inventory/Promotions/Cart/
 - **Locale-dependent functions** — `lower()` follows the database locale; a JS fake can hide the difference, only a real database shows it.
 - **Gate middleware on a prefix** — protection by default for every route under it; non-admins cannot discover admin routes (`401` before `404`).
 - **Coupling to a contract, not a service** — JWKS (OIDC discovery) is how Spring, ASP.NET, eShop, Cognito, Auth0, Istio and GitHub OIDC verify tokens without calling the issuer per request; alternatives (static key, introspection, shared secret) trade it for deploy coupling, runtime coupling or forgeable tokens.
+- **Lost update and optimistic locking** — read-modify-write without a version lets the last writer silently undo the first; a version column checked in the `UPDATE`'s own `WHERE` makes the database pick exactly one winner (the loser re-evaluates the `WHERE` after the row lock is released).
+- **ETag / If-Match** — the HTTP-native way to carry a version: `428` when the precondition is missing, `412` when it fails; `If-Match` compares strongly, so weak tags never match; `*` matches anything and would allow a blind write.
+- **Actions as sub-resources** — `POST .../publish` names the business intent; a generic `PUT .../status` pushes the state machine into the adapter. `409` = the resource's state refuses it, `422` = the request content is invalid.
+- **Problem Details extension members** — structured extra fields (`missing: [...]`) instead of parsing a message; standard members must not be overridable.
 - **Lambda + SQS is pull under the hood** — the event source mapping long-polls the queue, invokes the function with a batch and deletes what succeeded; partial batch responses need `ReportBatchItemFailures`.
 
 ## 9. Environment notes

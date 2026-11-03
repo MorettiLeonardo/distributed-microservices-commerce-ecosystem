@@ -2,6 +2,7 @@ import type { Sequelize } from 'sequelize';
 import { SequelizeStorage, Umzug } from 'umzug';
 import * as createCatalogTables from './migrations/0001-create-catalog-tables.js';
 import * as createProductTables from './migrations/0002-create-product-tables.js';
+import * as addProductVersion from './migrations/0003-add-product-version.js';
 
 /**
  * Migrations are listed explicitly instead of globbed, so the same list works from `src`
@@ -12,6 +13,7 @@ export function createMigrator(sequelize: Sequelize) {
     migrations: [
       { name: '0001-create-catalog-tables', ...createCatalogTables },
       { name: '0002-create-product-tables', ...createProductTables },
+      { name: '0003-add-product-version', ...addProductVersion },
     ],
     context: sequelize.getQueryInterface(),
     storage: new SequelizeStorage({ sequelize, tableName: 'schema_migrations' }),

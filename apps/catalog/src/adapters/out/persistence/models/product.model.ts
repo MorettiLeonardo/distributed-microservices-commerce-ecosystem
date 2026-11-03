@@ -23,6 +23,8 @@ export class ProductModel extends Model<
   declare status: string;
   declare createdAt: Date;
   declare publishedAt: Date | null;
+  /** Optimistic locking, managed by the repository (not Sequelize's `version: true`). */
+  declare version: number;
   declare updatedAt: CreationOptional<Date>;
   /** Present only when loaded with `include`. */
   declare images?: NonAttribute<ProductImageModel[]>;
@@ -40,6 +42,7 @@ export class ProductModel extends Model<
         status: { type: DataTypes.TEXT, allowNull: false },
         createdAt: { type: DataTypes.DATE, allowNull: false },
         publishedAt: { type: DataTypes.DATE, allowNull: true },
+        version: { type: DataTypes.INTEGER, allowNull: false },
         updatedAt: { type: DataTypes.DATE, allowNull: false },
       },
       // created_at belongs to the domain (it is part of the aggregate): Sequelize manages only updated_at.

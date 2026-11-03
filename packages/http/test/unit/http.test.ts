@@ -77,7 +77,11 @@ beforeAll(async () => {
       statusByCode: { OUT_OF_STOCK: 409 } satisfies Record<KnownError['code'], number>,
       extras: (error) =>
         error instanceof OutOfStockError
-          ? { headers: { 'Retry-After': String(error.retryAfterSeconds) } }
+          ? {
+              headers: { 'Retry-After': String(error.retryAfterSeconds) },
+              // `status` tries to override a standard member; it must not win.
+              extensions: { retryAfterSeconds: error.retryAfterSeconds, status: 200 },
+            }
           : {},
     }),
   );
@@ -122,6 +126,7 @@ describe('problem details', () => {
       instance: '/domain',
       code: 'OUT_OF_STOCK',
       correlationId: 'trace-2',
+      retryAfterSeconds: 30,
     });
   });
 

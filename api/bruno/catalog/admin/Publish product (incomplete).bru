@@ -1,0 +1,34 @@
+meta {
+  name: Publish product (incomplete)
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{catalogBaseUrl}}/v1/admin/products/{{productId}}/publish
+  body: none
+  auth: bearer
+}
+
+headers {
+  If-Match: {{productETag}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("lists what the product still lacks", function () {
+    expect(res.status).to.equal(409);
+    expect(res.body.code).to.equal("PRODUCT_NOT_PUBLISHABLE");
+    expect(res.body.missing).to.include("image");
+  });
+}
+
+docs {
+  Publishing requires a price, a weight and at least one image (K2); the problem lists everything
+  missing at once in `missing`. No endpoint attaches images until increment 6, so for now every
+  product answers this 409. Once images exist: 200 with `status: "published"` and a new ETag;
+  publishing a published product is a no-op.
+}

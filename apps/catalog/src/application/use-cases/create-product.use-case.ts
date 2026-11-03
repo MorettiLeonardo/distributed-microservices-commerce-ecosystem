@@ -6,7 +6,7 @@ import type { CategoryRepository } from '../ports/category.repository.port.js';
 import type { Clock } from '../ports/clock.port.js';
 import type { IdGenerator } from '../ports/id-generator.port.js';
 import type { ProductRepository } from '../ports/product.repository.port.js';
-import { type ProductView, toProductView } from '../product.view.js';
+import { toProductView, type VersionedProductView } from '../product.view.js';
 
 /** Optional fields accept an explicit `undefined`, which is what Zod's `.optional()` yields. */
 export type CreateProductInput = {
@@ -28,7 +28,7 @@ export class CreateProduct {
   ) {}
 
   /** Creates a draft. Throws `CategoryNotFoundError` when the category does not exist. */
-  async execute(input: CreateProductInput): Promise<ProductView> {
+  async execute(input: CreateProductInput): Promise<VersionedProductView> {
     // Built first: invalid details fail without any I/O.
     const product = Product.create({
       id: ProductId(this.deps.idGenerator.generate()),
@@ -48,9 +48,9 @@ export class CreateProduct {
       throw new CategoryNotFoundError();
     }
 
-    await this.deps.products.save(product);
+    const version = await this.deps.products.save(product, null);
 
     // ProductCreated is recorded but not published until increment 7, like CategoryCreated.
-    return toProductView(product);
+    return { product: toProductView(product), version };
   }
 }

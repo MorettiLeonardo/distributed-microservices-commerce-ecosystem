@@ -1,0 +1,31 @@
+meta {
+  name: Unpublish product (draft)
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{catalogBaseUrl}}/v1/admin/products/{{productId}}/unpublish
+  body: none
+  auth: bearer
+}
+
+headers {
+  If-Match: {{productETag}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+tests {
+  test("refuses a draft, which was never on the storefront", function () {
+    expect(res.status).to.equal(409);
+    expect(res.body.code).to.equal("PRODUCT_NOT_PUBLISHED");
+  });
+}
+
+docs {
+  Only a published product can be unpublished (never deleted, K1). For a published product: 200
+  with `status: "unpublished"` and a new ETag; unpublishing again is a no-op.
+}

@@ -1,0 +1,48 @@
+meta {
+  name: Change product price
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{catalogBaseUrl}}/v1/admin/products/{{productId}}/price
+  body: json
+  auth: bearer
+}
+
+headers {
+  If-Match: {{productETag}}
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "amount": 5990,
+    "currency": "BRL"
+  }
+}
+
+script:post-response {
+  if (res.status === 200) {
+    bru.setVar("productETag", res.headers.etag);
+  }
+}
+
+tests {
+  test("replaces the price and returns the new ETag", function () {
+    expect(res.status).to.equal(200);
+    expect(res.body.price).to.eql({ amount: 5990, currency: "BRL" });
+    expect(res.headers.etag).to.match(/^"\d+"$/);
+  });
+}
+
+docs {
+  Run **Create product** or **Get product** first: they set `productId` and `productETag`.
+
+  The price is the resource, so the body is the Money: integer cents, `currency` defaults to BRL.
+  Setting the same price changes nothing (the ETag stays). 422 for zero, fractions or another
+  currency; 400 for a malformed body; 428 without `If-Match`, 412 when it is stale.
+}

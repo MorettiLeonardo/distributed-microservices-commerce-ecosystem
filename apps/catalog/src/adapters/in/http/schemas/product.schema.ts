@@ -21,4 +21,10 @@ export const UpdateProductDetailsBody = z.object({
   weightGrams: z.number().optional(),
 });
 
+/** The price itself is the resource (`PUT .../price`), so the body is the Money. */
+export const ChangeProductPriceBody = z.object({
+  amount: z.number(),
+  currency: z.string().max(10).optional(),
+});
+
 export const ProductIdParams = z.object({ id: z.uuid() });
