@@ -1,5 +1,10 @@
 import type { Clock } from '#src/application/ports/clock.port.js';
 import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
+import type {
+  ImageUploadPermission,
+  ImageUploadSigner,
+  ImageUploadSignRequest,
+} from '#src/application/ports/image-upload-signer.port.js';
 
 export class FakeClock implements Clock {
   constructor(private current: Date) {}
@@ -23,5 +28,21 @@ export class SequentialIdGenerator implements IdGenerator {
   generate(): string {
     this.#next += 1;
     return testId(this.#next);
+  }
+}
+
+/** Records what it was asked to sign and answers with predictable fields; can be made to fail. */
+export class FakeImageUploadSigner implements ImageUploadSigner {
+  readonly requests: ImageUploadSignRequest[] = [];
+  #failure: Error | null = null;
+
+  failWith(error: Error): void {
+    this.#failure = error;
+  }
+
+  async sign(request: ImageUploadSignRequest): Promise<ImageUploadPermission> {
+    if (this.#failure) throw this.#failure;
+    this.requests.push({ ...request });
+    return { url: 'http://uploads.test', fields: { key: `signed-${request.imageId}` } };
   }
 }

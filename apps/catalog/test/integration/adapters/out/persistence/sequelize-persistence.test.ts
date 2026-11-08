@@ -1,17 +1,22 @@
 import { ForeignKeyConstraintError, QueryTypes } from 'sequelize';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { SequelizeCategoryRepository } from '#src/adapters/out/persistence/repositories/category.repository.js';
+import { SequelizeImageUploadRepository } from '#src/adapters/out/persistence/repositories/image-upload.repository.js';
 import { SequelizeProductRepository } from '#src/adapters/out/persistence/repositories/product.repository.js';
 import { CategoryNameTakenError } from '#src/application/errors/category-name-taken.error.js';
 import { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
 import type { VersionedProduct } from '#src/application/ports/product.repository.port.js';
 import { Category } from '#src/domain/entities/category.entity.js';
+import { ImageUpload, type ImageUploadProps } from '#src/domain/entities/image-upload.entity.js';
 import { Product, type ProductProps } from '#src/domain/entities/product.entity.js';
 import { CategoryId, ProductId, ProductImageId } from '#src/domain/value-objects/identifiers.js';
 import { Money } from '#src/domain/value-objects/money.value-object.js';
 import { startPostgres, type TestPostgres } from '#test/support/postgres.js';
 
 const NOW = new Date('2026-10-28T12:00:00.000Z');
+const minutes = (n: number) => new Date(NOW.getTime() + n * 60_000);
+const uploadId = (n: number) =>
+  ProductImageId(`0192a1f0-0000-7000-8000-0000000001${String(n).padStart(2, '0')}`);
 
 function newCategory(id: string, name: string): Category {
   return Category.create({ id: CategoryId(id), name, now: NOW });
@@ -40,6 +45,12 @@ describe('Sequelize persistence (Postgres)', () => {
 
   const productRows = () =>
     pg.sequelize.query('SELECT * FROM products', { type: QueryTypes.SELECT });
+
+  const uploadRows = () =>
+    pg.sequelize.query(
+      'SELECT id, product_id, content_type, status, requested_at, expires_at FROM image_uploads ORDER BY id',
+      { type: QueryTypes.SELECT },
+    );
 
   describe('categories', () => {
     it('stores the name as typed and the creation date from the domain', async () => {
@@ -308,6 +319,108 @@ describe('Sequelize persistence (Postgres)', () => {
           replacements: { currency: 'BRL' },
         }),
       ).rejects.toThrow(/products_price_check/);
+    });
+  });
+
+  describe('image uploads', () => {
+    const CATEGORY_ID = '0192a1f0-0000-7000-8000-000000000001';
+    const PRODUCT_ID = '0192a1f0-0000-7000-8000-0000000000a1';
+    const OTHER_PRODUCT_ID = '0192a1f0-0000-7000-8000-0000000000a2';
+    const uploads = new SequelizeImageUploadRepository();
+
+    beforeEach(async () => {
+      await categories.save(newCategory(CATEGORY_ID, 'Books'));
+      const products = new SequelizeProductRepository(pg.sequelize);
+      for (const id of [PRODUCT_ID, OTHER_PRODUCT_ID]) {
+        await products.save(
+          Product.create({
+            id: ProductId(id),
+            categoryId: CategoryId(CATEGORY_ID),
+            name: 'Dune',
+            now: NOW,
+          }),
+          null,
+        );
+      }
+    });
+
+    const upload = (n: number, overrides: Partial<ImageUploadProps> = {}) =>
+      ImageUpload.restore({
+        id: uploadId(n),
+        productId: ProductId(PRODUCT_ID),
+        contentType: 'image/png',
+        status: 'pending',
+        requestedAt: NOW,
+        expiresAt: minutes(5),
+        ...overrides,
+      });
+
+    it('stores a requested upload', async () => {
+      const requested = ImageUpload.request({
+        id: uploadId(1),
+        productId: ProductId(PRODUCT_ID),
+        contentType: 'image/webp',
+        now: NOW,
+      });
+
+      await uploads.save(requested);
+
+      expect(await uploadRows()).toEqual([
+        {
+          id: uploadId(1),
+          product_id: PRODUCT_ID,
+          content_type: 'image/webp',
+          status: 'pending',
+          requested_at: NOW,
+          expires_at: minutes(5),
+        },
+      ]);
+    });
+
+    it('saves the same upload again as an update of its status', async () => {
+      await uploads.save(upload(1));
+      const stored = upload(1);
+      stored.expire(minutes(15));
+
+      await uploads.save(stored);
+
+      expect(await uploadRows()).toEqual([expect.objectContaining({ status: 'expired' })]);
+    });
+
+    it('rejects an upload for a product that does not exist', async () => {
+      await expect(
+        uploads.save(upload(1, { productId: ProductId('0192a1f0-0000-7000-8000-0000000000ff') })),
+      ).rejects.toThrow(ForeignKeyConstraintError);
+    });
+
+    describe('countOpen', () => {
+      it("counts only this product's pending uploads whose window is still open", async () => {
+        await uploads.save(upload(1));
+        await uploads.save(upload(2, { expiresAt: minutes(3) }));
+        await uploads.save(upload(3, { productId: ProductId(OTHER_PRODUCT_ID) }));
+        for (const [n, status] of [
+          [4, 'attached'],
+          [5, 'rejected'],
+          [6, 'expired'],
+        ] as const) {
+          await uploads.save(upload(n, { status }));
+        }
+
+        expect(await uploads.countOpen(ProductId(PRODUCT_ID), minutes(2))).toBe(2);
+        expect(await uploads.countOpen(ProductId(PRODUCT_ID), minutes(3))).toBe(1);
+        expect(await uploads.countOpen(ProductId(PRODUCT_ID), minutes(5))).toBe(0);
+      });
+    });
+
+    it.each([
+      ['status', "status = 'lost'", /image_uploads_status_check/],
+      ['content type', "content_type = 'image/gif'", /image_uploads_content_type_check/],
+    ])('rejects an unknown %s written behind the domain', async (_, assignment, constraint) => {
+      await uploads.save(upload(1));
+
+      await expect(pg.sequelize.query(`UPDATE image_uploads SET ${assignment}`)).rejects.toThrow(
+        constraint,
+      );
     });
   });
 });

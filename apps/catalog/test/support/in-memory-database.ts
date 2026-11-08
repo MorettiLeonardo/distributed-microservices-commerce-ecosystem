@@ -1,11 +1,13 @@
 import { CategoryNameTakenError } from '#src/application/errors/category-name-taken.error.js';
 import type { CategoryRepository } from '#src/application/ports/category.repository.port.js';
+import type { ImageUploadRepository } from '#src/application/ports/image-upload.repository.port.js';
 import { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
 import type {
   ProductRepository,
   VersionedProduct,
 } from '#src/application/ports/product.repository.port.js';
 import type { Category, CategoryProps } from '#src/domain/entities/category.entity.js';
+import type { ImageUpload, ImageUploadProps } from '#src/domain/entities/image-upload.entity.js';
 import { Product, type ProductProps } from '#src/domain/entities/product.entity.js';
 import {
   type CategoryId,
@@ -16,19 +18,26 @@ import {
 type Tables = {
   categories: Map<string, CategoryProps>;
   products: Map<string, ProductProps & { version: number }>;
+  imageUploads: Map<string, ImageUploadProps>;
 };
 
 /**
  * Test double for the Postgres adapter. Stores COPIES of aggregate state, like a real database
  * would, and mimics its constraints: the case-insensitive UNIQUE index on category names, the
- * foreign key from products to categories and the products' optimistic locking.
+ * foreign keys from products to categories and from image uploads to products, and the products'
+ * optimistic locking.
  */
 export class InMemoryDatabase {
-  tables: Tables = { categories: new Map(), products: new Map() };
+  tables: Tables = { categories: new Map(), products: new Map(), imageUploads: new Map() };
 
-  readonly repositories: { categories: CategoryRepository; products: ProductRepository } = {
+  readonly repositories: {
+    categories: CategoryRepository;
+    products: ProductRepository;
+    imageUploads: ImageUploadRepository;
+  } = {
     categories: new InMemoryCategoryRepository(this),
     products: new InMemoryProductRepository(this),
+    imageUploads: new InMemoryImageUploadRepository(this),
   };
 }
 
@@ -92,6 +101,31 @@ class InMemoryProductRepository implements ProductRepository {
       publishedAt: product.publishedAt && new Date(product.publishedAt),
     });
     return version;
+  }
+}
+
+class InMemoryImageUploadRepository implements ImageUploadRepository {
+  constructor(private readonly db: InMemoryDatabase) {}
+
+  async save(upload: ImageUpload): Promise<void> {
+    if (!this.db.tables.products.has(upload.productId)) {
+      throw new Error('foreign key violation: image_uploads.product_id');
+    }
+    this.db.tables.imageUploads.set(upload.id, {
+      id: upload.id,
+      productId: upload.productId,
+      contentType: upload.contentType,
+      status: upload.status,
+      requestedAt: new Date(upload.requestedAt),
+      expiresAt: new Date(upload.expiresAt),
+    });
+  }
+
+  /** Mimics `WHERE product_id = ? AND status = 'pending' AND expires_at > now`. */
+  async countOpen(productId: ProductId, now: Date): Promise<number> {
+    return [...this.db.tables.imageUploads.values()].filter(
+      (row) => row.productId === productId && row.status === 'pending' && row.expiresAt > now,
+    ).length;
   }
 }
 
