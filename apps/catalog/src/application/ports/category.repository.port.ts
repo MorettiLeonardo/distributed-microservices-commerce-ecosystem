@@ -1,5 +1,5 @@
-import type { Category } from '../../domain/entities/category.entity.js';
-import type { CategoryId } from '../../domain/value-objects/identifiers.js';
+import type { Category } from '#src/domain/entities/category.entity.js';
+import type { CategoryId } from '#src/domain/value-objects/identifiers.js';
 
 export interface CategoryRepository {
   /**

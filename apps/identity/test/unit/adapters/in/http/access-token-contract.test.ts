@@ -1,6 +1,6 @@
 import { JwksAccessTokenVerifier } from '@ecommerce/auth';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { startTestServer, type TestServer } from '../../../../support/http-server.js';
+import { startTestServer, type TestServer } from '#test/support/http-server.js';
 
 const credentials = { email: 'john@example.com', password: 'correct horse' };
 

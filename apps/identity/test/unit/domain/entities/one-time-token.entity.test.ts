@@ -2,16 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   OneTimeTokenAlreadyConsumedError,
   OneTimeTokenExpiredError,
-} from '../../../../src/domain/errors/one-time-token.error.js';
-import {
-  OneTimeTokenId,
-  TokenHash,
-  UserId,
-} from '../../../../src/domain/value-objects/identifiers.js';
+} from '#src/domain/errors/one-time-token.error.js';
+import { OneTimeTokenId, TokenHash, UserId } from '#src/domain/value-objects/identifiers.js';
 import {
   OneTimeToken,
   type OneTimeTokenPurpose,
-} from '../../../../src/domain/entities/one-time-token.entity.js';
+} from '#src/domain/entities/one-time-token.entity.js';
 
 const MINUTE_MS = 60 * 1000;
 const issuedAt = new Date('2026-10-19T12:00:00.000Z');

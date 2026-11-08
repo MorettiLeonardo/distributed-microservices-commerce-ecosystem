@@ -3,9 +3,9 @@ import {
   RefreshTokenReuseDetectedError,
   SessionExpiredError,
   SessionRevokedError,
-} from '../../../../src/domain/errors/session.error.js';
-import { SessionId, TokenHash, UserId } from '../../../../src/domain/value-objects/identifiers.js';
-import { Session } from '../../../../src/domain/entities/session.entity.js';
+} from '#src/domain/errors/session.error.js';
+import { SessionId, TokenHash, UserId } from '#src/domain/value-objects/identifiers.js';
+import { Session } from '#src/domain/entities/session.entity.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const start = new Date('2026-10-19T12:00:00.000Z');

@@ -1,9 +1,6 @@
-import {
-  OneTimeToken,
-  OneTimeTokenPurpose,
-} from '../../../../domain/entities/one-time-token.entity.js';
-import { OneTimeTokenId, TokenHash, UserId } from '../../../../domain/value-objects/identifiers.js';
-import type { OneTimeTokenModel } from '../models/one-time-token.model.js';
+import { OneTimeToken, OneTimeTokenPurpose } from '#src/domain/entities/one-time-token.entity.js';
+import { OneTimeTokenId, TokenHash, UserId } from '#src/domain/value-objects/identifiers.js';
+import type { OneTimeTokenModel } from '#src/adapters/out/persistence/models/one-time-token.model.js';
 
 export const OneTimeTokenMapper = {
   toDomain(row: OneTimeTokenModel): OneTimeToken {
@@ -32,7 +29,7 @@ export const OneTimeTokenMapper = {
 };
 
 function parsePurpose(value: string): OneTimeTokenPurpose {
-  const purpose = OneTimeTokenPurpose.find((known) => known === value);
+  const purpose = Object.values(OneTimeTokenPurpose).find((known) => known === value);
   if (!purpose) throw new Error(`Unknown one-time token purpose in database: ${value}`);
   return purpose;
 }

@@ -1,22 +1,22 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { createMigrator } from '../../../../../src/adapters/out/persistence/migrator.js';
+import { createMigrator } from '#src/adapters/out/persistence/migrator.js';
 import {
   createRepositories,
   SequelizeUnitOfWork,
-} from '../../../../../src/adapters/out/persistence/sequelize.unit-of-work.js';
-import { EmailAlreadyRegisteredError } from '../../../../../src/application/errors/email-already-registered.error.js';
-import { OneTimeToken } from '../../../../../src/domain/entities/one-time-token.entity.js';
-import { Session } from '../../../../../src/domain/entities/session.entity.js';
-import { User } from '../../../../../src/domain/entities/user.entity.js';
-import { Email } from '../../../../../src/domain/value-objects/email.value-object.js';
+} from '#src/adapters/out/persistence/sequelize.unit-of-work.js';
+import { EmailAlreadyRegisteredError } from '#src/application/errors/email-already-registered.error.js';
+import { OneTimeToken } from '#src/domain/entities/one-time-token.entity.js';
+import { Session } from '#src/domain/entities/session.entity.js';
+import { User } from '#src/domain/entities/user.entity.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
 import {
   OneTimeTokenId,
   PasswordHash,
   SessionId,
   TokenHash,
   UserId,
-} from '../../../../../src/domain/value-objects/identifiers.js';
-import { startPostgres, type TestPostgres } from '../../../../support/postgres.js';
+} from '#src/domain/value-objects/identifiers.js';
+import { startPostgres, type TestPostgres } from '#test/support/postgres.js';
 
 const NOW = new Date('2026-10-19T12:00:00.000Z');
 const DAY_MS = 24 * 60 * 60 * 1000;

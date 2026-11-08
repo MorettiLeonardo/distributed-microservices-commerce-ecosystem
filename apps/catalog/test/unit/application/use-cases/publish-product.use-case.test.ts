@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ProductNotFoundError } from '../../../../src/application/errors/product-not-found.error.js';
-import { ProductVersionConflictError } from '../../../../src/application/errors/product-version-conflict.error.js';
-import { CreateCategory } from '../../../../src/application/use-cases/create-category.use-case.js';
-import { CreateProduct } from '../../../../src/application/use-cases/create-product.use-case.js';
-import { PublishProduct } from '../../../../src/application/use-cases/publish-product.use-case.js';
-import { UnpublishProduct } from '../../../../src/application/use-cases/unpublish-product.use-case.js';
+import { ProductNotFoundError } from '#src/application/errors/product-not-found.error.js';
+import { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
+import { CreateCategory } from '#src/application/use-cases/create-category.use-case.js';
+import { CreateProduct } from '#src/application/use-cases/create-product.use-case.js';
+import { PublishProduct } from '#src/application/use-cases/publish-product.use-case.js';
+import { UnpublishProduct } from '#src/application/use-cases/unpublish-product.use-case.js';
 import {
   ProductNotPublishableError,
   ProductNotPublishedError,
-} from '../../../../src/domain/errors/product.error.js';
-import { testId } from '../../../support/fakes.js';
-import { seedImage } from '../../../support/in-memory-database.js';
-import { createTestContext, type TestContext } from '../../../support/test-context.js';
+} from '#src/domain/errors/product.error.js';
+import { testId } from '#test/support/fakes.js';
+import { seedImage } from '#test/support/in-memory-database.js';
+import { createTestContext, type TestContext } from '#test/support/test-context.js';
 
 describe('PublishProduct and UnpublishProduct', () => {
   let ctx: TestContext;

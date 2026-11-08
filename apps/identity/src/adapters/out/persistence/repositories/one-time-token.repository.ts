@@ -1,12 +1,12 @@
 import type { Transaction } from 'sequelize';
-import type { OneTimeTokenRepository } from '../../../../application/ports/one-time-token.repository.port.js';
+import type { OneTimeTokenRepository } from '#src/application/ports/one-time-token.repository.port.js';
 import type {
   OneTimeToken,
   OneTimeTokenPurpose,
-} from '../../../../domain/entities/one-time-token.entity.js';
-import type { TokenHash } from '../../../../domain/value-objects/identifiers.js';
-import { OneTimeTokenMapper } from '../mappers/one-time-token.mapper.js';
-import { OneTimeTokenModel } from '../models/one-time-token.model.js';
+} from '#src/domain/entities/one-time-token.entity.js';
+import type { TokenHash } from '#src/domain/value-objects/identifiers.js';
+import { OneTimeTokenMapper } from '#src/adapters/out/persistence/mappers/one-time-token.mapper.js';
+import { OneTimeTokenModel } from '#src/adapters/out/persistence/models/one-time-token.model.js';
 
 export class SequelizeOneTimeTokenRepository implements OneTimeTokenRepository {
   constructor(private readonly transaction: Transaction | null = null) {}

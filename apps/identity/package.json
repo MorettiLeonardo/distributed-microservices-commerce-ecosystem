@@ -3,13 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#src/*": {
+      "source": "./src/*",
+      "default": "./dist/*"
+    },
+    "#test/*": "./test/*"
+  },
   "scripts": {
-    "dev": "tsx watch --env-file-if-exists=.env src/main.ts",
+    "dev": "tsx watch --conditions=source --env-file-if-exists=.env src/main.ts",
     "start": "node dist/main.js",
-    "keys:generate": "tsx scripts/generate-jwt-key.ts",
-    "db:migrate": "tsx --env-file-if-exists=.env scripts/migrate.ts",
-    "db:rollback": "tsx --env-file-if-exists=.env scripts/migrate.ts down",
-    "users:promote": "tsx --env-file-if-exists=.env scripts/promote-user.ts",
+    "keys:generate": "tsx --conditions=source scripts/generate-jwt-key.ts",
+    "db:migrate": "tsx --conditions=source --env-file-if-exists=.env scripts/migrate.ts",
+    "db:rollback": "tsx --conditions=source --env-file-if-exists=.env scripts/migrate.ts down",
+    "users:promote": "tsx --conditions=source --env-file-if-exists=.env scripts/promote-user.ts",
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run test/unit",

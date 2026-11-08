@@ -2,19 +2,19 @@ import type {
   AccessTokenClaims,
   AccessTokenIssuer,
   IssuedAccessToken,
-} from '../../src/application/ports/access-token-issuer.port.js';
-import type { Clock } from '../../src/application/ports/clock.port.js';
-import type { EmailMessage, EmailSender } from '../../src/application/ports/email-sender.port.js';
-import type { EventPublisher } from '../../src/application/ports/event-publisher.port.js';
-import type { IdGenerator } from '../../src/application/ports/id-generator.port.js';
-import type { PasswordHasher } from '../../src/application/ports/password-hasher.port.js';
+} from '#src/application/ports/access-token-issuer.port.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { EmailMessage, EmailSender } from '#src/application/ports/email-sender.port.js';
+import type { EventPublisher } from '#src/application/ports/event-publisher.port.js';
+import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
+import type { PasswordHasher } from '#src/application/ports/password-hasher.port.js';
 import type {
   GeneratedToken,
   SecureTokenGenerator,
-} from '../../src/application/ports/secure-token-generator.port.js';
-import type { IdentityEvent } from '../../src/domain/events/user.events.js';
-import { PasswordHash, TokenHash } from '../../src/domain/value-objects/identifiers.js';
-import type { Password } from '../../src/domain/value-objects/password.value-object.js';
+} from '#src/application/ports/secure-token-generator.port.js';
+import type { IdentityEvent } from '#src/domain/events/user.events.js';
+import { PasswordHash, TokenHash } from '#src/domain/value-objects/identifiers.js';
+import type { Password } from '#src/domain/value-objects/password.value-object.js';
 
 export class FakeClock implements Clock {
   constructor(private current: Date) {}

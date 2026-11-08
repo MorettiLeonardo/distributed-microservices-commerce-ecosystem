@@ -1,7 +1,7 @@
 import { AggregateRoot } from '@ecommerce/ddd';
-import { InvalidCategoryNameError } from '../errors/category.error.js';
-import type { CategoryEvent } from '../events/catalog.events.js';
-import type { CategoryId } from '../value-objects/identifiers.js';
+import { InvalidCategoryNameError } from '#src/domain/errors/category.error.js';
+import type { CategoryEvent } from '#src/domain/events/catalog.events.js';
+import type { CategoryId } from '#src/domain/value-objects/identifiers.js';
 
 const MAX_NAME_LENGTH = 60;
 

@@ -1,6 +1,6 @@
-import { Session } from '../../../../domain/entities/session.entity.js';
-import { SessionId, TokenHash, UserId } from '../../../../domain/value-objects/identifiers.js';
-import type { SessionModel } from '../models/session.model.js';
+import { Session } from '#src/domain/entities/session.entity.js';
+import { SessionId, TokenHash, UserId } from '#src/domain/value-objects/identifiers.js';
+import type { SessionModel } from '#src/adapters/out/persistence/models/session.model.js';
 
 export const SessionMapper = {
   toDomain(row: SessionModel): Session {

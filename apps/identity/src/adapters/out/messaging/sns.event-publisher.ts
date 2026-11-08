@@ -1,8 +1,8 @@
 import { PublishCommand, type SNSClient } from '@aws-sdk/client-sns';
 import { requestContext } from '@ecommerce/logger';
-import type { EventPublisher } from '../../../application/ports/event-publisher.port.js';
-import type { IdGenerator } from '../../../application/ports/id-generator.port.js';
-import type { IdentityEvent } from '../../../domain/events/user.events.js';
+import type { EventPublisher } from '#src/application/ports/event-publisher.port.js';
+import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
+import type { IdentityEvent } from '#src/domain/events/user.events.js';
 import { toCloudEvent } from './identity-event.mapper.js';
 
 /** Publishes domain events to identity's SNS topic (pub/sub: any service may subscribe). */

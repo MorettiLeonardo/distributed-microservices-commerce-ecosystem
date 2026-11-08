@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { RegisterUser } from '../../../../src/application/use-cases/register-user.use-case.js';
-import { InvalidEmailError } from '../../../../src/domain/errors/email.error.js';
-import { PasswordTooShortError } from '../../../../src/domain/errors/password.error.js';
-import { Email } from '../../../../src/domain/value-objects/email.value-object.js';
-import { createTestContext, type TestContext } from '../../../support/test-context.js';
+import { RegisterUser } from '#src/application/use-cases/register-user.use-case.js';
+import { InvalidEmailError } from '#src/domain/errors/email.error.js';
+import { PasswordTooShortError } from '#src/domain/errors/password.error.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { createTestContext, type TestContext } from '#test/support/test-context.js';
 
 describe('RegisterUser', () => {
   let ctx: TestContext;

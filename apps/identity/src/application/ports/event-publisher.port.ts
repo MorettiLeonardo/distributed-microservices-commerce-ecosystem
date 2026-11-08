@@ -1,4 +1,4 @@
-import type { IdentityEvent } from '../../domain/events/user.events.js';
+import type { IdentityEvent } from '#src/domain/events/user.events.js';
 
 /** Broadcasts domain events to any interested subscriber (pub/sub). Events carry no secrets. */
 export interface EventPublisher {

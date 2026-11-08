@@ -1,9 +1,9 @@
-import { Category } from '../../domain/entities/category.entity.js';
-import { CategoryId } from '../../domain/value-objects/identifiers.js';
-import { type CategoryView, toCategoryView } from '../category.view.js';
-import type { CategoryRepository } from '../ports/category.repository.port.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { IdGenerator } from '../ports/id-generator.port.js';
+import { Category } from '#src/domain/entities/category.entity.js';
+import { CategoryId } from '#src/domain/value-objects/identifiers.js';
+import { type CategoryView, toCategoryView } from '#src/application/category.view.js';
+import type { CategoryRepository } from '#src/application/ports/category.repository.port.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
 
 export type CreateCategoryInput = {
   name: string;

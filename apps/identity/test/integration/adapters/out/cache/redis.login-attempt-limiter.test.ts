@@ -1,13 +1,10 @@
 import { setTimeout as sleep } from 'node:timers/promises';
 import { RedisContainer, type StartedRedisContainer } from '@testcontainers/redis';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import {
-  createRedisClient,
-  type RedisClient,
-} from '../../../../../src/adapters/out/cache/redis.client.js';
-import { RedisLoginAttemptLimiter } from '../../../../../src/adapters/out/cache/redis.login-attempt-limiter.js';
-import { Email } from '../../../../../src/domain/value-objects/email.value-object.js';
-import { FakeClock } from '../../../../support/fakes.js';
+import { createRedisClient, type RedisClient } from '#src/adapters/out/cache/redis.client.js';
+import { RedisLoginAttemptLimiter } from '#src/adapters/out/cache/redis.login-attempt-limiter.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { FakeClock } from '#test/support/fakes.js';
 
 const limits = {
   maxAttemptsPerIp: 3,

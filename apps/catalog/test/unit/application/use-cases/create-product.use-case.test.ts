@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { testId } from '../../../support/fakes.js';
-import { CategoryNotFoundError } from '../../../../src/application/errors/category-not-found.error.js';
-import { CreateCategory } from '../../../../src/application/use-cases/create-category.use-case.js';
-import { CreateProduct } from '../../../../src/application/use-cases/create-product.use-case.js';
-import { InvalidMoneyError } from '../../../../src/domain/errors/money.error.js';
-import { InvalidProductNameError } from '../../../../src/domain/errors/product.error.js';
-import { createTestContext, type TestContext } from '../../../support/test-context.js';
+import { testId } from '#test/support/fakes.js';
+import { CategoryNotFoundError } from '#src/application/errors/category-not-found.error.js';
+import { CreateCategory } from '#src/application/use-cases/create-category.use-case.js';
+import { CreateProduct } from '#src/application/use-cases/create-product.use-case.js';
+import { InvalidMoneyError } from '#src/domain/errors/money.error.js';
+import { InvalidProductNameError } from '#src/domain/errors/product.error.js';
+import { createTestContext, type TestContext } from '#test/support/test-context.js';
 
 describe('CreateProduct', () => {
   let ctx: TestContext;

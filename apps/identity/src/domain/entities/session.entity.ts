@@ -2,8 +2,8 @@ import {
   RefreshTokenReuseDetectedError,
   SessionExpiredError,
   SessionRevokedError,
-} from '../errors/session.error.js';
-import type { SessionId, TokenHash, UserId } from '../value-objects/identifiers.js';
+} from '#src/domain/errors/session.error.js';
+import type { SessionId, TokenHash, UserId } from '#src/domain/value-objects/identifiers.js';
 
 export type SessionProps = {
   id: SessionId;

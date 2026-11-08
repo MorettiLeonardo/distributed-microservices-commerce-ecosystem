@@ -1,4 +1,4 @@
-import { PasswordTooLongError, PasswordTooShortError } from '../errors/password.error.js';
+import { PasswordTooLongError, PasswordTooShortError } from '#src/domain/errors/password.error.js';
 
 const MIN_LENGTH = 8;
 /** bcrypt silently truncates input beyond 72 bytes (ADR 0007). */

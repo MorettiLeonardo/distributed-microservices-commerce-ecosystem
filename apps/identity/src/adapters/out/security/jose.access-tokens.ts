@@ -11,11 +11,11 @@ import type {
   AccessTokenClaims,
   AccessTokenIssuer,
   IssuedAccessToken,
-} from '../../../application/ports/access-token-issuer.port.js';
-import type { AccessTokenVerifier } from '../../../application/ports/access-token-verifier.port.js';
-import type { Clock } from '../../../application/ports/clock.port.js';
-import { UserRole } from '../../../domain/entities/user.entity.js';
-import { UserId } from '../../../domain/value-objects/identifiers.js';
+} from '#src/application/ports/access-token-issuer.port.js';
+import type { AccessTokenVerifier } from '#src/application/ports/access-token-verifier.port.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import { UserRole } from '#src/domain/entities/user.entity.js';
+import { UserId } from '#src/domain/value-objects/identifiers.js';
 
 const ALGORITHM = 'ES256';
 
@@ -90,7 +90,7 @@ export class JoseAccessTokens implements AccessTokenIssuer, AccessTokenVerifier 
       });
       const { sub, email, emailVerified } = payload;
       // A role outside the known set is rejected, even on a correctly signed token.
-      const role = UserRole.find((known) => known === payload['role']);
+      const role = Object.values(UserRole).find((known) => known === payload['role']);
       if (
         typeof sub !== 'string' ||
         typeof email !== 'string' ||

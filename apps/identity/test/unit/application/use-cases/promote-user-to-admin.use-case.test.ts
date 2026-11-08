@@ -1,14 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { UserNotFoundError } from '../../../../src/application/errors/user-not-found.error.js';
-import { PromoteUserToAdmin } from '../../../../src/application/use-cases/promote-user-to-admin.use-case.js';
-import { VerifyEmail } from '../../../../src/application/use-cases/verify-email.use-case.js';
-import { EmailNotVerifiedError } from '../../../../src/domain/errors/user.error.js';
-import { Email } from '../../../../src/domain/value-objects/email.value-object.js';
-import {
-  createTestContext,
-  registerUser,
-  type TestContext,
-} from '../../../support/test-context.js';
+import { UserNotFoundError } from '#src/application/errors/user-not-found.error.js';
+import { PromoteUserToAdmin } from '#src/application/use-cases/promote-user-to-admin.use-case.js';
+import { VerifyEmail } from '#src/application/use-cases/verify-email.use-case.js';
+import { EmailNotVerifiedError } from '#src/domain/errors/user.error.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { createTestContext, registerUser, type TestContext } from '#test/support/test-context.js';
 
 const EMAIL = 'john@example.com';
 

@@ -1,19 +1,19 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { InvalidRefreshTokenError } from '../../../../src/application/errors/authentication.error.js';
-import { parseRefreshToken, type TokenPair } from '../../../../src/application/token-pair.js';
-import { Login } from '../../../../src/application/use-cases/login.use-case.js';
-import { RefreshSession } from '../../../../src/application/use-cases/refresh-session.use-case.js';
+import { InvalidRefreshTokenError } from '#src/application/errors/authentication.error.js';
+import { parseRefreshToken, type TokenPair } from '#src/application/token-pair.js';
+import { Login } from '#src/application/use-cases/login.use-case.js';
+import { RefreshSession } from '#src/application/use-cases/refresh-session.use-case.js';
 import {
   RefreshTokenReuseDetectedError,
   SessionExpiredError,
   SessionRevokedError,
-} from '../../../../src/domain/errors/session.error.js';
+} from '#src/domain/errors/session.error.js';
 import {
   createTestContext,
   registerUser,
   SESSION_TTL_MS,
   type TestContext,
-} from '../../../support/test-context.js';
+} from '#test/support/test-context.js';
 
 describe('RefreshSession', () => {
   let ctx: TestContext;

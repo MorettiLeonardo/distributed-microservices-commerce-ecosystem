@@ -1,6 +1,10 @@
-import type { Product, ProductStatus } from '../domain/entities/product.entity.js';
-import type { CategoryId, ProductId, ProductImageId } from '../domain/value-objects/identifiers.js';
-import type { Currency } from '../domain/value-objects/money.value-object.js';
+import type { Product, ProductStatus } from '#src/domain/entities/product.entity.js';
+import type {
+  CategoryId,
+  ProductId,
+  ProductImageId,
+} from '#src/domain/value-objects/identifiers.js';
+import type { Currency } from '#src/domain/value-objects/money.value-object.js';
 
 /** Plain read model returned by use cases, so inbound adapters never touch the aggregate. */
 export type ProductView = {

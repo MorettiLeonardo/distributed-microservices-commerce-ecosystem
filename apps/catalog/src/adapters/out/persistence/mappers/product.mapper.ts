@@ -1,11 +1,7 @@
-import { Product, ProductStatus } from '../../../../domain/entities/product.entity.js';
-import {
-  CategoryId,
-  ProductId,
-  ProductImageId,
-} from '../../../../domain/value-objects/identifiers.js';
-import { Money } from '../../../../domain/value-objects/money.value-object.js';
-import type { ProductModel } from '../models/product.model.js';
+import { Product, ProductStatus } from '#src/domain/entities/product.entity.js';
+import { CategoryId, ProductId, ProductImageId } from '#src/domain/value-objects/identifiers.js';
+import { Money } from '#src/domain/value-objects/money.value-object.js';
+import type { ProductModel } from '#src/adapters/out/persistence/models/product.model.js';
 
 export const ProductMapper = {
   /** `row` must be loaded with its images. */
@@ -54,7 +50,7 @@ export const ProductMapper = {
 };
 
 function parseStatus(value: string): ProductStatus {
-  const status = ProductStatus.find((known) => known === value);
+  const status = Object.values(ProductStatus).find((known) => known === value);
   if (!status) throw new Error(`Unknown product status in database: ${value}`);
   return status;
 }

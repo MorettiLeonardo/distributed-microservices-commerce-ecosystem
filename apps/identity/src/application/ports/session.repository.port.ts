@@ -1,5 +1,5 @@
-import type { Session } from '../../domain/entities/session.entity.js';
-import type { SessionId, UserId } from '../../domain/value-objects/identifiers.js';
+import type { Session } from '#src/domain/entities/session.entity.js';
+import type { SessionId, UserId } from '#src/domain/value-objects/identifiers.js';
 
 export interface SessionRepository {
   findById(id: SessionId): Promise<Session | null>;

@@ -1,4 +1,4 @@
-import type { Email } from '../../domain/value-objects/email.value-object.js';
+import type { Email } from '#src/domain/value-objects/email.value-object.js';
 
 /** Brute-force protection (ADR 0007). Thresholds and windows belong to the implementation. */
 export interface LoginAttemptLimiter {

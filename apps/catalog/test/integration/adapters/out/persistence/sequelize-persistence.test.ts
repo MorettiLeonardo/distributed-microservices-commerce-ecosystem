@@ -1,19 +1,15 @@
 import { ForeignKeyConstraintError, QueryTypes } from 'sequelize';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
-import { SequelizeCategoryRepository } from '../../../../../src/adapters/out/persistence/repositories/category.repository.js';
-import { SequelizeProductRepository } from '../../../../../src/adapters/out/persistence/repositories/product.repository.js';
-import { CategoryNameTakenError } from '../../../../../src/application/errors/category-name-taken.error.js';
-import { ProductVersionConflictError } from '../../../../../src/application/errors/product-version-conflict.error.js';
-import type { VersionedProduct } from '../../../../../src/application/ports/product.repository.port.js';
-import { Category } from '../../../../../src/domain/entities/category.entity.js';
-import { Product, type ProductProps } from '../../../../../src/domain/entities/product.entity.js';
-import {
-  CategoryId,
-  ProductId,
-  ProductImageId,
-} from '../../../../../src/domain/value-objects/identifiers.js';
-import { Money } from '../../../../../src/domain/value-objects/money.value-object.js';
-import { startPostgres, type TestPostgres } from '../../../../support/postgres.js';
+import { SequelizeCategoryRepository } from '#src/adapters/out/persistence/repositories/category.repository.js';
+import { SequelizeProductRepository } from '#src/adapters/out/persistence/repositories/product.repository.js';
+import { CategoryNameTakenError } from '#src/application/errors/category-name-taken.error.js';
+import { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
+import type { VersionedProduct } from '#src/application/ports/product.repository.port.js';
+import { Category } from '#src/domain/entities/category.entity.js';
+import { Product, type ProductProps } from '#src/domain/entities/product.entity.js';
+import { CategoryId, ProductId, ProductImageId } from '#src/domain/value-objects/identifiers.js';
+import { Money } from '#src/domain/value-objects/money.value-object.js';
+import { startPostgres, type TestPostgres } from '#test/support/postgres.js';
 
 const NOW = new Date('2026-10-28T12:00:00.000Z');
 

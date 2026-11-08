@@ -1,6 +1,6 @@
-import type { Clock } from '../../src/application/ports/clock.port.js';
-import type { LoginAttemptLimiter } from '../../src/application/ports/login-attempt-limiter.port.js';
-import type { Email } from '../../src/domain/value-objects/email.value-object.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { LoginAttemptLimiter } from '#src/application/ports/login-attempt-limiter.port.js';
+import type { Email } from '#src/domain/value-objects/email.value-object.js';
 
 /**
  * Same thresholds as production (ADR 0007), without time windows: counters never reset on

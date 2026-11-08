@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import type { Login } from '../../../../application/use-cases/login.use-case.js';
-import type { Logout } from '../../../../application/use-cases/logout.use-case.js';
-import type { RefreshSession } from '../../../../application/use-cases/refresh-session.use-case.js';
-import type { RegisterUser } from '../../../../application/use-cases/register-user.use-case.js';
-import type { RequestPasswordReset } from '../../../../application/use-cases/request-password-reset.use-case.js';
-import type { ResetPassword } from '../../../../application/use-cases/reset-password.use-case.js';
-import type { VerifyEmail } from '../../../../application/use-cases/verify-email.use-case.js';
+import type { Login } from '#src/application/use-cases/login.use-case.js';
+import type { Logout } from '#src/application/use-cases/logout.use-case.js';
+import type { RefreshSession } from '#src/application/use-cases/refresh-session.use-case.js';
+import type { RegisterUser } from '#src/application/use-cases/register-user.use-case.js';
+import type { RequestPasswordReset } from '#src/application/use-cases/request-password-reset.use-case.js';
+import type { ResetPassword } from '#src/application/use-cases/reset-password.use-case.js';
+import type { VerifyEmail } from '#src/application/use-cases/verify-email.use-case.js';
 import {
   ForgotPasswordBody,
   LoginBody,
@@ -14,7 +14,7 @@ import {
   RegisterBody,
   ResetPasswordBody,
   VerifyEmailBody,
-} from '../schemas/auth.schema.js';
+} from '#src/adapters/in/http/schemas/auth.schema.js';
 
 export type AuthUseCases = {
   registerUser: RegisterUser;

@@ -1,9 +1,9 @@
 import { UniqueConstraintError } from 'sequelize';
-import { CategoryNameTakenError } from '../../../../application/errors/category-name-taken.error.js';
-import type { CategoryRepository } from '../../../../application/ports/category.repository.port.js';
-import type { Category } from '../../../../domain/entities/category.entity.js';
-import type { CategoryId } from '../../../../domain/value-objects/identifiers.js';
-import { CategoryModel } from '../models/category.model.js';
+import { CategoryNameTakenError } from '#src/application/errors/category-name-taken.error.js';
+import type { CategoryRepository } from '#src/application/ports/category.repository.port.js';
+import type { Category } from '#src/domain/entities/category.entity.js';
+import type { CategoryId } from '#src/domain/value-objects/identifiers.js';
+import { CategoryModel } from '#src/adapters/out/persistence/models/category.model.js';
 
 /** Created by migration 0001 on lower(name). */
 const NAME_UNIQUE_INDEX = 'categories_name_unique';

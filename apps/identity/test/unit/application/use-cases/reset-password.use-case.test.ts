@@ -2,19 +2,15 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   InvalidCredentialsError,
   InvalidOneTimeTokenError,
-} from '../../../../src/application/errors/authentication.error.js';
-import { Login } from '../../../../src/application/use-cases/login.use-case.js';
-import { RefreshSession } from '../../../../src/application/use-cases/refresh-session.use-case.js';
-import { RequestPasswordReset } from '../../../../src/application/use-cases/request-password-reset.use-case.js';
-import { ResetPassword } from '../../../../src/application/use-cases/reset-password.use-case.js';
-import { OneTimeTokenAlreadyConsumedError } from '../../../../src/domain/errors/one-time-token.error.js';
-import { PasswordTooShortError } from '../../../../src/domain/errors/password.error.js';
-import { SessionRevokedError } from '../../../../src/domain/errors/session.error.js';
-import {
-  createTestContext,
-  registerUser,
-  type TestContext,
-} from '../../../support/test-context.js';
+} from '#src/application/errors/authentication.error.js';
+import { Login } from '#src/application/use-cases/login.use-case.js';
+import { RefreshSession } from '#src/application/use-cases/refresh-session.use-case.js';
+import { RequestPasswordReset } from '#src/application/use-cases/request-password-reset.use-case.js';
+import { ResetPassword } from '#src/application/use-cases/reset-password.use-case.js';
+import { OneTimeTokenAlreadyConsumedError } from '#src/domain/errors/one-time-token.error.js';
+import { PasswordTooShortError } from '#src/domain/errors/password.error.js';
+import { SessionRevokedError } from '#src/domain/errors/session.error.js';
+import { createTestContext, registerUser, type TestContext } from '#test/support/test-context.js';
 
 const IP = '203.0.113.7';
 

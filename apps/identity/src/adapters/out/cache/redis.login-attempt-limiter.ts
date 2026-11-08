@@ -1,6 +1,6 @@
-import type { Clock } from '../../../application/ports/clock.port.js';
-import type { LoginAttemptLimiter } from '../../../application/ports/login-attempt-limiter.port.js';
-import type { Email } from '../../../domain/value-objects/email.value-object.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { LoginAttemptLimiter } from '#src/application/ports/login-attempt-limiter.port.js';
+import type { Email } from '#src/domain/value-objects/email.value-object.js';
 import type { RedisClient } from './redis.client.js';
 
 export type LoginAttemptLimits = {

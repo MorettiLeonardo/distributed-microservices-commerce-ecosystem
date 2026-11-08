@@ -1,8 +1,8 @@
 import type {
   OneTimeToken,
   OneTimeTokenPurpose,
-} from '../../domain/entities/one-time-token.entity.js';
-import type { TokenHash } from '../../domain/value-objects/identifiers.js';
+} from '#src/domain/entities/one-time-token.entity.js';
+import type { TokenHash } from '#src/domain/value-objects/identifiers.js';
 
 export interface OneTimeTokenRepository {
   findByHash(hash: TokenHash, purpose: OneTimeTokenPurpose): Promise<OneTimeToken | null>;

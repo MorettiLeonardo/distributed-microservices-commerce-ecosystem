@@ -1,17 +1,17 @@
-import { EmailAlreadyRegisteredError } from '../../src/application/errors/email-already-registered.error.js';
-import type { OneTimeTokenRepository } from '../../src/application/ports/one-time-token.repository.port.js';
-import type { SessionRepository } from '../../src/application/ports/session.repository.port.js';
-import type { Repositories, UnitOfWork } from '../../src/application/ports/unit-of-work.port.js';
-import type { UserRepository } from '../../src/application/ports/user.repository.port.js';
+import { EmailAlreadyRegisteredError } from '#src/application/errors/email-already-registered.error.js';
+import type { OneTimeTokenRepository } from '#src/application/ports/one-time-token.repository.port.js';
+import type { SessionRepository } from '#src/application/ports/session.repository.port.js';
+import type { Repositories, UnitOfWork } from '#src/application/ports/unit-of-work.port.js';
+import type { UserRepository } from '#src/application/ports/user.repository.port.js';
 import {
   OneTimeToken,
   type OneTimeTokenProps,
   type OneTimeTokenPurpose,
-} from '../../src/domain/entities/one-time-token.entity.js';
-import { Session, type SessionProps } from '../../src/domain/entities/session.entity.js';
-import { User, type UserProps } from '../../src/domain/entities/user.entity.js';
-import type { Email } from '../../src/domain/value-objects/email.value-object.js';
-import type { SessionId, TokenHash, UserId } from '../../src/domain/value-objects/identifiers.js';
+} from '#src/domain/entities/one-time-token.entity.js';
+import { Session, type SessionProps } from '#src/domain/entities/session.entity.js';
+import { User, type UserProps } from '#src/domain/entities/user.entity.js';
+import type { Email } from '#src/domain/value-objects/email.value-object.js';
+import type { SessionId, TokenHash, UserId } from '#src/domain/value-objects/identifiers.js';
 
 type Tables = {
   users: Map<string, UserProps>;

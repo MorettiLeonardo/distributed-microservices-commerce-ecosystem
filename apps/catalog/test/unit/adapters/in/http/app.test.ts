@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { startTestServer, type TestServer } from '../../../../support/http-server.js';
+import { startTestServer, type TestServer } from '#test/support/http-server.js';
 
 describe('HTTP adapter', () => {
   let server: TestServer;

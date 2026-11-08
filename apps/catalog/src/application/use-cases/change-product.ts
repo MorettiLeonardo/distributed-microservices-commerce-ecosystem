@@ -1,9 +1,9 @@
-import type { Product } from '../../domain/entities/product.entity.js';
-import { ProductId } from '../../domain/value-objects/identifiers.js';
-import { ProductNotFoundError } from '../errors/product-not-found.error.js';
-import { ProductVersionConflictError } from '../errors/product-version-conflict.error.js';
-import type { ProductRepository } from '../ports/product.repository.port.js';
-import { toProductView, type VersionedProductView } from '../product.view.js';
+import type { Product } from '#src/domain/entities/product.entity.js';
+import { ProductId } from '#src/domain/value-objects/identifiers.js';
+import { ProductNotFoundError } from '#src/application/errors/product-not-found.error.js';
+import { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
+import type { ProductRepository } from '#src/application/ports/product.repository.port.js';
+import { toProductView, type VersionedProductView } from '#src/application/product.view.js';
 
 /** What every product change gets from its caller: which product, and the version it read. */
 export type ProductChangeInput = { productId: string; expectedVersion: number };

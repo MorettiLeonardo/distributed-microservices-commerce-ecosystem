@@ -7,23 +7,23 @@ import {
   type InvalidOneTimeTokenError,
   type InvalidRefreshTokenError,
   TooManyLoginAttemptsError,
-} from '../../../application/errors/authentication.error.js';
-import type { UserNotFoundError } from '../../../application/errors/user-not-found.error.js';
-import type { InvalidEmailError } from '../../../domain/errors/email.error.js';
+} from '#src/application/errors/authentication.error.js';
+import type { UserNotFoundError } from '#src/application/errors/user-not-found.error.js';
+import type { InvalidEmailError } from '#src/domain/errors/email.error.js';
 import type {
   OneTimeTokenAlreadyConsumedError,
   OneTimeTokenExpiredError,
-} from '../../../domain/errors/one-time-token.error.js';
+} from '#src/domain/errors/one-time-token.error.js';
 import type {
   PasswordTooLongError,
   PasswordTooShortError,
-} from '../../../domain/errors/password.error.js';
+} from '#src/domain/errors/password.error.js';
 import type {
   RefreshTokenReuseDetectedError,
   SessionExpiredError,
   SessionRevokedError,
-} from '../../../domain/errors/session.error.js';
-import type { UserDisabledError } from '../../../domain/errors/user.error.js';
+} from '#src/domain/errors/session.error.js';
+import type { UserDisabledError } from '#src/domain/errors/user.error.js';
 
 type KnownDomainError =
   | InvalidEmailError

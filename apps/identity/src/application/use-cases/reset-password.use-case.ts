@@ -1,10 +1,11 @@
-import { Password } from '../../domain/value-objects/password.value-object.js';
-import { InvalidOneTimeTokenError } from '../errors/authentication.error.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { EventPublisher } from '../ports/event-publisher.port.js';
-import type { PasswordHasher } from '../ports/password-hasher.port.js';
-import type { SecureTokenGenerator } from '../ports/secure-token-generator.port.js';
-import type { UnitOfWork } from '../ports/unit-of-work.port.js';
+import { OneTimeTokenPurpose } from '#src/domain/entities/one-time-token.entity.js';
+import { Password } from '#src/domain/value-objects/password.value-object.js';
+import { InvalidOneTimeTokenError } from '#src/application/errors/authentication.error.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { EventPublisher } from '#src/application/ports/event-publisher.port.js';
+import type { PasswordHasher } from '#src/application/ports/password-hasher.port.js';
+import type { SecureTokenGenerator } from '#src/application/ports/secure-token-generator.port.js';
+import type { UnitOfWork } from '#src/application/ports/unit-of-work.port.js';
 
 export type ResetPasswordInput = {
   token: string;
@@ -30,7 +31,7 @@ export class ResetPassword {
     const now = this.deps.clock.now();
 
     const events = await this.deps.unitOfWork.run(async ({ users, sessions, oneTimeTokens }) => {
-      const token = await oneTimeTokens.findByHash(tokenHash, 'password_reset');
+      const token = await oneTimeTokens.findByHash(tokenHash, OneTimeTokenPurpose.PasswordReset);
       if (!token) throw new InvalidOneTimeTokenError();
 
       const user = await users.findById(token.userId);

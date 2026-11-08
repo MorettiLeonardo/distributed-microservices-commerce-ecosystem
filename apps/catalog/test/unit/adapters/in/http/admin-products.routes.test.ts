@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { testId } from '../../../../support/fakes.js';
-import { seedImage } from '../../../../support/in-memory-database.js';
-import { startTestServer, TOKENS, type TestServer } from '../../../../support/http-server.js';
+import { testId } from '#test/support/fakes.js';
+import { seedImage } from '#test/support/in-memory-database.js';
+import { startTestServer, TOKENS, type TestServer } from '#test/support/http-server.js';
 
 const NOW = new Date('2026-10-28T12:00:00.000Z');
 const asAdmin = { authorization: `Bearer ${TOKENS.admin}` };

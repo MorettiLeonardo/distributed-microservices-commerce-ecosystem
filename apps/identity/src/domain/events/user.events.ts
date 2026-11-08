@@ -1,4 +1,4 @@
-import type { UserId } from '../value-objects/identifiers.js';
+import type { UserId } from '#src/domain/value-objects/identifiers.js';
 
 type UserEventBase = {
   readonly userId: UserId;

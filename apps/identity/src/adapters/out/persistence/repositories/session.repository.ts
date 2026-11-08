@@ -1,9 +1,9 @@
 import type { Transaction } from 'sequelize';
-import type { SessionRepository } from '../../../../application/ports/session.repository.port.js';
-import type { Session } from '../../../../domain/entities/session.entity.js';
-import type { SessionId, UserId } from '../../../../domain/value-objects/identifiers.js';
-import { SessionMapper } from '../mappers/session.mapper.js';
-import { SessionModel } from '../models/session.model.js';
+import type { SessionRepository } from '#src/application/ports/session.repository.port.js';
+import type { Session } from '#src/domain/entities/session.entity.js';
+import type { SessionId, UserId } from '#src/domain/value-objects/identifiers.js';
+import { SessionMapper } from '#src/adapters/out/persistence/mappers/session.mapper.js';
+import { SessionModel } from '#src/adapters/out/persistence/models/session.model.js';
 
 export class SequelizeSessionRepository implements SessionRepository {
   constructor(private readonly transaction: Transaction | null = null) {}

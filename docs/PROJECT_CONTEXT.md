@@ -69,23 +69,24 @@ Full detail lives in [`STYLE_GUIDE.md`](../STYLE_GUIDE.md), [`docs/adr/`](adr/) 
 
 ### 4.1 Stack and tooling (ADR 0002, 0003)
 
-| Area                | Choice                                                        | Why (short)                                                              |
-| ------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Language / runtime  | TypeScript, Node.js 24 LTS, ESM                               | Same language for containers and Lambdas; strong typing                  |
-| TypeScript compiler | TypeScript 7 (native compiler)                                | Installed latest; same `tsc` CLI                                         |
-| HTTP framework      | Express 5                                                     | Most widespread; unopinionated, so the architecture is built by hand     |
-| Validation          | Zod                                                           | Schema = type; reused for HTTP, events and env config                    |
-| Database access     | PostgreSQL + Sequelize                                        | Mature ORM; confined to the persistence adapter                          |
-| Logger              | Pino                                                          | Fast JSON logs, OpenTelemetry integration                                |
-| Tests               | Vitest (+ Testcontainers)                                     | Native TS/ESM, fast                                                      |
-| Lint / format       | oxlint + Prettier                                             | Very fast lint; stable formatter                                         |
-| Monorepo            | pnpm workspaces + Turborepo                                   | Shared contracts in one place; cached task graph                         |
-| Package manager     | pnpm 12                                                       | Blocks dependency install scripts unless approved (supply-chain defense) |
-| Build               | `tsc` → `dist/` for containers; `esbuild` bundles for Lambdas | Explicit and standard; small Lambda bundles                              |
-| Module resolution   | `NodeNext` → relative imports end in `.js`                    | Matches Node's real ESM rules                                            |
-| Git hooks           | lefthook (pre-commit: lint + format; commit-msg: commitlint)  | Enforces the style guide automatically                                   |
-| Commits / branches  | Conventional Commits; trunk-based with short PRs              | Changelog automation; one PR per module                                  |
-| Docs                | ADRs (MADR) + Mermaid diagrams                                | Records the "why"; diagrams render on GitHub                             |
+| Area                | Choice                                                             | Why (short)                                                                  |
+| ------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| Language / runtime  | TypeScript, Node.js 24 LTS, ESM                                    | Same language for containers and Lambdas; strong typing                      |
+| TypeScript compiler | TypeScript 7 (native compiler)                                     | Installed latest; same `tsc` CLI                                             |
+| HTTP framework      | Express 5                                                          | Most widespread; unopinionated, so the architecture is built by hand         |
+| Validation          | Zod                                                                | Schema = type; reused for HTTP, events and env config                        |
+| Database access     | PostgreSQL + Sequelize                                             | Mature ORM; confined to the persistence adapter                              |
+| Logger              | Pino                                                               | Fast JSON logs, OpenTelemetry integration                                    |
+| Tests               | Vitest (+ Testcontainers)                                          | Native TS/ESM, fast                                                          |
+| Lint / format       | oxlint + Prettier                                                  | Very fast lint; stable formatter                                             |
+| Monorepo            | pnpm workspaces + Turborepo                                        | Shared contracts in one place; cached task graph                             |
+| Package manager     | pnpm 12                                                            | Blocks dependency install scripts unless approved (supply-chain defense)     |
+| Build               | `tsc` → `dist/` for containers; `esbuild` bundles for Lambdas      | Explicit and standard; small Lambda bundles                                  |
+| Module resolution   | `NodeNext` → relative imports end in `.js`                         | Matches Node's real ESM rules                                                |
+| Import paths        | `#src/*` / `#test/*` subpath imports instead of `../` (2026-11-08) | Native to Node: `source` condition → `src/`, default → `dist/`, no rewriting |
+| Git hooks           | lefthook (pre-commit: lint + format; commit-msg: commitlint)       | Enforces the style guide automatically                                       |
+| Commits / branches  | Conventional Commits; trunk-based with short PRs                   | Changelog automation; one PR per module                                      |
+| Docs                | ADRs (MADR) + Mermaid diagrams                                     | Records the "why"; diagrams render on GitHub                                 |
 
 ### 4.2 Architecture (ADR 0004, 0005, 0008)
 
@@ -112,6 +113,7 @@ Full detail lives in [`STYLE_GUIDE.md`](../STYLE_GUIDE.md), [`docs/adr/`](adr/) 
 | Time                  | `now` **passed as a parameter** — the domain never calls `new Date()`                                                                                            |
 | IDs                   | Generated outside the domain (`IdGenerator` port) and passed in                                                                                                  |
 | Identifiers           | **Branded types** (`UserId`, `ProductId`...) so they cannot be mixed up                                                                                          |
+| Closed sets           | **Enum-like `as const` objects** (`ProductStatus.Draft`), no TS `enum`, no bare literals in production code; migrations and tests keep literals (2026-11-08)     |
 | Use cases             | **Classes with `execute()`**, dependencies injected through the constructor                                                                                      |
 | Atomic writes         | **`UnitOfWork` port** (`unitOfWork.run(repos => ...)`), only when several writes must happen together                                                            |
 | Test doubles          | **In-memory fakes** (state-based tests), not mocks                                                                                                               |
@@ -406,6 +408,7 @@ pnpm dev:catalog                          # http://localhost:3002 (needs identit
 - **After `pnpm infra:reset`** (or new volumes), the databases and Floci start empty: run `db:migrate` for **each** service and `pnpm infra:provision`, otherwise identity's `register` answers `500` (missing tables) and no email goes out (missing queue).
 
 - Use `pnpm dev:<service>`, not `pnpm --filter ... dev`: the latter does not build the shared packages first.
+- Run `tsx` only through package scripts: they pass `--conditions=source`; without it `#src/*` resolves to the (possibly stale) `dist/`.
 - Emails: Mailpit UI at http://localhost:8025. Lambda logs: `docker logs ecommerce-floci-1`.
 - **Manual API testing:** open `api/bruno/` in the Bruno desktop app and select the `local` environment (`identityBaseUrl`, `catalogBaseUrl`).
 - On Windows, stopping `tsx watch` from a background task can leave the child `node` process listening on its port; stop it by port if needed.

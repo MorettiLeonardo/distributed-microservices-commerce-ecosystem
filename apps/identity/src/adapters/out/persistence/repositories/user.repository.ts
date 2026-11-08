@@ -1,11 +1,11 @@
 import { type Transaction, UniqueConstraintError } from 'sequelize';
-import { EmailAlreadyRegisteredError } from '../../../../application/errors/email-already-registered.error.js';
-import type { UserRepository } from '../../../../application/ports/user.repository.port.js';
-import type { User } from '../../../../domain/entities/user.entity.js';
-import type { Email } from '../../../../domain/value-objects/email.value-object.js';
-import type { UserId } from '../../../../domain/value-objects/identifiers.js';
-import { UserMapper } from '../mappers/user.mapper.js';
-import { UserModel } from '../models/user.model.js';
+import { EmailAlreadyRegisteredError } from '#src/application/errors/email-already-registered.error.js';
+import type { UserRepository } from '#src/application/ports/user.repository.port.js';
+import type { User } from '#src/domain/entities/user.entity.js';
+import type { Email } from '#src/domain/value-objects/email.value-object.js';
+import type { UserId } from '#src/domain/value-objects/identifiers.js';
+import { UserMapper } from '#src/adapters/out/persistence/mappers/user.mapper.js';
+import { UserModel } from '#src/adapters/out/persistence/models/user.model.js';
 
 export class SequelizeUserRepository implements UserRepository {
   /** Without a transaction, every call runs on its own connection (autocommit). */

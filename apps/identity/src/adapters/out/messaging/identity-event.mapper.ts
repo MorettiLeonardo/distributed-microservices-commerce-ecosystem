@@ -3,7 +3,7 @@ import {
   IDENTITY_SOURCE,
   type IdentityEvent as IdentityEventMessage,
 } from '@ecommerce/event-contracts';
-import type { IdentityEvent } from '../../../domain/events/user.events.js';
+import type { IdentityEvent } from '#src/domain/events/user.events.js';
 
 type Metadata = { id: string; correlationId: string | undefined };
 

@@ -1,17 +1,17 @@
-import { OneTimeToken } from '../../domain/entities/one-time-token.entity.js';
-import { User } from '../../domain/entities/user.entity.js';
-import { Email } from '../../domain/value-objects/email.value-object.js';
-import { OneTimeTokenId, UserId } from '../../domain/value-objects/identifiers.js';
-import { Password } from '../../domain/value-objects/password.value-object.js';
-import { EmailAlreadyRegisteredError } from '../errors/email-already-registered.error.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { EmailSender } from '../ports/email-sender.port.js';
-import type { EventPublisher } from '../ports/event-publisher.port.js';
-import type { IdGenerator } from '../ports/id-generator.port.js';
-import type { PasswordHasher } from '../ports/password-hasher.port.js';
-import type { SecureTokenGenerator } from '../ports/secure-token-generator.port.js';
-import type { UnitOfWork } from '../ports/unit-of-work.port.js';
-import type { UserRepository } from '../ports/user.repository.port.js';
+import { OneTimeToken, OneTimeTokenPurpose } from '#src/domain/entities/one-time-token.entity.js';
+import { User } from '#src/domain/entities/user.entity.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { OneTimeTokenId, UserId } from '#src/domain/value-objects/identifiers.js';
+import { Password } from '#src/domain/value-objects/password.value-object.js';
+import { EmailAlreadyRegisteredError } from '#src/application/errors/email-already-registered.error.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { EmailSender } from '#src/application/ports/email-sender.port.js';
+import type { EventPublisher } from '#src/application/ports/event-publisher.port.js';
+import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
+import type { PasswordHasher } from '#src/application/ports/password-hasher.port.js';
+import type { SecureTokenGenerator } from '#src/application/ports/secure-token-generator.port.js';
+import type { UnitOfWork } from '#src/application/ports/unit-of-work.port.js';
+import type { UserRepository } from '#src/application/ports/user.repository.port.js';
 
 export type RegisterUserInput = {
   email: string;
@@ -60,7 +60,7 @@ export class RegisterUser {
     const verificationToken = OneTimeToken.issue({
       id: OneTimeTokenId(this.deps.idGenerator.generate()),
       userId: user.id,
-      purpose: 'email_verification',
+      purpose: OneTimeTokenPurpose.EmailVerification,
       tokenHash: verification.hash,
       now,
     });

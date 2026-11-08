@@ -1,5 +1,5 @@
-import type { Clock } from '../../src/application/ports/clock.port.js';
-import type { IdGenerator } from '../../src/application/ports/id-generator.port.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
 
 export class FakeClock implements Clock {
   constructor(private current: Date) {}

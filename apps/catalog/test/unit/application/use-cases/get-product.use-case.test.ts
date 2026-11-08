@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ProductNotFoundError } from '../../../../src/application/errors/product-not-found.error.js';
-import { CreateCategory } from '../../../../src/application/use-cases/create-category.use-case.js';
-import { CreateProduct } from '../../../../src/application/use-cases/create-product.use-case.js';
-import { GetProduct } from '../../../../src/application/use-cases/get-product.use-case.js';
-import { UpdateProductDetails } from '../../../../src/application/use-cases/update-product-details.use-case.js';
-import { testId } from '../../../support/fakes.js';
-import { createTestContext, type TestContext } from '../../../support/test-context.js';
+import { ProductNotFoundError } from '#src/application/errors/product-not-found.error.js';
+import { CreateCategory } from '#src/application/use-cases/create-category.use-case.js';
+import { CreateProduct } from '#src/application/use-cases/create-product.use-case.js';
+import { GetProduct } from '#src/application/use-cases/get-product.use-case.js';
+import { UpdateProductDetails } from '#src/application/use-cases/update-product-details.use-case.js';
+import { testId } from '#test/support/fakes.js';
+import { createTestContext, type TestContext } from '#test/support/test-context.js';
 
 describe('GetProduct', () => {
   let ctx: TestContext;

@@ -7,14 +7,14 @@ import {
   type TokenVerifier,
 } from '@ecommerce/http';
 import express, { type Express } from 'express';
-import type { CreateCategory } from '../../../application/use-cases/create-category.use-case.js';
-import type { CreateProduct } from '../../../application/use-cases/create-product.use-case.js';
-import type { GetProduct } from '../../../application/use-cases/get-product.use-case.js';
-import type { ChangeProductPrice } from '../../../application/use-cases/change-product-price.use-case.js';
-import type { PublishProduct } from '../../../application/use-cases/publish-product.use-case.js';
-import type { UnpublishProduct } from '../../../application/use-cases/unpublish-product.use-case.js';
-import type { UpdateProductDetails } from '../../../application/use-cases/update-product-details.use-case.js';
-import type { Logger } from '../../../logger.js';
+import type { CreateCategory } from '#src/application/use-cases/create-category.use-case.js';
+import type { CreateProduct } from '#src/application/use-cases/create-product.use-case.js';
+import type { GetProduct } from '#src/application/use-cases/get-product.use-case.js';
+import type { ChangeProductPrice } from '#src/application/use-cases/change-product-price.use-case.js';
+import type { PublishProduct } from '#src/application/use-cases/publish-product.use-case.js';
+import type { UnpublishProduct } from '#src/application/use-cases/unpublish-product.use-case.js';
+import type { UpdateProductDetails } from '#src/application/use-cases/update-product-details.use-case.js';
+import type { Logger } from '#src/logger.js';
 import { problemDetailsHandler } from './problem-details.js';
 import { requireAdmin } from './require-admin.js';
 import { adminCategoriesRoutes } from './routes/admin-categories.routes.js';

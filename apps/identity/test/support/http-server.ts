@@ -1,17 +1,17 @@
 import type { AddressInfo } from 'node:net';
 import type { ReadinessCheck } from '@ecommerce/http';
 import { exportJWK, generateKeyPair } from 'jose';
-import { createApp } from '../../src/adapters/in/http/app.js';
-import { JoseAccessTokens } from '../../src/adapters/out/security/jose.access-tokens.js';
-import { GetCurrentUser } from '../../src/application/use-cases/get-current-user.use-case.js';
-import { Login } from '../../src/application/use-cases/login.use-case.js';
-import { Logout } from '../../src/application/use-cases/logout.use-case.js';
-import { RefreshSession } from '../../src/application/use-cases/refresh-session.use-case.js';
-import { RegisterUser } from '../../src/application/use-cases/register-user.use-case.js';
-import { RequestPasswordReset } from '../../src/application/use-cases/request-password-reset.use-case.js';
-import { ResetPassword } from '../../src/application/use-cases/reset-password.use-case.js';
-import { VerifyEmail } from '../../src/application/use-cases/verify-email.use-case.js';
-import { createLogger } from '../../src/logger.js';
+import { createApp } from '#src/adapters/in/http/app.js';
+import { JoseAccessTokens } from '#src/adapters/out/security/jose.access-tokens.js';
+import { GetCurrentUser } from '#src/application/use-cases/get-current-user.use-case.js';
+import { Login } from '#src/application/use-cases/login.use-case.js';
+import { Logout } from '#src/application/use-cases/logout.use-case.js';
+import { RefreshSession } from '#src/application/use-cases/refresh-session.use-case.js';
+import { RegisterUser } from '#src/application/use-cases/register-user.use-case.js';
+import { RequestPasswordReset } from '#src/application/use-cases/request-password-reset.use-case.js';
+import { ResetPassword } from '#src/application/use-cases/reset-password.use-case.js';
+import { VerifyEmail } from '#src/application/use-cases/verify-email.use-case.js';
+import { createLogger } from '#src/logger.js';
 import { createTestContext, type TestContext } from './test-context.js';
 
 export type TestServer = {

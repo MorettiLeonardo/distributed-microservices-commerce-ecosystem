@@ -1,8 +1,8 @@
 import { randomBytes } from 'node:crypto';
 import bcrypt from 'bcrypt';
-import type { PasswordHasher } from '../../../application/ports/password-hasher.port.js';
-import { PasswordHash } from '../../../domain/value-objects/identifiers.js';
-import type { Password } from '../../../domain/value-objects/password.value-object.js';
+import type { PasswordHasher } from '#src/application/ports/password-hasher.port.js';
+import { PasswordHash } from '#src/domain/value-objects/identifiers.js';
+import type { Password } from '#src/domain/value-objects/password.value-object.js';
 
 export class BcryptPasswordHasher implements PasswordHasher {
   /**

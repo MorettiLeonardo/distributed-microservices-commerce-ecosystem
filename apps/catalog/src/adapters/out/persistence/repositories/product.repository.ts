@@ -1,13 +1,16 @@
 import type { Sequelize } from 'sequelize';
-import { ProductVersionConflictError } from '../../../../application/errors/product-version-conflict.error.js';
+import { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
 import type {
   ProductRepository,
   VersionedProduct,
-} from '../../../../application/ports/product.repository.port.js';
-import type { Product } from '../../../../domain/entities/product.entity.js';
-import type { ProductId } from '../../../../domain/value-objects/identifiers.js';
-import { ProductMapper } from '../mappers/product.mapper.js';
-import { ProductImageModel, ProductModel } from '../models/product.model.js';
+} from '#src/application/ports/product.repository.port.js';
+import type { Product } from '#src/domain/entities/product.entity.js';
+import type { ProductId } from '#src/domain/value-objects/identifiers.js';
+import { ProductMapper } from '#src/adapters/out/persistence/mappers/product.mapper.js';
+import {
+  ProductImageModel,
+  ProductModel,
+} from '#src/adapters/out/persistence/models/product.model.js';
 
 export class SequelizeProductRepository implements ProductRepository {
   constructor(private readonly sequelize: Sequelize) {}

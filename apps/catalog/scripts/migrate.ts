@@ -2,8 +2,8 @@
  * Applies pending migrations (`up`, default) or reverts the last one (`down`).
  * Runs as its own step, never on service boot: replicas starting together would race.
  */
-import { createDatabase } from '../src/adapters/out/persistence/database.js';
-import { createMigrator } from '../src/adapters/out/persistence/migrator.js';
+import { createDatabase } from '#src/adapters/out/persistence/database.js';
+import { createMigrator } from '#src/adapters/out/persistence/migrator.js';
 
 const url = process.env['DATABASE_URL'];
 if (!url) throw new Error('DATABASE_URL is not set');

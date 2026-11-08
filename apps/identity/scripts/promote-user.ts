@@ -5,10 +5,10 @@
  */
 import { userInfo } from 'node:os';
 import { DomainError } from '@ecommerce/ddd';
-import { createDatabase } from '../src/adapters/out/persistence/database.js';
-import { SequelizeUserRepository } from '../src/adapters/out/persistence/repositories/user.repository.js';
-import { PromoteUserToAdmin } from '../src/application/use-cases/promote-user-to-admin.use-case.js';
-import { createLogger } from '../src/logger.js';
+import { createDatabase } from '#src/adapters/out/persistence/database.js';
+import { SequelizeUserRepository } from '#src/adapters/out/persistence/repositories/user.repository.js';
+import { PromoteUserToAdmin } from '#src/application/use-cases/promote-user-to-admin.use-case.js';
+import { createLogger } from '#src/logger.js';
 
 const url = process.env['DATABASE_URL'];
 if (!url) throw new Error('DATABASE_URL is not set');

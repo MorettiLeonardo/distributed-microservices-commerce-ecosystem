@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { Category } from '../../../../src/domain/entities/category.entity.js';
-import { InvalidCategoryNameError } from '../../../../src/domain/errors/category.error.js';
-import { CategoryId } from '../../../../src/domain/value-objects/identifiers.js';
+import { Category } from '#src/domain/entities/category.entity.js';
+import { InvalidCategoryNameError } from '#src/domain/errors/category.error.js';
+import { CategoryId } from '#src/domain/value-objects/identifiers.js';
 
 const now = new Date('2026-10-25T12:00:00.000Z');
 

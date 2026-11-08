@@ -1,4 +1,8 @@
-import type { CategoryId, ProductId, ProductImageId } from '../value-objects/identifiers.js';
+import type {
+  CategoryId,
+  ProductId,
+  ProductImageId,
+} from '#src/domain/value-objects/identifiers.js';
 
 /** Plain values only: events are serialized and outlive the domain classes. */
 type Price = { readonly amount: number; readonly currency: string };
@@ -54,5 +58,10 @@ export type ProductEvent =
 
 export type CatalogEvent = CategoryEvent | ProductEvent;
 
-export const ProductDetailField = ['name', 'description', 'categoryId', 'weightGrams'] as const;
-export type ProductDetailField = (typeof ProductDetailField)[number];
+export const ProductDetailField = {
+  Name: 'name',
+  Description: 'description',
+  CategoryId: 'categoryId',
+  WeightGrams: 'weightGrams',
+} as const;
+export type ProductDetailField = (typeof ProductDetailField)[keyof typeof ProductDetailField];

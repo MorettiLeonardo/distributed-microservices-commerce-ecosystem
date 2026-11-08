@@ -1,12 +1,12 @@
 import type { DomainError } from '@ecommerce/ddd';
 import { createProblemDetailsHandler, type ProblemExtras } from '@ecommerce/http';
 import type { ErrorRequestHandler } from 'express';
-import type { CategoryNameTakenError } from '../../../application/errors/category-name-taken.error.js';
-import type { CategoryNotFoundError } from '../../../application/errors/category-not-found.error.js';
-import type { ProductNotFoundError } from '../../../application/errors/product-not-found.error.js';
-import type { ProductVersionConflictError } from '../../../application/errors/product-version-conflict.error.js';
-import type { InvalidCategoryNameError } from '../../../domain/errors/category.error.js';
-import type { InvalidMoneyError } from '../../../domain/errors/money.error.js';
+import type { CategoryNameTakenError } from '#src/application/errors/category-name-taken.error.js';
+import type { CategoryNotFoundError } from '#src/application/errors/category-not-found.error.js';
+import type { ProductNotFoundError } from '#src/application/errors/product-not-found.error.js';
+import type { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
+import type { InvalidCategoryNameError } from '#src/domain/errors/category.error.js';
+import type { InvalidMoneyError } from '#src/domain/errors/money.error.js';
 import {
   type InvalidPriceError,
   type InvalidProductDescriptionError,
@@ -14,7 +14,7 @@ import {
   type InvalidWeightError,
   ProductNotPublishableError,
   type ProductNotPublishedError,
-} from '../../../domain/errors/product.error.js';
+} from '#src/domain/errors/product.error.js';
 
 /** Union of the domain errors the API exposes; grows with the domain. */
 type KnownDomainError =

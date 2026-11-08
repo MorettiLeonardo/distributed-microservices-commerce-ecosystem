@@ -1,4 +1,4 @@
-import { SessionId } from '../domain/value-objects/identifiers.js';
+import { SessionId } from '#src/domain/value-objects/identifiers.js';
 
 export type TokenPair = {
   accessToken: string;

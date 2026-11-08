@@ -1,17 +1,17 @@
-import { CategoryNameTakenError } from '../../src/application/errors/category-name-taken.error.js';
-import type { CategoryRepository } from '../../src/application/ports/category.repository.port.js';
-import { ProductVersionConflictError } from '../../src/application/errors/product-version-conflict.error.js';
+import { CategoryNameTakenError } from '#src/application/errors/category-name-taken.error.js';
+import type { CategoryRepository } from '#src/application/ports/category.repository.port.js';
+import { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
 import type {
   ProductRepository,
   VersionedProduct,
-} from '../../src/application/ports/product.repository.port.js';
-import type { Category, CategoryProps } from '../../src/domain/entities/category.entity.js';
-import { Product, type ProductProps } from '../../src/domain/entities/product.entity.js';
+} from '#src/application/ports/product.repository.port.js';
+import type { Category, CategoryProps } from '#src/domain/entities/category.entity.js';
+import { Product, type ProductProps } from '#src/domain/entities/product.entity.js';
 import {
   type CategoryId,
   type ProductId,
   ProductImageId,
-} from '../../src/domain/value-objects/identifiers.js';
+} from '#src/domain/value-objects/identifiers.js';
 
 type Tables = {
   categories: Map<string, CategoryProps>;

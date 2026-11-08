@@ -1,11 +1,16 @@
-import { RefreshTokenReuseDetectedError } from '../../domain/errors/session.error.js';
-import { InvalidRefreshTokenError } from '../errors/authentication.error.js';
-import type { AccessTokenIssuer } from '../ports/access-token-issuer.port.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { SecureTokenGenerator } from '../ports/secure-token-generator.port.js';
-import type { SessionRepository } from '../ports/session.repository.port.js';
-import type { UserRepository } from '../ports/user.repository.port.js';
-import { formatRefreshToken, parseRefreshToken, type TokenPair } from '../token-pair.js';
+import { UserStatus } from '#src/domain/entities/user.entity.js';
+import { RefreshTokenReuseDetectedError } from '#src/domain/errors/session.error.js';
+import { InvalidRefreshTokenError } from '#src/application/errors/authentication.error.js';
+import type { AccessTokenIssuer } from '#src/application/ports/access-token-issuer.port.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { SecureTokenGenerator } from '#src/application/ports/secure-token-generator.port.js';
+import type { SessionRepository } from '#src/application/ports/session.repository.port.js';
+import type { UserRepository } from '#src/application/ports/user.repository.port.js';
+import {
+  formatRefreshToken,
+  parseRefreshToken,
+  type TokenPair,
+} from '#src/application/token-pair.js';
 
 export type RefreshSessionInput = {
   refreshToken: string;
@@ -44,7 +49,7 @@ export class RefreshSession {
     }
 
     const user = await this.deps.users.findById(session.userId);
-    if (!user || user.status === 'disabled') throw new InvalidRefreshTokenError();
+    if (!user || user.status === UserStatus.Disabled) throw new InvalidRefreshTokenError();
 
     await this.deps.sessions.save(session);
 

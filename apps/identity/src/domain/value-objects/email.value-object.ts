@@ -1,4 +1,4 @@
-import { InvalidEmailError } from '../errors/email.error.js';
+import { InvalidEmailError } from '#src/domain/errors/email.error.js';
 
 const MAX_LENGTH = 254;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

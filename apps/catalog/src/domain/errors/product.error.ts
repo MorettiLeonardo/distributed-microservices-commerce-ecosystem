@@ -41,7 +41,12 @@ export class TooManyImagesError extends DomainError {
 }
 
 /** What a product still lacks to be published (K2). */
-export type PublishRequirement = 'price' | 'weight' | 'image';
+export const PublishRequirement = {
+  Price: 'price',
+  Weight: 'weight',
+  Image: 'image',
+} as const;
+export type PublishRequirement = (typeof PublishRequirement)[keyof typeof PublishRequirement];
 
 export class ProductNotPublishableError extends DomainError {
   override readonly code = 'PRODUCT_NOT_PUBLISHABLE';

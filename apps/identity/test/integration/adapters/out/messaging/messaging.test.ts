@@ -7,11 +7,11 @@ import {
 import { IdentityEvent, SendEmailV1 } from '@ecommerce/event-contracts';
 import { requestContext } from '@ecommerce/logger';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { SnsEventPublisher } from '../../../../../src/adapters/out/messaging/sns.event-publisher.js';
-import { SqsEmailSender } from '../../../../../src/adapters/out/messaging/sqs.email-sender.js';
-import { UserId } from '../../../../../src/domain/value-objects/identifiers.js';
-import { FakeClock, SequentialIdGenerator } from '../../../../support/fakes.js';
-import { startFloci, type TestFloci } from '../../../../support/floci.js';
+import { SnsEventPublisher } from '#src/adapters/out/messaging/sns.event-publisher.js';
+import { SqsEmailSender } from '#src/adapters/out/messaging/sqs.email-sender.js';
+import { UserId } from '#src/domain/value-objects/identifiers.js';
+import { FakeClock, SequentialIdGenerator } from '#test/support/fakes.js';
+import { startFloci, type TestFloci } from '#test/support/floci.js';
 
 describe('messaging adapters (Floci)', () => {
   let floci: TestFloci;

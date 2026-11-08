@@ -1,4 +1,4 @@
-import type { TokenHash } from '../../domain/value-objects/identifiers.js';
+import type { TokenHash } from '#src/domain/value-objects/identifiers.js';
 
 export type GeneratedToken = {
   /** Sent to the user; never stored. */
