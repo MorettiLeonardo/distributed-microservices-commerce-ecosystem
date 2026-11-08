@@ -1,4 +1,4 @@
-import { FakeClock, SequentialIdGenerator } from './fakes.js';
+import { FakeClock, FakeImageUploadSigner, SequentialIdGenerator } from './fakes.js';
 import { InMemoryDatabase } from './in-memory-database.js';
 
 /**
@@ -13,6 +13,7 @@ export function createTestContext(now = new Date('2026-10-28T12:00:00.000Z')) {
     clock: new FakeClock(now),
     ...db.repositories,
     idGenerator: new SequentialIdGenerator(),
+    signer: new FakeImageUploadSigner(),
   };
 }
 

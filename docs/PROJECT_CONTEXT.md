@@ -1,7 +1,7 @@
 # Project Context
 
 > Living document that captures **why** this project exists, **how** we work on it, **what** has been decided and built, and **what comes next**.
-> Read this first when resuming work. Last updated: 2026-11-02.
+> Read this first when resuming work. Last updated: 2026-11-08.
 
 ---
 
@@ -286,7 +286,8 @@ Floci needs no account or token. Its state is **persistent** (`floci-data` volum
 - **Category slice done (increment 5, part 1):** `CreateCategory` use case, `categories` table (migration `0001-create-catalog-tables`, `UNIQUE (lower(name))`), `SequelizeCategoryRepository`, `POST /v1/admin/categories` behind `requireAdmin`, Bruno requests (`catalog/admin`). Mutation-tested (role check, gate mounting, error translation, `lower` in the index).
 - Verified end to end (2026-10-28) with a real identity token: customer `403`, token issued before promotion `403`, admin `201`, same name in upper case `409`, blank name `422`, tampered token `401`.
 - **Product slice (increment 5) done in code:** `CreateProduct`, `GetProduct`, `UpdateProductDetails`, `ChangeProductPrice`, `PublishProduct`, `UnpublishProduct`, all changes through `changeProduct` with optimistic locking (ADR 0015, 0016); `SequelizeProductRepository`; admin routes `POST`/`GET`/`PATCH /products[/{id}]`, `PUT /products/{id}/price`, `POST /products/{id}/publish|unpublish`; Bruno requests (stale `412`, incomplete publish `409`, unpublish draft `409`). Mutation-tested (version check, no-change skip, `*` → 428, strict tag parsing, `If-Match` wiring, `412`/`409` mapping, `missing` extension, currency forwarding, action wiring). One **equivalent mutant** survives: the "category changed" guard before `categories.exists()` in `UpdateProductDetails` only saves a query.
-- Commit `e44f018` landed on `main` with the locking tests red (use cases and repository not yet versioned); fixed on branch `feat/product-optimistic-locking`.
+- Commit `e44f018` landed on `main` with the locking tests red; fixed on `feat/product-optimistic-locking`, merged as PR #3.
+- Verified (2026-11-08): 20/20 integration tests on real Postgres (incl. the concurrent-update race), migration `0003` applied locally, and the `If-Match` flow end to end with a real admin token (`ETag` bumps, missing/`*` `428`, weak `412 PRECONDITION_FAILED`, stale `412 PRODUCT_VERSION_CONFLICT`, incomplete publish `409` + `missing`, unpublish draft `409`).
 
 ## 6. Known gaps (deliberate or accepted)
 
@@ -303,17 +304,22 @@ Floci needs no account or token. Its state is **persistent** (`floci-data` volum
 | `Role` declared twice (identity domain + `@ecommerce/auth` contract); identity does not issue with the shared schema | Identity / auth           | Kept aligned by the contract test        |
 | First authenticated request after a cold start pays the JWKS round trip                                              | `@ecommerce/auth`         | Accepted                                 |
 | Case-insensitive category names rely on `lower()`, which follows the DB locale (`C` would fold only ASCII)           | Catalog persistence       | Accepted; guarded by integration tests   |
+| Floci accepts presigned POSTs with a forged signature (it only enforces the policy conditions)                       | Local emulator            | Accepted; real S3 verifies signatures    |
 
 ## 7. Next steps
 
-`feat/catalog-admin-api` was merged into `main` (PR #2). Work now happens on branch **`feat/product-optimistic-locking`** (not pushed yet).
+PR #3 (`feat/product-optimistic-locking`) was merged into `main`; increment 5 is done and verified. Next: increment 6 (images).
 
-**Pending on this branch:** run `pnpm test:integration` with Docker up (the 4 optimistic-locking integration tests, incl. the concurrent-update race, have not run yet), run `db:migrate` locally (migration `0003`) and do the manual Bruno check (`If-Match` flow, stale `412`, missing `428`).
+**Increment 6 decisions so far (2026-11-08):** the Lambda's result reaches Catalog through an **SQS queue owned by Catalog + a worker in the Catalog service** (not an internal HTTP call); uploads use a **presigned POST** (policy with `content-length-range`, fixed key and `Content-Type`) instead of a presigned PUT, so S3 itself rejects files over 5 MB. A spike confirmed Floci enforces the policy conditions (`EntityTooLarge`, wrong key/type `403`) but **does not verify the signature**.
+
+More decisions: **one bucket** with `originals/` and `processed/` prefixes (the Lambda trigger must be filtered by `originals/` or it would re-trigger itself); pending uploads tracked in their own **`ImageUpload` aggregate** (requesting an upload does not bump the product's version); the limit of 8 counts attached images **plus open uploads**; an **`expired` state set by a job** (only after the 5-min upload window + 10-min processing grace; the limit query still filters `expires_at > now`, so it never depends on the job's timing); **sign before save** (a failed signature stores nothing; a permission only leaves the service once its upload is saved).
+
+**Slice (a) built on `feat/catalog-images` (stacked on `refactor/enum-objects-and-subpath-imports`):** `ImageUpload` aggregate, `RequestImageUpload` use case, migration `0004-create-image-uploads` (FK, CHECKs, partial index `(product_id, expires_at) WHERE status = 'pending'` → index-only scan), `SequelizeImageUploadRepository`, `S3PresignedPostSigner` (`@aws-sdk/s3-presigned-post`, tested against Floci). All mutation-tested; one equivalent mutant showed the SDK already turns every `Fields` entry into an exact-match condition. **Left in slice (a):** config (`AWS_REGION`, `AWS_ENDPOINT_URL`, `IMAGE_BUCKET`), composition root, `POST /v1/admin/products/{id}/images/uploads` (open question: `UNSUPPORTED_IMAGE_TYPE` → 422, recommended, or 415), Terraform bucket + lifecycle on `originals/`, Bruno check. Where the expiry job runs is decided in slice (c).
 
 Catalog increments (new order):
 
-1. **Increment 5 — persistence + admin API:** ✅ Category slice (ADR 0014). ✅ Product slice: create, get, update details, price, publish, unpublish, with optimistic locking (ADR 0015, 0016). **Left:** integration tests with Docker, `db:migrate` (`0003`), manual Bruno check; then open the PR.
-2. **Increment 6 — images:** S3 bucket (Terraform), presigned upload URL, image-processor Lambda (H22), `attachImage`, lifecycle rule.
+1. **Increment 5 — persistence + admin API:** ✅ Done (ADR 0014, 0015, 0016).
+2. **Increment 6 — images**, in three vertical slices: (a) S3 bucket (Terraform) + `RequestImageUpload` (presigned POST); (b) image-processor Lambda (H22) on `ObjectCreated`; (c) Catalog SQS worker → `AttachProductImage`; plus the lifecycle rule.
 3. **Increment 7 — storefront + events:** public read routes (cursor pagination, filter by category), catalog events on SNS (`ecommerce-catalog-events`).
 4. **Increment 8 — cache:** Redis cache-aside for the storefront, event-driven invalidation, stampede protection (H21).
 

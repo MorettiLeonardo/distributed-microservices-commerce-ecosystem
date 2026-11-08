@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize';
 import { CategoryModel } from './models/category.model.js';
+import { ImageUploadModel } from './models/image-upload.model.js';
 import { associateProductModels, ProductImageModel, ProductModel } from './models/product.model.js';
 
 /** Connects to Postgres and binds the models. Does not create tables: migrations do. */
@@ -16,6 +17,7 @@ export function createDatabase(url: string): Sequelize {
   ProductModel.initialize(sequelize);
   ProductImageModel.initialize(sequelize);
   associateProductModels();
+  ImageUploadModel.initialize(sequelize);
 
   return sequelize;
 }
