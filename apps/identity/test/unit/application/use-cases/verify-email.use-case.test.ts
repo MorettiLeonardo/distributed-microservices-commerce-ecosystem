@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { InvalidOneTimeTokenError } from '../../../../src/application/errors/authentication.error.js';
-import { VerifyEmail } from '../../../../src/application/use-cases/verify-email.use-case.js';
+import { InvalidOneTimeTokenError } from '#src/application/errors/authentication.error.js';
+import { VerifyEmail } from '#src/application/use-cases/verify-email.use-case.js';
 import {
   OneTimeTokenAlreadyConsumedError,
   OneTimeTokenExpiredError,
-} from '../../../../src/domain/errors/one-time-token.error.js';
-import { Email } from '../../../../src/domain/value-objects/email.value-object.js';
+} from '#src/domain/errors/one-time-token.error.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
 import {
   createTestContext,
   DAY_MS,
   registerUser,
   type TestContext,
-} from '../../../support/test-context.js';
+} from '#test/support/test-context.js';
 
 describe('VerifyEmail', () => {
   let ctx: TestContext;

@@ -1,5 +1,5 @@
-import type { PasswordHash } from '../../domain/value-objects/identifiers.js';
-import type { Password } from '../../domain/value-objects/password.value-object.js';
+import type { PasswordHash } from '#src/domain/value-objects/identifiers.js';
+import type { Password } from '#src/domain/value-objects/password.value-object.js';
 
 export interface PasswordHasher {
   hash(password: Password): Promise<PasswordHash>;

@@ -1,6 +1,6 @@
 import { InMemoryDatabase } from './in-memory-database.js';
 import { InMemoryLoginAttemptLimiter } from './in-memory-login-attempt-limiter.js';
-import { RegisterUser } from '../../src/application/use-cases/register-user.use-case.js';
+import { RegisterUser } from '#src/application/use-cases/register-user.use-case.js';
 import {
   FakeAccessTokenIssuer,
   FakeClock,

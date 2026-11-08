@@ -1,14 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { TokenPair } from '../../../../src/application/token-pair.js';
-import { Login } from '../../../../src/application/use-cases/login.use-case.js';
-import { Logout } from '../../../../src/application/use-cases/logout.use-case.js';
-import { RefreshSession } from '../../../../src/application/use-cases/refresh-session.use-case.js';
-import { SessionRevokedError } from '../../../../src/domain/errors/session.error.js';
-import {
-  createTestContext,
-  registerUser,
-  type TestContext,
-} from '../../../support/test-context.js';
+import type { TokenPair } from '#src/application/token-pair.js';
+import { Login } from '#src/application/use-cases/login.use-case.js';
+import { Logout } from '#src/application/use-cases/logout.use-case.js';
+import { RefreshSession } from '#src/application/use-cases/refresh-session.use-case.js';
+import { SessionRevokedError } from '#src/domain/errors/session.error.js';
+import { createTestContext, registerUser, type TestContext } from '#test/support/test-context.js';
 
 describe('Logout', () => {
   let ctx: TestContext;

@@ -1,18 +1,18 @@
 import { type Response, Router } from 'express';
-import type { VersionedProductView } from '../../../../application/product.view.js';
-import type { ChangeProductPrice } from '../../../../application/use-cases/change-product-price.use-case.js';
-import type { CreateProduct } from '../../../../application/use-cases/create-product.use-case.js';
-import type { GetProduct } from '../../../../application/use-cases/get-product.use-case.js';
-import type { PublishProduct } from '../../../../application/use-cases/publish-product.use-case.js';
-import type { UnpublishProduct } from '../../../../application/use-cases/unpublish-product.use-case.js';
-import type { UpdateProductDetails } from '../../../../application/use-cases/update-product-details.use-case.js';
-import { expectedVersion, toETag } from '../etag.js';
+import type { VersionedProductView } from '#src/application/product.view.js';
+import type { ChangeProductPrice } from '#src/application/use-cases/change-product-price.use-case.js';
+import type { CreateProduct } from '#src/application/use-cases/create-product.use-case.js';
+import type { GetProduct } from '#src/application/use-cases/get-product.use-case.js';
+import type { PublishProduct } from '#src/application/use-cases/publish-product.use-case.js';
+import type { UnpublishProduct } from '#src/application/use-cases/unpublish-product.use-case.js';
+import type { UpdateProductDetails } from '#src/application/use-cases/update-product-details.use-case.js';
+import { expectedVersion, toETag } from '#src/adapters/in/http/etag.js';
 import {
   ChangeProductPriceBody,
   CreateProductBody,
   ProductIdParams,
   UpdateProductDetailsBody,
-} from '../schemas/product.schema.js';
+} from '#src/adapters/in/http/schemas/product.schema.js';
 
 /**
  * Mounted under `/v1/admin`, behind `requireAdmin`. One endpoint per intent: details, price and

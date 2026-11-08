@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { Product, type ProductProps } from '../../../../src/domain/entities/product.entity.js';
+import { Product, type ProductProps } from '#src/domain/entities/product.entity.js';
 import {
   InvalidPriceError,
   InvalidProductDescriptionError,
@@ -8,13 +8,9 @@ import {
   ProductNotPublishableError,
   ProductNotPublishedError,
   TooManyImagesError,
-} from '../../../../src/domain/errors/product.error.js';
-import {
-  CategoryId,
-  ProductId,
-  ProductImageId,
-} from '../../../../src/domain/value-objects/identifiers.js';
-import { Money } from '../../../../src/domain/value-objects/money.value-object.js';
+} from '#src/domain/errors/product.error.js';
+import { CategoryId, ProductId, ProductImageId } from '#src/domain/value-objects/identifiers.js';
+import { Money } from '#src/domain/value-objects/money.value-object.js';
 
 const now = new Date('2026-10-25T12:00:00.000Z');
 const later = new Date('2026-10-25T13:00:00.000Z');

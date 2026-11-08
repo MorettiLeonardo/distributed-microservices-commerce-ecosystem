@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadConfig } from '../../src/config.js';
+import { loadConfig } from '#src/config.js';
 
 const required = {
   DATABASE_URL: 'postgres://catalog:catalog@localhost:5402/catalog',

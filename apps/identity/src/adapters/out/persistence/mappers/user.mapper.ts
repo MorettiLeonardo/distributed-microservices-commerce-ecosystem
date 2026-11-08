@@ -1,7 +1,7 @@
-import { User, UserRole, UserStatus } from '../../../../domain/entities/user.entity.js';
-import { Email } from '../../../../domain/value-objects/email.value-object.js';
-import { PasswordHash, UserId } from '../../../../domain/value-objects/identifiers.js';
-import type { UserModel } from '../models/user.model.js';
+import { User, UserRole, UserStatus } from '#src/domain/entities/user.entity.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { PasswordHash, UserId } from '#src/domain/value-objects/identifiers.js';
+import type { UserModel } from '#src/adapters/out/persistence/models/user.model.js';
 
 export const UserMapper = {
   toDomain(row: UserModel): User {
@@ -30,13 +30,13 @@ export const UserMapper = {
 };
 
 function parseStatus(value: string): UserStatus {
-  const status = UserStatus.find((known) => known === value);
+  const status = Object.values(UserStatus).find((known) => known === value);
   if (!status) throw new Error(`Unknown user status in database: ${value}`);
   return status;
 }
 
 function parseRole(value: string): UserRole {
-  const role = UserRole.find((known) => known === value);
+  const role = Object.values(UserRole).find((known) => known === value);
   if (!role) throw new Error(`Unknown user role in database: ${value}`);
   return role;
 }

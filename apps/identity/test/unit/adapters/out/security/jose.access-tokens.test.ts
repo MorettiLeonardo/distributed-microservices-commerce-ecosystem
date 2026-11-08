@@ -1,8 +1,8 @@
 import { exportJWK, generateKeyPair, importJWK, type JWK, SignJWT } from 'jose';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { JoseAccessTokens } from '../../../../../src/adapters/out/security/jose.access-tokens.js';
-import { UserId } from '../../../../../src/domain/value-objects/identifiers.js';
-import { FakeClock } from '../../../../support/fakes.js';
+import { JoseAccessTokens } from '#src/adapters/out/security/jose.access-tokens.js';
+import { UserId } from '#src/domain/value-objects/identifiers.js';
+import { FakeClock } from '#test/support/fakes.js';
 
 const TTL_MS = 15 * 60_000;
 const claims = {

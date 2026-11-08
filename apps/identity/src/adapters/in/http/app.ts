@@ -6,9 +6,9 @@ import {
 } from '@ecommerce/http';
 import express, { type Express } from 'express';
 import type { JSONWebKeySet } from 'jose';
-import type { AccessTokenVerifier } from '../../../application/ports/access-token-verifier.port.js';
-import type { GetCurrentUser } from '../../../application/use-cases/get-current-user.use-case.js';
-import type { Logger } from '../../../logger.js';
+import type { AccessTokenVerifier } from '#src/application/ports/access-token-verifier.port.js';
+import type { GetCurrentUser } from '#src/application/use-cases/get-current-user.use-case.js';
+import type { Logger } from '#src/logger.js';
 import { problemDetailsHandler } from './problem-details.js';
 import { type AuthUseCases, authRoutes } from './routes/auth.routes.js';
 import { usersRoutes } from './routes/users.routes.js';

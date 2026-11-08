@@ -1,4 +1,4 @@
-import type { AccessTokenClaims } from '@ecommerce/auth';
+import { type AccessTokenClaims, Role } from '@ecommerce/auth';
 import { authenticate, requireRole, type TokenVerifier } from '@ecommerce/http';
 import type { RequestHandler } from 'express';
 
@@ -9,7 +9,7 @@ import type { RequestHandler } from 'express';
  */
 export function requireAdmin(verifier: TokenVerifier<AccessTokenClaims>): RequestHandler {
   return async (req, _res, next) => {
-    requireRole(await authenticate(req, verifier), 'admin');
+    requireRole(await authenticate(req, verifier), Role.Admin);
     next();
   };
 }

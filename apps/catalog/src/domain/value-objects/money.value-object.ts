@@ -1,8 +1,10 @@
-import { InvalidMoneyError } from '../errors/money.error.js';
+import { InvalidMoneyError } from '#src/domain/errors/money.error.js';
 
 /** Single currency for now (K3). Changing it is a business decision, not a config switch. */
-export const Currency = ['BRL'] as const;
-export type Currency = (typeof Currency)[number];
+export const Currency = {
+  BRL: 'BRL',
+} as const;
+export type Currency = (typeof Currency)[keyof typeof Currency];
 
 /**
  * An amount of money in integer cents: never floats, so 0.1 + 0.2 never shows up in a price.
@@ -14,8 +16,8 @@ export class Money {
     readonly currency: Currency,
   ) {}
 
-  static of(amount: number, currency: string = 'BRL'): Money {
-    const known = Currency.find((code) => code === currency);
+  static of(amount: number, currency: string = Currency.BRL): Money {
+    const known = Object.values(Currency).find((code) => code === currency);
     if (!Number.isSafeInteger(amount) || amount < 0 || !known) throw new InvalidMoneyError();
     return new Money(amount, known);
   }

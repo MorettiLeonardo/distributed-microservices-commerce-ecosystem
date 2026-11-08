@@ -1,5 +1,5 @@
-import type { Product } from '../../domain/entities/product.entity.js';
-import type { ProductId } from '../../domain/value-objects/identifiers.js';
+import type { Product } from '#src/domain/entities/product.entity.js';
+import type { ProductId } from '#src/domain/value-objects/identifiers.js';
 
 /**
  * A product and the version it was stored at. The version is a concurrency concept, not a

@@ -1,10 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { RequestPasswordReset } from '../../../../src/application/use-cases/request-password-reset.use-case.js';
-import {
-  createTestContext,
-  registerUser,
-  type TestContext,
-} from '../../../support/test-context.js';
+import { RequestPasswordReset } from '#src/application/use-cases/request-password-reset.use-case.js';
+import { createTestContext, registerUser, type TestContext } from '#test/support/test-context.js';
 
 describe('RequestPasswordReset', () => {
   let ctx: TestContext;

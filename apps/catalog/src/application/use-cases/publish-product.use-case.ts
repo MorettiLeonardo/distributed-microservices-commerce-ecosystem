@@ -1,6 +1,6 @@
-import type { Clock } from '../ports/clock.port.js';
-import type { ProductRepository } from '../ports/product.repository.port.js';
-import type { VersionedProductView } from '../product.view.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { ProductRepository } from '#src/application/ports/product.repository.port.js';
+import type { VersionedProductView } from '#src/application/product.view.js';
 import { changeProduct, type ProductChangeInput } from './change-product.js';
 
 /** Puts a product on the storefront. Throws `ProductNotPublishableError` listing what is missing. */

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { testId } from '../../../support/fakes.js';
-import { CategoryNameTakenError } from '../../../../src/application/errors/category-name-taken.error.js';
-import { CreateCategory } from '../../../../src/application/use-cases/create-category.use-case.js';
-import { InvalidCategoryNameError } from '../../../../src/domain/errors/category.error.js';
-import { createTestContext, type TestContext } from '../../../support/test-context.js';
+import { testId } from '#test/support/fakes.js';
+import { CategoryNameTakenError } from '#src/application/errors/category-name-taken.error.js';
+import { CreateCategory } from '#src/application/use-cases/create-category.use-case.js';
+import { InvalidCategoryNameError } from '#src/domain/errors/category.error.js';
+import { createTestContext, type TestContext } from '#test/support/test-context.js';
 
 describe('CreateCategory', () => {
   let ctx: TestContext;

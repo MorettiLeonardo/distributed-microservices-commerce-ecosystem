@@ -36,14 +36,29 @@
   - `exactOptionalPropertyTypes: true`
   - `verbatimModuleSyntax: true` (forces `import type` for types)
 - Build: containers compile with `tsc` to `dist/` (dev runs `tsx watch`, see ADR 0009); Lambdas are bundled with `esbuild` into a single file per function.
-- `module: NodeNext` ⇒ relative imports must use the `.js` extension (`import { Order } from './order.entity.js'`).
+- `module: NodeNext` ⇒ imports must use the `.js` extension (`import { Order } from './order.entity.js'`).
+- Imports that would climb directories use **Node subpath imports** instead of `../`: `#src/*` and `#test/*` (package.json `"imports"`). Same-folder imports stay relative (`./`):
+  ```ts
+  import { Product } from '#src/domain/entities/product.entity.js';
+  import { createTestContext } from '#test/support/test-context.js';
+  ```
+  `#src/*` resolves to `src/` under the `source` condition (tsc `customConditions`, Vitest `resolve.conditions`, `tsx --conditions=source`) and to `dist/` otherwise, so compiled code runs on plain Node with no path rewriting. **Run `tsx` only through the package scripts**: without `--conditions=source` it silently loads the stale `dist/`. Lambdas bundled by esbuild map `#src/*` straight to `./src/*`.
 - No explicit `any`; use `unknown` + narrowing (or a Zod schema).
 - Prefer `type` for unions/data and `interface` for **ports** (contracts implemented by adapters).
-- No TS `enum` — use a literal union + `as const`:
+- Closed sets of values are **enum-like `as const` objects**, never TS `enum` (nominal, not erasable by type stripping) and never bare string literals in production code:
   ```ts
-  export const OrderStatus = ['pending', 'confirmed', 'cancelled'] as const;
-  export type OrderStatus = (typeof OrderStatus)[number];
+  export const OrderStatus = {
+    Pending: 'pending',
+    Confirmed: 'confirmed',
+    Cancelled: 'cancelled',
+  } as const;
+  export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
+
+  if (order.status === OrderStatus.Pending) { ... }
+  const known = Object.values(OrderStatus).find((status) => status === raw); // parse untrusted input
+  z.enum(OrderStatus); // Zod accepts the object directly
   ```
+  Two places keep literals on purpose: **migrations** (frozen history; importing the constant would let a rename rewrite an old migration) and **tests** (they pin the real value, so a wrong change to the constant is caught instead of followed).
 
 ## 3. Naming
 

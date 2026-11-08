@@ -1,7 +1,7 @@
-import { ProductId } from '../../domain/value-objects/identifiers.js';
-import { ProductNotFoundError } from '../errors/product-not-found.error.js';
-import type { ProductRepository } from '../ports/product.repository.port.js';
-import { toProductView, type VersionedProductView } from '../product.view.js';
+import { ProductId } from '#src/domain/value-objects/identifiers.js';
+import { ProductNotFoundError } from '#src/application/errors/product-not-found.error.js';
+import type { ProductRepository } from '#src/application/ports/product.repository.port.js';
+import { toProductView, type VersionedProductView } from '#src/application/product.view.js';
 
 export type GetProductInput = {
   productId: string;

@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import type { CreateCategory } from '../../../../application/use-cases/create-category.use-case.js';
-import { CreateCategoryBody } from '../schemas/category.schema.js';
+import type { CreateCategory } from '#src/application/use-cases/create-category.use-case.js';
+import { CreateCategoryBody } from '#src/adapters/in/http/schemas/category.schema.js';
 
 /** Mounted under `/v1/admin`, behind `requireAdmin`. */
 export function adminCategoriesRoutes(deps: { createCategory: CreateCategory }): Router {

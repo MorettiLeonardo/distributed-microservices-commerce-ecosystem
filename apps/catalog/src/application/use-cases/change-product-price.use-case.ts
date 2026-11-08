@@ -1,7 +1,7 @@
-import { Money } from '../../domain/value-objects/money.value-object.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { ProductRepository } from '../ports/product.repository.port.js';
-import type { VersionedProductView } from '../product.view.js';
+import { Money } from '#src/domain/value-objects/money.value-object.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { ProductRepository } from '#src/application/ports/product.repository.port.js';
+import type { VersionedProductView } from '#src/application/product.view.js';
 import { changeProduct, type ProductChangeInput } from './change-product.js';
 
 export type ChangeProductPriceInput = ProductChangeInput & {

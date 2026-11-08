@@ -1,7 +1,7 @@
 import { PostgreSqlContainer, type StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 import type { Sequelize } from 'sequelize';
-import { createDatabase } from '../../src/adapters/out/persistence/database.js';
-import { createMigrator } from '../../src/adapters/out/persistence/migrator.js';
+import { createDatabase } from '#src/adapters/out/persistence/database.js';
+import { createMigrator } from '#src/adapters/out/persistence/migrator.js';
 
 export type TestPostgres = {
   sequelize: Sequelize;

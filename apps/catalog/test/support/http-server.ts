@@ -1,15 +1,15 @@
 import type { AddressInfo } from 'node:net';
 import type { AccessTokenClaims } from '@ecommerce/auth';
 import type { ReadinessCheck, TokenVerifier } from '@ecommerce/http';
-import { createApp } from '../../src/adapters/in/http/app.js';
-import { CreateCategory } from '../../src/application/use-cases/create-category.use-case.js';
-import { CreateProduct } from '../../src/application/use-cases/create-product.use-case.js';
-import { GetProduct } from '../../src/application/use-cases/get-product.use-case.js';
-import { ChangeProductPrice } from '../../src/application/use-cases/change-product-price.use-case.js';
-import { PublishProduct } from '../../src/application/use-cases/publish-product.use-case.js';
-import { UnpublishProduct } from '../../src/application/use-cases/unpublish-product.use-case.js';
-import { UpdateProductDetails } from '../../src/application/use-cases/update-product-details.use-case.js';
-import { createLogger } from '../../src/logger.js';
+import { createApp } from '#src/adapters/in/http/app.js';
+import { CreateCategory } from '#src/application/use-cases/create-category.use-case.js';
+import { CreateProduct } from '#src/application/use-cases/create-product.use-case.js';
+import { GetProduct } from '#src/application/use-cases/get-product.use-case.js';
+import { ChangeProductPrice } from '#src/application/use-cases/change-product-price.use-case.js';
+import { PublishProduct } from '#src/application/use-cases/publish-product.use-case.js';
+import { UnpublishProduct } from '#src/application/use-cases/unpublish-product.use-case.js';
+import { UpdateProductDetails } from '#src/application/use-cases/update-product-details.use-case.js';
+import { createLogger } from '#src/logger.js';
 import { createTestContext, type TestContext } from './test-context.js';
 
 /** Bearer tokens the fake verifier accepts. */

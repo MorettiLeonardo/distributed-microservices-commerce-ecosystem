@@ -1,9 +1,9 @@
-import { CategoryId } from '../../domain/value-objects/identifiers.js';
-import { CategoryNotFoundError } from '../errors/category-not-found.error.js';
-import type { CategoryRepository } from '../ports/category.repository.port.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { ProductRepository } from '../ports/product.repository.port.js';
-import type { VersionedProductView } from '../product.view.js';
+import { CategoryId } from '#src/domain/value-objects/identifiers.js';
+import { CategoryNotFoundError } from '#src/application/errors/category-not-found.error.js';
+import type { CategoryRepository } from '#src/application/ports/category.repository.port.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { ProductRepository } from '#src/application/ports/product.repository.port.js';
+import type { VersionedProductView } from '#src/application/product.view.js';
 import { changeProduct, type ProductChangeInput } from './change-product.js';
 
 /** Every detail is optional; the ones left out keep their value. */

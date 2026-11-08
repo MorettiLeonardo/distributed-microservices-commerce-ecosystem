@@ -1,12 +1,12 @@
-import { Product } from '../../domain/entities/product.entity.js';
-import { CategoryId, ProductId } from '../../domain/value-objects/identifiers.js';
-import { Money } from '../../domain/value-objects/money.value-object.js';
-import { CategoryNotFoundError } from '../errors/category-not-found.error.js';
-import type { CategoryRepository } from '../ports/category.repository.port.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { IdGenerator } from '../ports/id-generator.port.js';
-import type { ProductRepository } from '../ports/product.repository.port.js';
-import { toProductView, type VersionedProductView } from '../product.view.js';
+import { Product } from '#src/domain/entities/product.entity.js';
+import { CategoryId, ProductId } from '#src/domain/value-objects/identifiers.js';
+import { Money } from '#src/domain/value-objects/money.value-object.js';
+import { CategoryNotFoundError } from '#src/application/errors/category-not-found.error.js';
+import type { CategoryRepository } from '#src/application/ports/category.repository.port.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
+import type { ProductRepository } from '#src/application/ports/product.repository.port.js';
+import { toProductView, type VersionedProductView } from '#src/application/product.view.js';
 
 /** Optional fields accept an explicit `undefined`, which is what Zod's `.optional()` yields. */
 export type CreateProductInput = {

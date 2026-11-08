@@ -1,13 +1,14 @@
-import { OneTimeToken } from '../../domain/entities/one-time-token.entity.js';
-import { Email } from '../../domain/value-objects/email.value-object.js';
-import { OneTimeTokenId } from '../../domain/value-objects/identifiers.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { EmailSender } from '../ports/email-sender.port.js';
-import type { EventPublisher } from '../ports/event-publisher.port.js';
-import type { IdGenerator } from '../ports/id-generator.port.js';
-import type { OneTimeTokenRepository } from '../ports/one-time-token.repository.port.js';
-import type { SecureTokenGenerator } from '../ports/secure-token-generator.port.js';
-import type { UserRepository } from '../ports/user.repository.port.js';
+import { OneTimeToken, OneTimeTokenPurpose } from '#src/domain/entities/one-time-token.entity.js';
+import { UserStatus } from '#src/domain/entities/user.entity.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { OneTimeTokenId } from '#src/domain/value-objects/identifiers.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { EmailSender } from '#src/application/ports/email-sender.port.js';
+import type { EventPublisher } from '#src/application/ports/event-publisher.port.js';
+import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
+import type { OneTimeTokenRepository } from '#src/application/ports/one-time-token.repository.port.js';
+import type { SecureTokenGenerator } from '#src/application/ports/secure-token-generator.port.js';
+import type { UserRepository } from '#src/application/ports/user.repository.port.js';
 
 export type RequestPasswordResetInput = {
   email: string;
@@ -30,7 +31,7 @@ export class RequestPasswordReset {
   async execute(input: RequestPasswordResetInput): Promise<void> {
     const email = Email.create(input.email);
     const user = await this.deps.users.findByEmail(email);
-    if (!user || user.status === 'disabled') return;
+    if (!user || user.status === UserStatus.Disabled) return;
 
     const now = this.deps.clock.now();
     user.requestPasswordReset(now);
@@ -40,7 +41,7 @@ export class RequestPasswordReset {
       OneTimeToken.issue({
         id: OneTimeTokenId(this.deps.idGenerator.generate()),
         userId: user.id,
-        purpose: 'password_reset',
+        purpose: OneTimeTokenPurpose.PasswordReset,
         tokenHash: reset.hash,
         now,
       }),

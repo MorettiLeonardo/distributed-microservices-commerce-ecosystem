@@ -6,15 +6,23 @@ import {
   InvalidWeightError,
   ProductNotPublishableError,
   ProductNotPublishedError,
-  type PublishRequirement,
+  PublishRequirement,
   TooManyImagesError,
-} from '../errors/product.error.js';
-import type { ProductDetailField, ProductEvent } from '../events/catalog.events.js';
-import type { CategoryId, ProductId, ProductImageId } from '../value-objects/identifiers.js';
-import type { Money } from '../value-objects/money.value-object.js';
+} from '#src/domain/errors/product.error.js';
+import type { ProductDetailField, ProductEvent } from '#src/domain/events/catalog.events.js';
+import type {
+  CategoryId,
+  ProductId,
+  ProductImageId,
+} from '#src/domain/value-objects/identifiers.js';
+import type { Money } from '#src/domain/value-objects/money.value-object.js';
 
-export const ProductStatus = ['draft', 'published', 'unpublished'] as const;
-export type ProductStatus = (typeof ProductStatus)[number];
+export const ProductStatus = {
+  Draft: 'draft',
+  Published: 'published',
+  Unpublished: 'unpublished',
+} as const;
+export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus];
 
 /** A processed image in S3; its position in `images` is its display order. */
 export type ProductImage = {
@@ -75,7 +83,7 @@ export class Product extends AggregateRoot<ProductEvent> {
       price: input.price ? validPrice(input.price) : null,
       weightGrams: input.weightGrams === undefined ? null : validWeight(input.weightGrams),
       images: [],
-      status: 'draft',
+      status: ProductStatus.Draft,
       createdAt: input.now,
       publishedAt: null,
     });
@@ -194,24 +202,24 @@ export class Product extends AggregateRoot<ProductEvent> {
 
   /** Idempotent for a published product. Lists every missing requirement at once. */
   publish(now: Date): void {
-    if (this.props.status === 'published') return;
+    if (this.props.status === ProductStatus.Published) return;
 
     const missing: PublishRequirement[] = [];
-    if (!this.props.price) missing.push('price');
-    if (this.props.weightGrams === null) missing.push('weight');
-    if (this.props.images.length === 0) missing.push('image');
+    if (!this.props.price) missing.push(PublishRequirement.Price);
+    if (this.props.weightGrams === null) missing.push(PublishRequirement.Weight);
+    if (this.props.images.length === 0) missing.push(PublishRequirement.Image);
     if (missing.length > 0) throw new ProductNotPublishableError(missing);
 
-    this.props = { ...this.props, status: 'published', publishedAt: now };
+    this.props = { ...this.props, status: ProductStatus.Published, publishedAt: now };
     this.record({ type: 'ProductPublished', productId: this.id, occurredAt: now });
   }
 
   /** Idempotent for an unpublished product; a draft was never on the storefront. */
   unpublish(now: Date): void {
-    if (this.props.status === 'unpublished') return;
-    if (this.props.status === 'draft') throw new ProductNotPublishedError();
+    if (this.props.status === ProductStatus.Unpublished) return;
+    if (this.props.status === ProductStatus.Draft) throw new ProductNotPublishedError();
 
-    this.props = { ...this.props, status: 'unpublished' };
+    this.props = { ...this.props, status: ProductStatus.Unpublished };
     this.record({ type: 'ProductUnpublished', productId: this.id, occurredAt: now });
   }
 }

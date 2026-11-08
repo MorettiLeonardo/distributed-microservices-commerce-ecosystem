@@ -1,15 +1,22 @@
 import { AggregateRoot } from '@ecommerce/ddd';
-import { EmailNotVerifiedError, UserDisabledError } from '../errors/user.error.js';
-import type { UserEvent } from '../events/user.events.js';
-import type { Email } from '../value-objects/email.value-object.js';
-import type { PasswordHash, UserId } from '../value-objects/identifiers.js';
+import { EmailNotVerifiedError, UserDisabledError } from '#src/domain/errors/user.error.js';
+import type { UserEvent } from '#src/domain/events/user.events.js';
+import type { Email } from '#src/domain/value-objects/email.value-object.js';
+import type { PasswordHash, UserId } from '#src/domain/value-objects/identifiers.js';
 
-export const UserStatus = ['pending_verification', 'active', 'disabled'] as const;
-export type UserStatus = (typeof UserStatus)[number];
+export const UserStatus = {
+  PendingVerification: 'pending_verification',
+  Active: 'active',
+  Disabled: 'disabled',
+} as const;
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
 /** What the user may do across services; carried in the access token (ADR 0012). */
-export const UserRole = ['customer', 'admin'] as const;
-export type UserRole = (typeof UserRole)[number];
+export const UserRole = {
+  Customer: 'customer',
+  Admin: 'admin',
+} as const;
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export type UserProps = {
   id: UserId;
@@ -37,8 +44,8 @@ export class User extends AggregateRoot<UserEvent> {
       id: input.id,
       email: input.email,
       passwordHash: input.passwordHash,
-      status: 'pending_verification',
-      role: 'customer',
+      status: UserStatus.PendingVerification,
+      role: UserRole.Customer,
       emailVerifiedAt: null,
       createdAt: input.now,
     });
@@ -93,7 +100,7 @@ export class User extends AggregateRoot<UserEvent> {
     this.ensureNotDisabled();
     if (this.isEmailVerified) return;
 
-    this.props = { ...this.props, status: 'active', emailVerifiedAt: now };
+    this.props = { ...this.props, status: UserStatus.Active, emailVerifiedAt: now };
     this.record({ type: 'UserEmailVerified', userId: this.id, occurredAt: now });
   }
 
@@ -119,10 +126,10 @@ export class User extends AggregateRoot<UserEvent> {
   promoteToAdmin(): void {
     this.ensureNotDisabled();
     if (!this.isEmailVerified) throw new EmailNotVerifiedError();
-    this.props = { ...this.props, role: 'admin' };
+    this.props = { ...this.props, role: UserRole.Admin };
   }
 
   private ensureNotDisabled(): void {
-    if (this.props.status === 'disabled') throw new UserDisabledError();
+    if (this.props.status === UserStatus.Disabled) throw new UserDisabledError();
   }
 }

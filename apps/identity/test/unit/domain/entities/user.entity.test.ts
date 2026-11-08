@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import {
-  EmailNotVerifiedError,
-  UserDisabledError,
-} from '../../../../src/domain/errors/user.error.js';
-import { Email } from '../../../../src/domain/value-objects/email.value-object.js';
-import { PasswordHash, UserId } from '../../../../src/domain/value-objects/identifiers.js';
-import { User, type UserProps } from '../../../../src/domain/entities/user.entity.js';
+import { EmailNotVerifiedError, UserDisabledError } from '#src/domain/errors/user.error.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { PasswordHash, UserId } from '#src/domain/value-objects/identifiers.js';
+import { User, type UserProps } from '#src/domain/entities/user.entity.js';
 
 const now = new Date('2026-10-19T12:00:00.000Z');
 const later = new Date('2026-10-19T13:00:00.000Z');

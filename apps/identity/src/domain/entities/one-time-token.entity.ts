@@ -1,18 +1,21 @@
 import {
   OneTimeTokenAlreadyConsumedError,
   OneTimeTokenExpiredError,
-} from '../errors/one-time-token.error.js';
-import type { OneTimeTokenId, TokenHash, UserId } from '../value-objects/identifiers.js';
+} from '#src/domain/errors/one-time-token.error.js';
+import type { OneTimeTokenId, TokenHash, UserId } from '#src/domain/value-objects/identifiers.js';
 
-export const OneTimeTokenPurpose = ['email_verification', 'password_reset'] as const;
-export type OneTimeTokenPurpose = (typeof OneTimeTokenPurpose)[number];
+export const OneTimeTokenPurpose = {
+  EmailVerification: 'email_verification',
+  PasswordReset: 'password_reset',
+} as const;
+export type OneTimeTokenPurpose = (typeof OneTimeTokenPurpose)[keyof typeof OneTimeTokenPurpose];
 
 const HOUR_MS = 60 * 60 * 1000;
 
 /** How long each kind of token stays valid — a business rule, so it lives in the domain. */
 export const ONE_TIME_TOKEN_TTL_MS: Record<OneTimeTokenPurpose, number> = {
-  email_verification: 24 * HOUR_MS,
-  password_reset: 30 * 60 * 1000,
+  [OneTimeTokenPurpose.EmailVerification]: 24 * HOUR_MS,
+  [OneTimeTokenPurpose.PasswordReset]: 30 * 60 * 1000,
 };
 
 export type OneTimeTokenProps = {

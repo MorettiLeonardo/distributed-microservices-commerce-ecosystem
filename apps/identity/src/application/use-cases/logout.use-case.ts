@@ -1,7 +1,7 @@
-import type { Clock } from '../ports/clock.port.js';
-import type { SecureTokenGenerator } from '../ports/secure-token-generator.port.js';
-import type { SessionRepository } from '../ports/session.repository.port.js';
-import { parseRefreshToken } from '../token-pair.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { SecureTokenGenerator } from '#src/application/ports/secure-token-generator.port.js';
+import type { SessionRepository } from '#src/application/ports/session.repository.port.js';
+import { parseRefreshToken } from '#src/application/token-pair.js';
 
 export type LogoutInput = {
   refreshToken: string;

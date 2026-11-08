@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadConfig } from '../../src/config.js';
+import { loadConfig } from '#src/config.js';
 
 const required = {
   JWT_PRIVATE_KEY: JSON.stringify({ kty: 'EC', crv: 'P-256' }),

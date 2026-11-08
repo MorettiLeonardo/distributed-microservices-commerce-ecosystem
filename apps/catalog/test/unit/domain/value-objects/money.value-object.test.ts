@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { InvalidMoneyError } from '../../../../src/domain/errors/money.error.js';
-import { Money } from '../../../../src/domain/value-objects/money.value-object.js';
+import { InvalidMoneyError } from '#src/domain/errors/money.error.js';
+import { Money } from '#src/domain/value-objects/money.value-object.js';
 
 describe('Money', () => {
   it('holds an amount in cents and defaults to BRL', () => {

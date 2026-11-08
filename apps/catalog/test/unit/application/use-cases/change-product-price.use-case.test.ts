@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ProductNotFoundError } from '../../../../src/application/errors/product-not-found.error.js';
-import { ProductVersionConflictError } from '../../../../src/application/errors/product-version-conflict.error.js';
-import { ChangeProductPrice } from '../../../../src/application/use-cases/change-product-price.use-case.js';
-import { CreateCategory } from '../../../../src/application/use-cases/create-category.use-case.js';
-import { CreateProduct } from '../../../../src/application/use-cases/create-product.use-case.js';
-import { InvalidMoneyError } from '../../../../src/domain/errors/money.error.js';
-import { InvalidPriceError } from '../../../../src/domain/errors/product.error.js';
-import { Money } from '../../../../src/domain/value-objects/money.value-object.js';
-import { testId } from '../../../support/fakes.js';
-import { createTestContext, type TestContext } from '../../../support/test-context.js';
+import { ProductNotFoundError } from '#src/application/errors/product-not-found.error.js';
+import { ProductVersionConflictError } from '#src/application/errors/product-version-conflict.error.js';
+import { ChangeProductPrice } from '#src/application/use-cases/change-product-price.use-case.js';
+import { CreateCategory } from '#src/application/use-cases/create-category.use-case.js';
+import { CreateProduct } from '#src/application/use-cases/create-product.use-case.js';
+import { InvalidMoneyError } from '#src/domain/errors/money.error.js';
+import { InvalidPriceError } from '#src/domain/errors/product.error.js';
+import { Money } from '#src/domain/value-objects/money.value-object.js';
+import { testId } from '#test/support/fakes.js';
+import { createTestContext, type TestContext } from '#test/support/test-context.js';
 
 describe('ChangeProductPrice', () => {
   let ctx: TestContext;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { BcryptPasswordHasher } from '../../../../../src/adapters/out/security/bcrypt.password-hasher.js';
-import { Password } from '../../../../../src/domain/value-objects/password.value-object.js';
+import { BcryptPasswordHasher } from '#src/adapters/out/security/bcrypt.password-hasher.js';
+import { Password } from '#src/domain/value-objects/password.value-object.js';
 
 // The minimum cost keeps the tests fast; production uses 12.
 const hasher = new BcryptPasswordHasher(4);

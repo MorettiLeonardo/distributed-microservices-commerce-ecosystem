@@ -1,5 +1,5 @@
-import type { UserRole } from '../../domain/entities/user.entity.js';
-import type { UserId } from '../../domain/value-objects/identifiers.js';
+import type { UserRole } from '#src/domain/entities/user.entity.js';
+import type { UserId } from '#src/domain/value-objects/identifiers.js';
 
 export type AccessTokenClaims = {
   userId: UserId;

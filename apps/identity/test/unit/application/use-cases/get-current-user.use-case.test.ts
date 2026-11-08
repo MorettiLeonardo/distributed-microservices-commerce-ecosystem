@@ -1,11 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { UserNotFoundError } from '../../../../src/application/errors/user-not-found.error.js';
-import { GetCurrentUser } from '../../../../src/application/use-cases/get-current-user.use-case.js';
-import {
-  createTestContext,
-  registerUser,
-  type TestContext,
-} from '../../../support/test-context.js';
+import { UserNotFoundError } from '#src/application/errors/user-not-found.error.js';
+import { GetCurrentUser } from '#src/application/use-cases/get-current-user.use-case.js';
+import { createTestContext, registerUser, type TestContext } from '#test/support/test-context.js';
 
 describe('GetCurrentUser', () => {
   let ctx: TestContext;

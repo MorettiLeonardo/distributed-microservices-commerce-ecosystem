@@ -1,8 +1,9 @@
-import { InvalidOneTimeTokenError } from '../errors/authentication.error.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { EventPublisher } from '../ports/event-publisher.port.js';
-import type { SecureTokenGenerator } from '../ports/secure-token-generator.port.js';
-import type { UnitOfWork } from '../ports/unit-of-work.port.js';
+import { OneTimeTokenPurpose } from '#src/domain/entities/one-time-token.entity.js';
+import { InvalidOneTimeTokenError } from '#src/application/errors/authentication.error.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { EventPublisher } from '#src/application/ports/event-publisher.port.js';
+import type { SecureTokenGenerator } from '#src/application/ports/secure-token-generator.port.js';
+import type { UnitOfWork } from '#src/application/ports/unit-of-work.port.js';
 
 export type VerifyEmailInput = {
   token: string;
@@ -23,7 +24,10 @@ export class VerifyEmail {
     const now = this.deps.clock.now();
 
     const events = await this.deps.unitOfWork.run(async ({ users, oneTimeTokens }) => {
-      const token = await oneTimeTokens.findByHash(tokenHash, 'email_verification');
+      const token = await oneTimeTokens.findByHash(
+        tokenHash,
+        OneTimeTokenPurpose.EmailVerification,
+      );
       if (!token) throw new InvalidOneTimeTokenError();
 
       const user = await users.findById(token.userId);

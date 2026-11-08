@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CryptoSecureTokenGenerator } from '../../../../../src/adapters/out/security/crypto.secure-token-generator.js';
+import { CryptoSecureTokenGenerator } from '#src/adapters/out/security/crypto.secure-token-generator.js';
 
 const generator = new CryptoSecureTokenGenerator();
 

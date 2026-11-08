@@ -1,7 +1,7 @@
-import type { UserRole, UserStatus } from '../../domain/entities/user.entity.js';
-import { UserId } from '../../domain/value-objects/identifiers.js';
-import { UserNotFoundError } from '../errors/user-not-found.error.js';
-import type { UserRepository } from '../ports/user.repository.port.js';
+import type { UserRole, UserStatus } from '#src/domain/entities/user.entity.js';
+import { UserId } from '#src/domain/value-objects/identifiers.js';
+import { UserNotFoundError } from '#src/application/errors/user-not-found.error.js';
+import type { UserRepository } from '#src/application/ports/user.repository.port.js';
 
 export type GetCurrentUserInput = {
   userId: string;

@@ -1,7 +1,7 @@
 import { createCloudEvent } from '@ecommerce/event-contracts';
 import type { SQSEvent, SQSRecord } from 'aws-lambda';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { createHandler, type Mail, type Mailer } from '../../src/handler.js';
+import { createHandler, type Mail, type Mailer } from '#src/handler.js';
 
 class RecordingMailer implements Mailer {
   readonly sent: Mail[] = [];

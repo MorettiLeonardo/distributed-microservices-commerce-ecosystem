@@ -1,5 +1,5 @@
 import type { Sequelize, Transaction } from 'sequelize';
-import type { Repositories, UnitOfWork } from '../../../application/ports/unit-of-work.port.js';
+import type { Repositories, UnitOfWork } from '#src/application/ports/unit-of-work.port.js';
 import { SequelizeOneTimeTokenRepository } from './repositories/one-time-token.repository.js';
 import { SequelizeSessionRepository } from './repositories/session.repository.js';
 import { SequelizeUserRepository } from './repositories/user.repository.js';

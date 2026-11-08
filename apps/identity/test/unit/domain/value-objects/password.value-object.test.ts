@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  PasswordTooLongError,
-  PasswordTooShortError,
-} from '../../../../src/domain/errors/password.error.js';
-import { Password } from '../../../../src/domain/value-objects/password.value-object.js';
+import { PasswordTooLongError, PasswordTooShortError } from '#src/domain/errors/password.error.js';
+import { Password } from '#src/domain/value-objects/password.value-object.js';
 
 describe('Password', () => {
   it('accepts a password within the policy', () => {

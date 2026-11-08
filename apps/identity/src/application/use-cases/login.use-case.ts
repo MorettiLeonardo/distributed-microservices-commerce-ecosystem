@@ -1,23 +1,23 @@
-import { Session } from '../../domain/entities/session.entity.js';
-import type { User } from '../../domain/entities/user.entity.js';
-import { UserDisabledError } from '../../domain/errors/user.error.js';
-import { Email } from '../../domain/value-objects/email.value-object.js';
-import { SessionId } from '../../domain/value-objects/identifiers.js';
+import { Session } from '#src/domain/entities/session.entity.js';
+import { type User, UserStatus } from '#src/domain/entities/user.entity.js';
+import { UserDisabledError } from '#src/domain/errors/user.error.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { SessionId } from '#src/domain/value-objects/identifiers.js';
 import {
   AccountLockedError,
   InvalidCredentialsError,
   TooManyLoginAttemptsError,
-} from '../errors/authentication.error.js';
-import type { AccessTokenIssuer } from '../ports/access-token-issuer.port.js';
-import type { Clock } from '../ports/clock.port.js';
-import type { EventPublisher } from '../ports/event-publisher.port.js';
-import type { IdGenerator } from '../ports/id-generator.port.js';
-import type { LoginAttemptLimiter } from '../ports/login-attempt-limiter.port.js';
-import type { PasswordHasher } from '../ports/password-hasher.port.js';
-import type { SecureTokenGenerator } from '../ports/secure-token-generator.port.js';
-import type { SessionRepository } from '../ports/session.repository.port.js';
-import type { UserRepository } from '../ports/user.repository.port.js';
-import { formatRefreshToken, type TokenPair } from '../token-pair.js';
+} from '#src/application/errors/authentication.error.js';
+import type { AccessTokenIssuer } from '#src/application/ports/access-token-issuer.port.js';
+import type { Clock } from '#src/application/ports/clock.port.js';
+import type { EventPublisher } from '#src/application/ports/event-publisher.port.js';
+import type { IdGenerator } from '#src/application/ports/id-generator.port.js';
+import type { LoginAttemptLimiter } from '#src/application/ports/login-attempt-limiter.port.js';
+import type { PasswordHasher } from '#src/application/ports/password-hasher.port.js';
+import type { SecureTokenGenerator } from '#src/application/ports/secure-token-generator.port.js';
+import type { SessionRepository } from '#src/application/ports/session.repository.port.js';
+import type { UserRepository } from '#src/application/ports/user.repository.port.js';
+import { formatRefreshToken, type TokenPair } from '#src/application/token-pair.js';
 
 export type LoginInput = {
   email: string;
@@ -64,7 +64,7 @@ export class Login {
       await this.registerFailure(email, user);
       throw new InvalidCredentialsError();
     }
-    if (user.status === 'disabled') throw new UserDisabledError();
+    if (user.status === UserStatus.Disabled) throw new UserDisabledError();
 
     await loginAttemptLimiter.clearFailures(email);
     return this.startSession(user);

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { InvalidEmailError } from '../../../../src/domain/errors/email.error.js';
-import { Email } from '../../../../src/domain/value-objects/email.value-object.js';
+import { InvalidEmailError } from '#src/domain/errors/email.error.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
 
 describe('Email', () => {
   it('normalizes by trimming and lowercasing', () => {

@@ -3,18 +3,18 @@ import {
   AccountLockedError,
   InvalidCredentialsError,
   TooManyLoginAttemptsError,
-} from '../../../../src/application/errors/authentication.error.js';
-import { parseRefreshToken } from '../../../../src/application/token-pair.js';
-import { Login } from '../../../../src/application/use-cases/login.use-case.js';
-import { VerifyEmail } from '../../../../src/application/use-cases/verify-email.use-case.js';
-import { Email } from '../../../../src/domain/value-objects/email.value-object.js';
-import { InMemoryLoginAttemptLimiter } from '../../../support/in-memory-login-attempt-limiter.js';
+} from '#src/application/errors/authentication.error.js';
+import { parseRefreshToken } from '#src/application/token-pair.js';
+import { Login } from '#src/application/use-cases/login.use-case.js';
+import { VerifyEmail } from '#src/application/use-cases/verify-email.use-case.js';
+import { Email } from '#src/domain/value-objects/email.value-object.js';
+import { InMemoryLoginAttemptLimiter } from '#test/support/in-memory-login-attempt-limiter.js';
 import {
   createTestContext,
   registerUser,
   SESSION_TTL_MS,
   type TestContext,
-} from '../../../support/test-context.js';
+} from '#test/support/test-context.js';
 
 const IP = '203.0.113.7';
 const valid = { email: 'john@example.com', password: 'correct horse', ip: IP };

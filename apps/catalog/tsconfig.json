@@ -1,7 +1,8 @@
 {
   "extends": "@ecommerce/tsconfig/base.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "customConditions": ["source"]
   },
   "include": ["src", "test", "scripts"]
 }
